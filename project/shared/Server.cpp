@@ -1,6 +1,5 @@
 #include "Server.hpp"
 
-
 Server::Server(ServerStruct server_struct)
 {
 

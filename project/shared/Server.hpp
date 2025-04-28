@@ -36,7 +36,7 @@ private:
 	std::string server_name;
 	std::string root;
 	std::string index;
-	std::string client_max_blody_size;
+	std::string client_max_body_size;
 	std::string error_page;
 
 	std::vector<ServerStructLocation> locations;
