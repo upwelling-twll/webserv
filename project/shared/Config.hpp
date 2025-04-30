@@ -3,25 +3,23 @@
 
 # include <iostream>
 # include "Server.hpp"
-
+# include "Port.hpp"
 class Config
 {
 private:
-    std::vector<Server> servers;
-	std::vector<Ports>	ports;
+    std::vector<Server> _servers;
+	std::vector<Port>	_ports;
 
 public:
 	/*Member functions*/
-    void method();
+    // void method();
 
 	/*Getters and Setters*/
-	getServers();
-	getConfigs();
-	setServers(const Server server);
-	setPorts(const Port port);
+	std::vector<Server>	const getServers();
+	std::vector<Port>	const getPorts();
 
 	/*Constructors*/
-    Config(/*Parameterized Constructor*/);
+    Config(std::vector<Server> servers, std::vector<Port> ports);
 	Config(void);
 
 	/*Destructors*/

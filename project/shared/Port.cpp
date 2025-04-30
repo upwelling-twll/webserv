@@ -7,14 +7,14 @@
 // }
 
 /*Getters and Setters*/
-std::string Port::const getIp()
+std::string const Port::getIp()
 {
-	return (this._ip);
+	return (this->_ip);
 }
 
-std::string Port::const getPort()
+unsigned int const Port::getPort()
 {
-	return (this._port);
+	return (this->_port);
 }
 
 /*Constructors*/
@@ -47,7 +47,8 @@ Port::~Port( void )
 
 std::ostream& operator<<(std::ostream& output_stream, Port& src)
 {
-	output_stream << "Port instance: ip=" << this._ip << ", port=" << this._port << std::endl;
+	output_stream << "Port instance: ip=" << src.getIp() << ", port=" \
+		 << src.getPort() << std::endl;
 	return output_stream;
 }
 

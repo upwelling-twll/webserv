@@ -1,35 +1,25 @@
 #include "Config.hpp"
 
 /*Member functions*/
-void Config::method()
-{
-    // Method implementation
-}
+// void Config::method()
+// {
+//     // Method implementation
+// }
 
 /*Getters and Setters*/
-std::vector	const Config::getServers()
+std::vector<Server>	const Config::getServers()
 {
-
+	return (this->_servers);
 }
 
-std::vector	const Config::getPorts()
+std::vector<Port>	const Config::getPorts()
 {
-	
+	return (this->_ports);
 }
-
-void const	Config::setServers()
-{
-	
-}
-
-void const	Config::setPorts()
-{
-	
-}
-
 
 /*Constructors*/
-Config::Config(/*Parameterized Constructor*/)
+Config::Config(std::vector<Server> servers, std::vector<Port> ports) : \
+	 _servers(servers), _ports(ports)
 {
    std::cout << "Config parameterized constructor is called" << std::endl;
 }
