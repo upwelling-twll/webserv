@@ -1,37 +1,34 @@
-#include "Server.hpp"
+#include "./Server.hpp"
 
+Server::Server(){
+	
+	this->listen = "80";
+	this->server_name = "";
+	this->root = "";
+	this->index = "index.html";
+	this->client_max_blody_size = "1MB";
+	this->error_page = "";
 
-Server::Server(ServerStruct server_struct)
-{
-
-   std::cout << "Server parameterized constructor is called" << std::endl;
+	std::vector<Location> locations;
 }
 
-Server::Server()
-{
-    std::cout << "Server default constructor is called" << std::endl;
+Server::~Server(){
+	
 }
 
-/*Destructors*/
-Server::~Server( void )
-{
-    std::cout << "Server destructor is called" << std::endl;
+Location::Location() {
+	this->path_prefix = "-";
+	this->root_sd = "server_default";
+	this->index_sd = "server_default";
+	this->autoindex = "off";
+	this->limit_except = "GET POST DELETE HEAD";
+	this->returns = "";
+	this->cgi_pass = "off";
+	this->upload_store = "forbidden";
+	this->client_max_body_size_sd = "server_default";
+	this->error_page_sd = "server_default";
 }
 
-/*Overload operators*/
-Server& Server::operator=(const Server& src)
-{
-	std::cout << "Server copy assignment is called" << std::endl;
-	if (this != &src)
-	{
-		// Assinment variables
-	}
-	return (*this);
-}
+Location::~Location(){
 
-std::ostream& operator<<(std::ostream& output_stream, Server& src)
-{
-	output_stream << "* Server Class info*" << std::endl;
-	return output_stream;
 }
-
