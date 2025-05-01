@@ -10,4 +10,7 @@ public:
 	Parser(const char *filename);
 };
 
+int FindChar(std::string line, char character);
+int FindSubstringEnd(std::string line, std::string word);
+
 #endif
