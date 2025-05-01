@@ -6,4 +6,5 @@ Parser::Parser(const char *filename){
 	file.open(filename);
 	std::getline(file, line);
 	std::cout << "The Line: "<< line << std::endl;
+	
 }
