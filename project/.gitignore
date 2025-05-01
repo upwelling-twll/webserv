@@ -1,0 +1,5 @@
+webserv
+*.o
+parsing/*.o
+shared/*.o
+src/*.o
