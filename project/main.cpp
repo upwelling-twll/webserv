@@ -23,6 +23,13 @@ int main()
     Config newConf = initMockConfig();
 
 	std::cout << "Data for Mock config is created" << std::endl;
-    newConf.startWebServ();
+    try
+	{
+		newConf.startWebServ();
+	}
+	catch(const std::exception& e)
+	{
+		std::out << "Server start impossible" << std::endl;
+	}
 	return (1);
 }

@@ -10,7 +10,7 @@ private:
 	const unsigned int		_port;
 public:
 	/*Member functions*/
-    // void method();
+    bool createSocket();
 
 	/*Getters and Setters*/
 	std::string const getIp();
