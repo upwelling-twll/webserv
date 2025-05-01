@@ -13,8 +13,8 @@ public:
     // void method();
 
 	/*Getters and Setters*/
-	std::string const Port::getIp();
-	unsigned int const Port::getPort();
+	std::string const getIp();
+	unsigned int const getPort();
 
 	/*Constructors*/
     Port(const std::string ip, const int port);
