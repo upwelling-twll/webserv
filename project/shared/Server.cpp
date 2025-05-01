@@ -1,19 +1,26 @@
 #include "./Server.hpp"
 
+void	Server::addLocation(std::vector<Location> src)
+{
+	this->locations = src;
+	return ;
+}
+
 Server::Server(){
 	
 	this->listen = "80";
 	this->server_name = "";
 	this->root = "";
 	this->index = "index.html";
-	this->client_max_blody_size = "1MB";
+	this->client_max_body_size = "1MB";
 	this->error_page = "";
 
 	std::vector<Location> locations;
 }
 
-Server::~Server(){
-	
+Server::~Server()
+{
+	std::cout << "Server destructor is called" << std::endl;
 }
 
 Location::Location() {

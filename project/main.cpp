@@ -1,19 +1,28 @@
-
 #include <iostream>
-#include "./parsing/Parser.hpp"
+#include "shared/Config.hpp"
 
-int main(int argc, char** argv)
+Config initMockConfig()
 {
-	if (argc != 2)
-		return 1;
-	const char* file = argv[1];
+    Server		mockServer;
+	Location	mockLocation;
+    Port   		mockPort("127.0.0.1", 8080);
+	std::vector<Location>	locs;
+    std::vector<Server> servs;
+    std::vector<Port> ports;
+    
+	locs.push_back(mockLocation);
+	mockServer.addLocation(locs);
+    servs.push_back(mockServer);
+    ports.push_back(mockPort);
+    Config mockConf(servs, ports);
+    return (mockConf);
+}
 
-	try {
-		Parser parser(file);
-	}
-	catch (const std::exception& e) {
-		std::cerr << "Error: " << e.what() << '\n';
-		return 1;
-	}
-	return 0;
+int main()
+{
+    Config newConf = initMockConfig();
+
+	std::cout << "Data for Mock config is created" << std::endl;
+    newConf.startWebServ();
+	return (1);
 }

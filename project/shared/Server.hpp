@@ -24,6 +24,7 @@ public:
 	Location();
 	~Location();
 };
+
 class Server
 {
 private:
@@ -37,6 +38,8 @@ private:
 	std::vector<Location> locations;
 
 public:
+	void addLocation(std::vector<Location> src);
+
 	Server();
 	~Server(void);
 };

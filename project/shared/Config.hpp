@@ -4,6 +4,7 @@
 # include <iostream>
 # include "Server.hpp"
 # include "Port.hpp"
+
 class Config
 {
 private:
@@ -12,7 +13,7 @@ private:
 
 public:
 	/*Member functions*/
-    // void method();
+	bool	startWebServ();
 
 	/*Getters and Setters*/
 	std::vector<Server>	const getServers();
@@ -29,6 +30,6 @@ public:
 	Config &operator=(const Config& src);
 };
 
-std::ostream& operator<<(std::ostream &output_stream, Config& src);
+// std::ostream& operator<<(std::ostream &output_stream, Config& src);
 
 #endif // CONFIG_HPP

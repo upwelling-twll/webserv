@@ -1,10 +1,11 @@
 #include "Config.hpp"
 
 /*Member functions*/
-// void Config::method()
-// {
-//     // Method implementation
-// }
+bool Config::startWebServ()
+{
+    std::cout << "starting Web Serv" << std::endl;
+	
+}
 
 /*Getters and Setters*/
 std::vector<Server>	const Config::getServers()
@@ -46,9 +47,9 @@ Config& Config::operator=(const Config& src)
 	return (*this);
 }
 
-std::ostream& operator<<(std::ostream& output_stream, Config& src)
-{
-	output_stream << "* Config Class info*" << std::endl;
-	return output_stream;
-}
+// std::ostream& operator<<(std::ostream& output_stream, Config& src)
+// {
+// 	output_stream << "* Config Class info*" << std::endl;
+// 	return output_stream;
+// }
 

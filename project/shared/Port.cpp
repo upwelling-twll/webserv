@@ -12,7 +12,7 @@ std::string const Port::getIp()
 	return (this->_ip);
 }
 
-unsigned int const Port::getPort()
+unsigned int Port::getPort()
 {
 	return (this->_port);
 }

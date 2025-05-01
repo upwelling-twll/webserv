@@ -14,7 +14,7 @@ public:
 
 	/*Getters and Setters*/
 	std::string const getIp();
-	unsigned int const getPort();
+	unsigned int getPort();
 
 	/*Constructors*/
     Port(const std::string ip, const int port);
