@@ -8,19 +8,22 @@ bool Config::startWebServ()
 
     std::cout << "	Starting Web Serv" << std::endl;
 	for (std::vector<Port>::iterator it = this->_ports.begin(); it != this->_ports.end(); ++it)
-	{
+	{ 
 		try
 		{
 			listenSocket = it->createSocket();
 			it->setListenSocket(listenSocket);
+			it->optionsSocket();
 			it->bindSocket();
+			it->listenConnectionSocket();
+			std::cout << *it << std::endl;
 		}
 		catch (const std::exception& e)
 		{
-			std::cout << "Error creating socket for IP:PORT pair from vector" << std::endl;
+			std::cout << "Error creating/paring/listening socket for IP(" << it->getIp() <<\
+				 "):PORT(" << it->getPort() << ") pair from vector" << std::endl;
 			return (false);
 		}
-		std::cout << *it << std::endl;
 	}
 	return (true);
 }
@@ -31,7 +34,7 @@ std::vector<Server>	const Config::getServers()
 	return (this->_servers);
 }
 
-std::vector<Port>	const Config::getPorts()
+std::vector<Port> Config::getPorts()
 {
 	return (this->_ports);
 }

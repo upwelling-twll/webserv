@@ -6,8 +6,8 @@ void	Server::addLocation(std::vector<Location> src)
 	return ;
 }
 
-Server::Server(){
-	
+Server::Server()
+{
 	this->listen = "80";
 	this->server_name = "";
 	this->root = "";

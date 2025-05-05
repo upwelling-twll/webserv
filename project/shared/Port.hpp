@@ -5,6 +5,8 @@
 # include <sys/socket.h>
 # include <sys/types.h>
 # include <arpa/inet.h>
+# include <cerrno>
+# include <cstring>
 
 # define S_DOMAIN AF_INET
 
@@ -23,6 +25,8 @@ public:
 	std::string const getIp();
 	unsigned int getPort();
 	int		getListenSocket();
+	void	listenConnectionSocket();
+	void	optionsSocket();
 
 	void	setListenSocket(int s);
 
@@ -34,7 +38,7 @@ public:
     ~Port( void );
 
 	/*Overload operators*/
-	// Port &operator=(const Port& src);
+	Port &operator=(const Port& src);
 };
 
 std::ostream& operator<<(std::ostream &output_stream, Port& src);

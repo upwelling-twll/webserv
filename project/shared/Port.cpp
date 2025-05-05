@@ -1,10 +1,44 @@
 #include "Port.hpp"
 
 /*Member functions*/
+
+void	Port::optionsSocket()
+{
+	int	i;
+	int	yes = 1;
+	
+	std::cout << "	Listen connection" << std::endl;
+	i = setsockopt(this->_listenSocket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
+	std::cout << i << std::endl;
+	if (i < 0)
+	{
+		std::cerr << "sockopt() failed: " << strerror(errno) << std::endl;
+		throw std::runtime_error("setsockopt() failed"); //TODO : if error, a value of -1 is returned and the global integer variable errno is set to indicate the error
+	}
+	std::cout << "	Setsockopt for listen socket complete" << std::endl;
+	return ;
+}
+
+void	Port::listenConnectionSocket()
+{
+	int	i;
+	
+	std::cout << "	Listen connection" << std::endl;
+	i = listen(this->_listenSocket, 32);
+	std::cout << i << std::endl;
+	if (i < 0)
+	{
+		std::cerr << "listen() failed: " << strerror(errno) << std::endl;
+		throw std::runtime_error("listen() failed"); //TODO : if error, a value of -1 is returned and the global integer variable errno is set to indicate the error
+	}
+	std::cout << "	Connection listen socket complete" << std::endl;
+	return ;
+}
+
+
 //   bind() assigns a name to an unnamed socket.  When a socket is created with socket(2) it
 //exists in a name space (address family) but has no name assigned.  bind() requests that
 ///address be assigned to the socket.
-
 void	Port::bindSocket()
 {
 	int	i;
@@ -15,10 +49,14 @@ void	Port::bindSocket()
 	addr.sin_port = htons(this->_port);
 	addr.sin_addr.s_addr = inet_addr( this->_ip.c_str());
 	std::cout << "	Binding socket start" << std::endl;
+	std::cout << *this << std::endl;
 	i = bind(this->_listenSocket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr));
 	std::cout << i << std::endl;
 	if (i < 0)
+	{
+		std::cerr << "bind() failed: " << strerror(errno) << std::endl;
 		throw std::runtime_error("bind() failed"); //TODO : if error, a value of -1 is returned and the global integer variable errno is set to indicate the error
+	}
 	std::cout << "	Binding socket complete" << std::endl;
 	return ;
 }
@@ -84,7 +122,7 @@ Port::~Port( void )
 // 	std::cout << "Port copy assignment is called" << std::endl;
 // 	if (this != &src)
 // 	{
-// 		// Assinment variables
+		
 // 	}
 // 	return (*this);
 // }

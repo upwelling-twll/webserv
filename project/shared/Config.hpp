@@ -5,7 +5,7 @@
 # include "Server.hpp"
 # include "Port.hpp"
 
-#include <sys/socket.h>
+# include <sys/socket.h>
 
 
 class Config
@@ -20,7 +20,7 @@ public:
 
 	/*Getters and Setters*/
 	std::vector<Server>	const getServers();
-	std::vector<Port>	const getPorts();
+	std::vector<Port> getPorts();
 
 
 	/*Constructors*/
