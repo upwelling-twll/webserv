@@ -29,7 +29,7 @@ int main()
 	}
 	catch(const std::exception& e)
 	{
-		std::out << "Server start impossible" << std::endl;
+		std::cout << "Server start impossible" << std::endl;
 	}
 	return (1);
 }

@@ -1,20 +1,28 @@
 #include "Config.hpp"
 
 /*Member functions*/
+
 bool Config::startWebServ()
 {
-    std::cout << "starting Web Serv" << std::endl;
-	for (std::vector<Port>::iterator it = this._ports.begin(); it ! this._ports.end(); ++it)
+	int	listenSocket;
+
+    std::cout << "	Starting Web Serv" << std::endl;
+	for (std::vector<Port>::iterator it = this->_ports.begin(); it != this->_ports.end(); ++it)
 	{
 		try
 		{
-			it.createSocket();
+			listenSocket = it->createSocket();
+			it->setListenSocket(listenSocket);
+			it->bindSocket();
 		}
 		catch (const std::exception& e)
 		{
-			std::out << "Impossible to create socket for IP:PORT pair from vector" << std::endl;
+			std::cout << "Error creating socket for IP:PORT pair from vector" << std::endl;
+			return (false);
 		}
+		std::cout << *it << std::endl;
 	}
+	return (true);
 }
 
 /*Getters and Setters*/

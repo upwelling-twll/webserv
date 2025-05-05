@@ -2,19 +2,29 @@
 # define PORT_HPP
 
 # include <iostream>
+# include <sys/socket.h>
+# include <sys/types.h>
+# include <arpa/inet.h>
+
+# define S_DOMAIN AF_INET
 
 class Port
 {
 private:
 	const std::string		_ip;
 	const unsigned int		_port;
+	int						_listenSocket;
 public:
 	/*Member functions*/
-    bool createSocket();
+    int 	createSocket();
+	void	bindSocket();
 
 	/*Getters and Setters*/
 	std::string const getIp();
 	unsigned int getPort();
+	int		getListenSocket();
+
+	void	setListenSocket(int s);
 
 	/*Constructors*/
     Port(const std::string ip, const int port);

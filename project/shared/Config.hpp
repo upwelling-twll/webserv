@@ -5,6 +5,9 @@
 # include "Server.hpp"
 # include "Port.hpp"
 
+#include <sys/socket.h>
+
+
 class Config
 {
 private:
@@ -19,9 +22,10 @@ public:
 	std::vector<Server>	const getServers();
 	std::vector<Port>	const getPorts();
 
+
 	/*Constructors*/
     Config(std::vector<Server> servers, std::vector<Port> ports);
-	Config(void);
+	Config(void);  
 
 	/*Destructors*/
     ~Config( void );
