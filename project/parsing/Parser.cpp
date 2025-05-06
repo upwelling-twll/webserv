@@ -34,8 +34,11 @@ Parser::Parser(const char *filename)
 	while (std::getline(file, line))
 	{
 		lineBuffer = splitAndRemoveSpaces(line);
-		if(locateString(lineBuffer, "server"))
-			std::cout<< "SERVER FOUNDED" << '\n';
+		if(locateString(lineBuffer, "server") )
+		{
+			serverParser(file, line);
+
+		}
 	}
 	std::getline(file, line);
 	std::cout << FindChar(line, '{') << std::endl;

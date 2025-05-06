@@ -21,5 +21,7 @@ int FindSubstringEnd(std::string line, std::string word);
 std::vector<std::string> splitAndRemoveSpaces(const std::string& input);
 
 bool locateString(const std::vector<std::string>& vectorStr, std::string the_line);
+void serverParser(std::ifstream &file, std::string line);
+void locationParser(std::ifstream &file, std::string line);
 
 #endif
