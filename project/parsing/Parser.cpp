@@ -1,13 +1,42 @@
 #include "./Parser.hpp"
 
-Parser::Parser(const char *filename){
+const char *ServersEnum[] = {
+	"listen",
+	"server_name",
+	"root",
+	"index",
+	"client_max_body_size",
+	"error_page"};
+
+const char *LocationsEnum[] = {
+	"path_prefix",
+	"root_sd",
+	"index_sd",
+	"autoindex",
+	"limit_except",
+	"returns",
+	"cgi_pass",
+	"upload_store",
+	"client_max_body_size_sd",
+	"error_page_sd"};
+
+Parser::Parser(const char *filename)
+{
+	// int isParentOpened = 0;
+	// int isChildeOpened = 0;
+
 	std::ifstream file;
 	std::string line;
-	file.open(filename);
-	//while(std::getline(file, line)){
-	//	std::cout << "The Line: "<< line << std::endl;
 
-	//}
+	std::vector<std::string> lineBuffer;
+
+	file.open(filename);
+	while (std::getline(file, line))
+	{
+		lineBuffer = splitAndRemoveSpaces(line);
+		if(locateString(lineBuffer, "server"))
+			std::cout<< "SERVER FOUNDED" << '\n';
+	}
 	std::getline(file, line);
 	std::cout << FindChar(line, '{') << std::endl;
 	file.close();

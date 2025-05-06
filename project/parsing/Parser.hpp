@@ -1,6 +1,11 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 #include "../shared/Server.hpp"
+#include <vector>
+#include <sstream>
+
+extern const char* ServersEnum[];
+extern const char* LocationsEnum[];
 
 class Parser
 {
@@ -12,5 +17,9 @@ public:
 
 int FindChar(std::string line, char character);
 int FindSubstringEnd(std::string line, std::string word);
+
+std::vector<std::string> splitAndRemoveSpaces(const std::string& input);
+
+bool locateString(const std::vector<std::string>& vectorStr, std::string the_line);
 
 #endif
