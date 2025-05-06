@@ -16,6 +16,7 @@ private:
 	const std::string		_ip;
 	const unsigned int		_port;
 	int						_listenSocket;
+
 public:
 	/*Member functions*/
     int 	createSocket();
