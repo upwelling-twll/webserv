@@ -23,6 +23,16 @@ private:
 public:
 	Location();
 	~Location();
+	void setPathPrefix(std::string newValue);
+	void setRootSd(std::string newValue);
+	void setIndexSd(std::string newValue);
+	void setAutoIndex(std::string newValue);
+	void setLimitExcept(std::string newValue);
+	void setReturns(std::string newValue);
+	void setCgiPass(std::string newValue);
+	void setUploadStore(std::string newValue);
+	void setClientMaxBodySizeSd(std::string newValue);
+	void setErrorPageSd(std::string newValue);
 };
 class Server
 {
@@ -31,7 +41,7 @@ private:
 	std::string server_name;
 	std::string root;
 	std::string index;
-	std::string client_max_blody_size;
+	std::string client_max_body_size;
 	std::string error_page;
 
 	std::vector<Location> locations;
@@ -39,6 +49,12 @@ private:
 public:
 	Server();
 	~Server(void);
+	void setListen(std::string newValue);
+	void setServerName(std::string newValue);
+	void setRoot(std::string newValue);
+	void setIndex(std::string newValue);
+	void setClientMaxBodySize(std::string newValue);
+	void setErrorPage(std::string newValue);
 };
 
 std::ostream &operator<<(std::ostream &output_stream, Server &src);
