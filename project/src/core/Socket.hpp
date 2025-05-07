@@ -16,7 +16,7 @@ public:
 	/*Member functions*/
     // int				receiveRequest();
 	// int				sentResponce();
-	SocketHandler	handler();
+	SocketHandler	handler;
 
 
 	/*Getters and Setters*/

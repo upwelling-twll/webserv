@@ -59,7 +59,7 @@ Socket::~Socket( void )
 
 std::ostream& operator<<(std::ostream& output_stream, Socket& src)
 {
-	output_stream << "Socket: fd=" << this->getFd() << std::endl;
+	output_stream << "Socket: fd=" << src.getFd() << std::endl;
 	return output_stream;
 }
 

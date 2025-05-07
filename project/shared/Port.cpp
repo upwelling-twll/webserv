@@ -44,7 +44,7 @@ void	Port::bindSocket()
 	int	i;
 	struct sockaddr_in	addr;
 
-	addr.sin_len = sizeof(addr);
+	// addr.sin_len = sizeof(addr);
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(this->_port);
 	addr.sin_addr.s_addr = inet_addr( this->_ip.c_str());
