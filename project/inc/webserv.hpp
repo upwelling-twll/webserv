@@ -5,8 +5,10 @@
 
 # include "../shared/Config.hpp"
 # include "../src/core/Socket.hpp"
+# include "../src/core/Engine.hpp"
 
 
-int connectClients(Config config);
+void addPortsToSocketsList(std::vector<Socket> allSockets, std::vector<Port> ports);
+std::vector<Socket> createSocketVec(Config config);
 
 #endif

@@ -11,6 +11,8 @@ class Socket
 {
 private:
 	int	_fd;
+	std::string	_ip;
+	std::string	_port;
 
 public:
 	/*Member functions*/

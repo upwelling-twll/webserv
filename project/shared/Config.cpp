@@ -35,6 +35,7 @@ void	Config::closeAllFds()
 		it->closeFd();
 	}
 }
+
 /*Getters and Setters*/
 std::vector<Server>	const Config::getServers()
 {

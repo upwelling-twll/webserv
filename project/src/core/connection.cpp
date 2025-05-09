@@ -14,12 +14,10 @@ void addPortsToSocketsList(std::vector<Socket> allSockets, std::vector<Port> por
     }
 }
 
-
-
-int connectClients(Config config)
+std::vector<Socket> createSocketVec(Config config)
 {
     std::vector<Socket> allSockets;
 
     addPortsToSocketsList(allSockets, config.getPorts());
-    return (true);
+    return (allSockets);
 }

@@ -46,10 +46,14 @@ int main()
 	{
 		std::cout << "Server start impossible" << std::endl;
 	}
-	if (!connectClients(newConf))
+	
+	Engine	engine(createSocketVec(newConf));
+
+	if (!engine.engineRoutine(newConf))
 	{
-		std::cout << "Error: failed connecting clients" << std::endl;
+		std::cout << "Error: engin failed" << std::endl;
 	}
+
 	newConf.closeAllFds();
 	return (1);
 }
