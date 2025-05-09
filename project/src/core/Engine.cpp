@@ -3,14 +3,22 @@
 /*Member functions*/
 int Engine::engineRoutine(Config config)
 {
-	(void)config;
+	std::vector<Socket> fdsPool = this->_allSockets;
+	fd_set *masterFds;
+	
 	std::cout << "	Engine routine is called" << std::endl;
-	for (std::vector<Socket>::iterator it = this->_allSockets.begin(); it != this->_allSockets.end(); ++it)
+	FD_ZERO(masterFds);
+	for (std::vector<Socket>::iterator it = fdsPool.begin(); it != fdsPool.end(); ++it)
 	{
-		std::cout << "Engine routine is called" << std::endl;
-		it->handler(*it);
+		FD_SET(it->getFd(), masterFds);
 	}
-	return (1);
+	int maxFd = fdsPool.back().getFd();
+	while(1)
+	{
+		receiveFromClients(fdsPool);
+		sendToClients(fdsPool);
+		acceptNewClients(fdsPool);
+	}
 }
 
 /*Getters and Setters*/
