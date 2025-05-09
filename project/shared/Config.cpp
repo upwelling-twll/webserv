@@ -28,6 +28,13 @@ bool Config::startWebServ()
 	return (true);
 }
 
+void	Config::closeAllFds()
+{
+	for(std::vector<Port>::iterator it = this->_ports.begin(); it != this->_ports.end(); ++it)
+	{
+		it->closeFd();
+	}
+}
 /*Getters and Setters*/
 std::vector<Server>	const Config::getServers()
 {

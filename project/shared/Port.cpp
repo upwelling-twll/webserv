@@ -35,7 +35,6 @@ void	Port::listenConnectionSocket()
 	return ;
 }
 
-
 //   bind() assigns a name to an unnamed socket.  When a socket is created with socket(2) it
 //exists in a name space (address family) but has no name assigned.  bind() requests that
 ///address be assigned to the socket.
@@ -56,6 +55,7 @@ void	Port::bindSocket()
 	{
 		std::cerr << "bind() failed: " << strerror(errno) << std::endl;
 		throw std::runtime_error("bind() failed"); //TODO : if error, a value of -1 is returned and the global integer variable errno is set to indicate the error
+		return ;
 	}
 	std::cout << "	Binding socket complete" << std::endl;
 	return ;
@@ -71,6 +71,20 @@ int	Port::createSocket()
 		throw;
 	//TODO : there is a list of errors returned in case of socket() fail, i may need to catch them as they all a macros 
 	return (s_fd);
+}
+
+void	Port::closeFd()
+{
+	if (this->_listenSocket != -1)
+	{
+		std::cout << "	Closing listen socket" << std::endl;
+		close(this->_listenSocket);
+	}
+	else
+	{
+		std::cout << "	Listen socket already closed" << std::endl;
+	}
+	return ;
 }
 
 /*Getters and Setters*/

@@ -7,6 +7,7 @@
 # include <arpa/inet.h>
 # include <cerrno>
 # include <cstring>
+# include <unistd.h>
 
 # define S_DOMAIN AF_INET
 
@@ -19,15 +20,16 @@ private:
 
 public:
 	/*Member functions*/
-    int 	createSocket();
+	void	optionsSocket();
+	void	listenConnectionSocket();
 	void	bindSocket();
+    int 	createSocket();
+	void	closeFd();
 
 	/*Getters and Setters*/
 	std::string const getIp();
 	unsigned int getPort();
 	int		getListenSocket();
-	void	listenConnectionSocket();
-	void	optionsSocket();
 
 	void	setListenSocket(int s);
 

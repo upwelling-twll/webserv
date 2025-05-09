@@ -50,5 +50,6 @@ int main()
 	{
 		std::cout << "Error: failed connecting clients" << std::endl;
 	}
+	newConf.closeAllFds();
 	return (1);
 }

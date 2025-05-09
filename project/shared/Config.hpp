@@ -17,6 +17,7 @@ private:
 public:
 	/*Member functions*/
 	bool	startWebServ();
+	void	closeAllFds();
 
 	/*Getters and Setters*/
 	std::vector<Server>	const getServers();
