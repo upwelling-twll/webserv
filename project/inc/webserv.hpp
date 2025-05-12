@@ -1,6 +1,7 @@
 #ifndef WEBSERV_HPP
 # define WEBSERV_HPP
 
+# include <sys/socket.h>
 # include <list>
 
 # include "../shared/Config.hpp"

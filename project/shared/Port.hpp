@@ -27,11 +27,11 @@ public:
 	void	closeFd();
 
 	/*Getters and Setters*/
-	std::string const getIp();
-	unsigned int getPort();
-	int		getListenSocket();
+	std::string const	getIp();
+	unsigned int		getPort();
+	int					getListenSocket();
 
-	void	setListenSocket(int s);
+	void				setListenSocket(int s);
 
 	/*Constructors*/
     Port(const std::string ip, const int port);

@@ -1,6 +1,28 @@
 #include "Engine.hpp"
 
 /*Member functions*/
+struct pollfd createNewFd(int _fd, short events, short revents)
+{
+	struct pollfd newFd;
+	
+	newFd.fd = _fd;
+	newFd.events = events;
+	newFd.revents = revents;
+	return(newFd);
+}
+
+bool	haveResponse(struct pollfd fd)
+{
+	if (fd.fd)
+		return (true);
+	return (false);
+}
+
+bool	sendToClients()
+{
+	return (false);
+}
+
 int Engine::engineRoutine(Config config)
 {
 	(void)config;
@@ -10,9 +32,9 @@ int Engine::engineRoutine(Config config)
 	std::cout << "	Engine routine is called" << std::endl;
 	for (std::vector<Socket>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
 	{
-		fds.push_back({it, POLLIN, 0}) 
+		fds.push_back(createNewFd(it->getFd(), POLLIN, 0));
 	}
-	int maxFd = _allSockets.back().getFd();
+	// int maxFd = _allSockets.back().getFd();
 	while(true)
 	{
 		//timeout=0, then poll() will return without blocking.
@@ -24,19 +46,24 @@ int Engine::engineRoutine(Config config)
 		}
 		for (size_t i = 0; i < fds.size(); i++)
 		{
-			if (fds.[i].revents && POLLIN)
+			if (fds[i].revents && POLLIN)
 			{
-				if (is_listening_socket(fds[i].fd)) //	acceptNewClients(_allSockets);
+				std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
+				if (isListeningSocket(fds[i].fd, _allSockets[i])) //	acceptNewClients(_allSockets);
 				{
-					int new_client = accept(fds[i].fd, &addr, sizeof(addr));
-					fds.push_back(new_client, POLLIN, 0);
+					struct sockaddr addr;
+					socklen_t	size = sizeof(addr);
+					int new_client = accept(fds[i].fd, &addr, &size);
+					fds.push_back(createNewFd(new_client, POLLIN, 0));
 				}
 				else
-					receiveFromClients(allSockets);
+					std::cout <<"receiveFromClients" << std::endl;
+					// receiveFromClients(allSockets);
 			}
 			if (haveResponse(fds[i]))
-				sendToClients(allSockets);
+				sendToClients();
 		}
+		// break ; 
 	}
 	return (0);
 }

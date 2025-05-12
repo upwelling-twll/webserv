@@ -29,8 +29,13 @@ int	Socket::getFd()
 	return(this->_fd);
 }
 
+std::string	Socket::getType()
+{
+	return(this->_type);
+}
+
 /*Constructors*/
-Socket::Socket(int fd) : _fd(fd)
+Socket::Socket(int fd, std::string type) : _fd(fd), _type(type)
 {
    std::cout << "Socket parameterized constructor is called" << std::endl;
 }

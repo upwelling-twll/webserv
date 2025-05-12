@@ -10,9 +10,10 @@ typedef void (*SocketHandler)(Socket &);
 class Socket
 {
 private:
-	int	_fd;
+	int			_fd;
 	std::string	_ip;
 	std::string	_port;
+	std::string	_type;
 
 public:
 	/*Member functions*/
@@ -24,9 +25,10 @@ public:
 	/*Getters and Setters*/
 	void    setHandler(SocketHandler func);
 	int		getFd();
+	std::string		getType();
 	
 /*Constructors*/
-    Socket(int fd);
+    Socket(int fd, std::string _type);
 	// Socket(void);
 
 	/*Destructors*/
@@ -38,6 +40,7 @@ public:
 
 std::ostream& operator<<(std::ostream &output_stream, Socket& src);
 
+bool isListeningSocket(int fd, Socket s);
 void acceptConnection(Socket &s);
 void epollWork(Socket &s);
 

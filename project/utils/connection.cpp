@@ -1,11 +1,11 @@
-#include "../../inc/webserv.hpp"
+#include "../inc/webserv.hpp"
 
 void addPortsToSocketsList(std::vector<Socket> allSockets, std::vector<Port> ports)
 {
     for (std::vector<Port>::iterator it = ports.begin(); it != ports.end(); ++it)
     {
         std::cout << "adding listen socket from Ports to sockets vector" << std::endl;
-        allSockets.push_back(it->getListenSocket());
+        allSockets.push_back(Socket(it->getListenSocket(), "listen"));
     }
     for (std::vector<Socket>::iterator it = allSockets.begin(); it != allSockets.end(); ++it)
     {
