@@ -2,6 +2,8 @@
 # define ENGINE_HPP
 
 # include <iostream>
+# include <poll.h> 
+
 # include "../../inc/webserv.hpp"
 
 class Engine

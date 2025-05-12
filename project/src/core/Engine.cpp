@@ -3,22 +3,42 @@
 /*Member functions*/
 int Engine::engineRoutine(Config config)
 {
-	std::vector<Socket> fdsPool = this->_allSockets;
-	fd_set *masterFds;
-	
+	(void)config;
+
+	std::vector<struct pollfd> fds;
+
 	std::cout << "	Engine routine is called" << std::endl;
-	FD_ZERO(masterFds);
-	for (std::vector<Socket>::iterator it = fdsPool.begin(); it != fdsPool.end(); ++it)
+	for (std::vector<Socket>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
 	{
-		FD_SET(it->getFd(), masterFds);
+		fds.push_back({it, POLLIN, 0}) 
 	}
-	int maxFd = fdsPool.back().getFd();
-	while(1)
+	int maxFd = _allSockets.back().getFd();
+	while(true)
 	{
-		receiveFromClients(fdsPool);
-		sendToClients(fdsPool);
-		acceptNewClients(fdsPool);
+		//timeout=0, then poll() will return without blocking.
+		int n = poll(fds.data(), fds.size(), 0);
+		if (n < 0)
+		{
+			perror("poll");
+			continue;
+		}
+		for (size_t i = 0; i < fds.size(); i++)
+		{
+			if (fds.[i].revents && POLLIN)
+			{
+				if (is_listening_socket(fds[i].fd)) //	acceptNewClients(_allSockets);
+				{
+					int new_client = accept(fds[i].fd, &addr, sizeof(addr));
+					fds.push_back(new_client, POLLIN, 0);
+				}
+				else
+					receiveFromClients(allSockets);
+			}
+			if (haveResponse(fds[i]))
+				sendToClients(allSockets);
+		}
 	}
+	return (0);
 }
 
 /*Getters and Setters*/
