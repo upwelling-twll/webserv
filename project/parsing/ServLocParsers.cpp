@@ -1,33 +1,73 @@
 #include "./Parser.hpp"
 
-void locationParser(std::ifstream &file, std::string line)
+void locationParser(std::ifstream &file, Location &location)
 {
-	std::cout << "-----[START]-----Location Parser: " << std::endl;
+	int depth = 1;
+	std::string line;
 	while (std::getline(file, line))
 	{
-		std::vector<std::string> buffer = splitAndRemoveSpaces(line);
-		if (locateString(buffer, "}"))
-			break;
-		if (buffer.size() == 0)
-			continue;
-	}
-	std::cout << "-----[END]-------Location Parser";
-}
-
-void serverParser(std::ifstream &file, std::string line)
-{
-	std::cout << "-----[START]-----Server Parser: " << std::endl;
-	while (std::getline(file, line))
-	{
-		std::vector<std::string> buffer = splitAndRemoveSpaces(line);
-		if (locateString(buffer, "}"))
-			break;
-		if (buffer.size() == 0)
-			continue;
-		if (locateString(buffer, "location") && locateString(buffer, "{"))
+		for (std::size_t j = 0; j < line.size(); ++j)
 		{
-			locationParser(file, line);
+			if (line[j] == '{')
+				++depth;
+			if (line[j] == '}')
+				--depth;
+		}
+		if (depth == 0)
+			break;
+		std::vector<std::string> buffer = splitAndRemoveSpaces(line);
+		if (buffer.empty())
+			continue;
+		if (location.hasProperty(buffer[0]))
+		{
+			std::string value;
+			for (std::size_t i = 1; i < buffer.size(); ++i)
+			{
+				if (i > 1)
+					value += ' ';
+				value += buffer[i];
+			}
+			location.set(buffer[0], value);
 		}
 	}
-	std::cout << "-----[END]-------Server Parser";
+}
+
+void serverParser(std::ifstream &file, Server &server)
+{
+	int depth = 1;
+	std::string line;
+	while (std::getline(file, line))
+	{
+		for (std::size_t j = 0; j < line.size(); ++j)
+		{
+			if (line[j] == '{')
+				++depth;
+			if (line[j] == '}')
+				--depth;
+		}
+		if (depth == 0)
+			break;
+		std::vector<std::string> buffer = splitAndRemoveSpaces(line);
+		if (buffer.empty())
+			continue;
+		if (server.hasProperty(buffer[0]))
+		{
+			std::string value;
+			for (std::size_t i = 1; i < buffer.size(); ++i)
+			{
+				if (i > 1)
+					value += ' ';
+				value += buffer[i];
+			}
+			server.set(buffer[0], value);
+		}
+		else if (buffer[0] == "location" && buffer.size() >= 2)
+		{
+			Location location;
+			location.set("path_prefix", buffer[1]);
+			locationParser(file, location);
+			--depth;
+			server.addLocation(location);
+		}
+	}
 }

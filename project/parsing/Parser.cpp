@@ -1,43 +1,29 @@
-#include "./Parser.hpp"
+#include "Parser.hpp"
+#include <algorithm>
 
-const char *ServersEnum[] = {
-	"listen",
-	"server_name",
-	"root",
-	"index",
-	"client_max_body_size",
-	"error_page"};
-
-const char *LocationsEnum[] = {
-	"path_prefix",
-	"root_sd",
-	"index_sd",
-	"autoindex",
-	"limit_except",
-	"returns",
-	"cgi_pass",
-	"upload_store",
-	"client_max_body_size_sd",
-	"error_page_sd"};
-
-Parser::Parser(const char *filename)
+Parser::Parser(const char *fname, std::vector<Server> &servers)
 {
-	std::ifstream file;
+	std::ifstream file(fname);
+	if (!file)
+		return;
 	std::string line;
-
-	std::vector<std::string> lineBuffer;
-
-	file.open(filename);
+	int depth = 0;
 	while (std::getline(file, line))
 	{
-		lineBuffer = splitAndRemoveSpaces(line);
-		if(locateString(lineBuffer, "server") )
+		for (std::size_t i = 0; i < line.size(); ++i)
 		{
-			serverParser(file, line);
-
+			if (line[i] == '{')
+				++depth;
+			if (line[i] == '}')
+				--depth;
+		}
+		std::vector<std::string> buffer = splitAndRemoveSpaces(line);
+		if (depth == 1 && buffer.size() == 1 && buffer[0] == "server")
+		{
+			Server server;
+			serverParser(file, server);
+			servers.push_back(server);
+			depth = 0;
 		}
 	}
-	std::getline(file, line);
-	std::cout << FindChar(line, '{') << std::endl;
-	file.close();
 }

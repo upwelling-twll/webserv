@@ -1,37 +1,42 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <iostream>
 #include <vector>
 #include <string>
+#include <iostream>
+#include <sstream>
 
-class Location {
-private:
-	std::string values[10];
-	static const char* properties[10];
+class Location
+{
+	static const std::size_t K = 10;
+	static const char *properties[K];
+	std::vector<std::string> values[K];
 
 public:
 	Location();
-	~Location();
-
-	std::string get(const std::string& key) const;
-	void set(const std::string& key, const std::string& value);
+	bool hasProperty(const std::string &key) const;
+	std::string get(const std::string &key) const;
+	void set(const std::string &key, const std::string &val);
+	std::string getProperties() const;
+	void print(int indent = 1) const;
 };
 
-class Server {
-private:
-	std::string values[6];
-	static const char* properties[6];
+class Server
+{
+	static const std::size_t K = 6;
+	static const char *properties[K];
+	std::vector<std::string> values[K];
 	std::vector<Location> locations;
 
 public:
 	Server();
-	~Server();
-
-	std::string get(const std::string& key) const;
-	void set(const std::string& key, const std::string& value);
+	bool hasProperty(const std::string &key) const;
+	std::string get(const std::string &key) const;
+	void set(const std::string &key, const std::string &val);
+	void addLocation(const Location &loc);
+	const std::vector<Location> &getLocations() const;
+	std::string getProperties() const;
+	void print() const;
 };
-
-std::ostream& operator<<(std::ostream& output_stream, Server& src);
 
 #endif

@@ -1,21 +1,17 @@
 #include "../Parser.hpp"
 
-void printStringVector(const std::vector<std::string>& vec) {
-	std::cout << "The Line: [" << vec.size() << "] ";
-    for (size_t i = 0; i < vec.size(); ++i) {
-        std::cout << "[" << vec[i] << "]   ";
-    }
-	std::cout << std::endl;
-}
-
-std::vector<std::string> splitAndRemoveSpaces(const std::string& input) {
-    std::istringstream iss(input);
-    std::string word;
-    std::vector<std::string> result;
-
-    while (iss >> word) {
-        result.push_back(word);
-    }
-	printStringVector(result);
-    return result;
+std::vector<std::string> splitAndRemoveSpaces(const std::string &input)
+{
+	std::istringstream iss(input);
+	std::string word, clean;
+	std::vector<std::string> res;
+	while (iss >> word)
+	{
+		clean = word;
+		while (!clean.empty() && (clean.back() == '{' || clean.back() == '}' || clean.back() == ';'))
+			clean.erase(clean.size() - 1);
+		if (!clean.empty())
+			res.push_back(clean);
+	}
+	return res;
 }
