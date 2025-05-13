@@ -3,44 +3,35 @@
 
 #include <iostream>
 #include <vector>
-#include <fstream>
 #include <string>
 
-class Location
-{
+class Location {
 private:
-	std::string path_prefix;
-	std::string root_sd;
-	std::string index_sd;
-	std::string autoindex;
-	std::string limit_except;
-	std::string returns;
-	std::string cgi_pass;
-	std::string upload_store;
-	std::string client_max_body_size_sd;
-	std::string error_page_sd;
+	std::string values[10];
+	static const char* properties[10];
 
 public:
 	Location();
 	~Location();
-};
-class Server
-{
-private:
-	std::string listen;
-	std::string server_name;
-	std::string root;
-	std::string index;
-	std::string client_max_blody_size;
-	std::string error_page;
 
+	std::string get(const std::string& key) const;
+	void set(const std::string& key, const std::string& value);
+};
+
+class Server {
+private:
+	std::string values[6];
+	static const char* properties[6];
 	std::vector<Location> locations;
 
 public:
 	Server();
-	~Server(void);
+	~Server();
+
+	std::string get(const std::string& key) const;
+	void set(const std::string& key, const std::string& value);
 };
 
-std::ostream &operator<<(std::ostream &output_stream, Server &src);
+std::ostream& operator<<(std::ostream& output_stream, Server& src);
 
 #endif

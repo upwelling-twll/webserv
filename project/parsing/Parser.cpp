@@ -22,9 +22,6 @@ const char *LocationsEnum[] = {
 
 Parser::Parser(const char *filename)
 {
-	// int isParentOpened = 0;
-	// int isChildeOpened = 0;
-
 	std::ifstream file;
 	std::string line;
 

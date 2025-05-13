@@ -3,6 +3,7 @@
 #include "../shared/Server.hpp"
 #include <vector>
 #include <sstream>
+#include <fstream>
 
 extern const char* ServersEnum[];
 extern const char* LocationsEnum[];
