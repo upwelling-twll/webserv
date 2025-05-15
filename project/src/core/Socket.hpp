@@ -3,36 +3,30 @@
 
 # include <iostream>
 
-class Socket; 
-
-typedef void (*SocketHandler)(Socket &);
-
 class Socket
 {
-private:
+protected:
 	int			_fd;
-	std::string	_ip;
-	std::string	_port;
-	std::string	_type;
+
+	struct sockaddr		_addr;
+	socklen_t			_addr_len;
+	size_t				_addr_text_len;
 
 public:
 	/*Member functions*/
-    // int				receiveRequest();
-	// int				sentResponce();
-	SocketHandler	handler;
-
+    virtual bool	isListening() const = 0;
+	virtual int		handle() = 0;
 
 	/*Getters and Setters*/
-	void    setHandler(SocketHandler func);
 	int		getFd();
-	std::string		getType();
+	void	setAddrInfo(struct sockaddr _addr, socklen_t _addr_len, size_t _addr_text_len);
 	
 /*Constructors*/
-    Socket(int fd, std::string _type);
+    Socket(int fd);
 	// Socket(void);
 
 	/*Destructors*/
-    ~Socket( void );
+    virtual ~Socket( void );
 
 	/*Overload operators*/
 	// Socket &operator=(const Socket& src);

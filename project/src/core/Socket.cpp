@@ -2,48 +2,25 @@
 
 /*Member functions*/
 
-
-// void Socket::method()
-// {
-// 	// Method implementation
-// }
-
-//int	Socket::receiveRequest()
-// {
-
-// }
-
-//int	Socket::sentResponce()
-// {
-
-// }
-
 /*Getters and Setters*/
-void    Socket::setHandler(SocketHandler func)
-{
-	this->handler = func;
-}
 
 int	Socket::getFd()
 {
 	return(this->_fd);
 }
 
-std::string	Socket::getType()
+void	setAddrInfo(struct sockaddr _addr, socklen_t _addr_len, size_t _addr_text_len)
 {
-	return(this->_type);
+	this->_addr = _addr;
+	this->_addr_len = _addr_len;
+	this->_addr_text_len = _addr_text_len;
 }
 
 /*Constructors*/
-Socket::Socket(int fd, std::string type) : _fd(fd), _type(type)
+Socket::Socket(int fd) : _fd(fd)
 {
    std::cout << "Socket parameterized constructor is called" << std::endl;
 }
-
-// Socket::Socket()
-// {
-//     std::cout << "Socket default constructor is called" << std::endl;
-// }
 
 /*Destructors*/
 Socket::~Socket( void )
