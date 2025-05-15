@@ -1,7 +1,6 @@
 #include <iostream>
 #include "inc/webserv.hpp"
 
-
 Config initMockConfig()
 {
 	std::cout << "Mock server 1" << std::endl;

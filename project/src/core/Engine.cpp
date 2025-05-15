@@ -13,7 +13,7 @@ struct pollfd createNewFd(int _fd, short events, short revents)
 
 bool	haveResponse(struct pollfd fd)
 {
-	std::cout << "	Need to check my response" << std::endl;
+	// std::cout << "	Need to check my response" << std::endl;
 	if (fd.fd)
 		return (true);
 	return (false);
@@ -21,7 +21,7 @@ bool	haveResponse(struct pollfd fd)
 
 bool	sendToClients()
 {
-	std::cout << "	Giving my response to the client" << std::endl;
+	// std::cout << "	Giving my response to the client" << std::endl;
 	return (false);
 }
 
@@ -54,12 +54,12 @@ int Engine::engineRoutine(Config config)
 		{
 			f++;
 		}
-		std::cout << "	fds= " << f << std::endl;
-		std::cout << "	waiting here" << std::endl;
+		// std::cout << "	fds= " << f << std::endl;
+		// std::cout << "	waiting here" << std::endl;
 		for (size_t i = 0; i < fds.size(); i++)
 		{
-			std::cout << "	checking fds" << std::endl;
-			if (fds[i].revents && POLLIN)
+			// std::cout << "	checking fds" << std::endl;
+			if (fds[i].revents & POLLIN)
 			{
 				std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
 				if (isListeningSocket(fds[i].fd, _allSockets[i])) //	acceptNewClients(_allSockets);
@@ -68,17 +68,19 @@ int Engine::engineRoutine(Config config)
 					socklen_t	size = sizeof(addr);
 					int new_client = accept(fds[i].fd, &addr, &size);
 					fds.push_back(createNewFd(new_client, POLLIN, 0));
+					_allSockets.push_back(Socket(new_client, "client"));
 				}
 				else
 					std::cout <<"receiveFromClients" << std::endl;
 					// receiveFromClients(allSockets);
 			}
-			if (haveResponse(fds[i]))
-				sendToClients();
-			else
-				std::cout <<"nothing happens" << std::endl;
 		}
-		 break ; 
+		if (haveResponse(fds[i]))
+			sendToClients();
+			// else
+			// 	std::cout <<"nothing happens" << std::endl;
+		}
+		//  break ; 
 	}
 	return (1);
 }
