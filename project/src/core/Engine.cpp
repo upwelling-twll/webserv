@@ -13,6 +13,7 @@ struct pollfd createNewFd(int _fd, short events, short revents)
 
 bool	haveResponse(struct pollfd fd)
 {
+	std::cout << "	Need to check my response" << std::endl;
 	if (fd.fd)
 		return (true);
 	return (false);
@@ -20,6 +21,7 @@ bool	haveResponse(struct pollfd fd)
 
 bool	sendToClients()
 {
+	std::cout << "	Giving my response to the client" << std::endl;
 	return (false);
 }
 
@@ -30,10 +32,13 @@ int Engine::engineRoutine(Config config)
 	std::vector<struct pollfd> fds;
 
 	std::cout << "	Engine routine is called" << std::endl;
+	int s = 0;
 	for (std::vector<Socket>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
 	{
 		fds.push_back(createNewFd(it->getFd(), POLLIN, 0));
+		s++;
 	}
+	std::cout << "	s= " << s << std::endl;
 	// int maxFd = _allSockets.back().getFd();
 	while(true)
 	{
@@ -44,8 +49,16 @@ int Engine::engineRoutine(Config config)
 			perror("poll");
 			continue;
 		}
+		int f = 0;
+		for (std::vector<struct pollfd>::iterator it =fds.begin(); it != fds.end(); ++it)
+		{
+			f++;
+		}
+		std::cout << "	fds= " << f << std::endl;
+		std::cout << "	waiting here" << std::endl;
 		for (size_t i = 0; i < fds.size(); i++)
 		{
+			std::cout << "	checking fds" << std::endl;
 			if (fds[i].revents && POLLIN)
 			{
 				std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
@@ -62,10 +75,12 @@ int Engine::engineRoutine(Config config)
 			}
 			if (haveResponse(fds[i]))
 				sendToClients();
+			else
+				std::cout <<"nothing happens" << std::endl;
 		}
-		// break ; 
+		 break ; 
 	}
-	return (0);
+	return (1);
 }
 
 /*Getters and Setters*/

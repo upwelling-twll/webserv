@@ -19,5 +19,13 @@ std::vector<Socket> createSocketVec(Config config)
     std::vector<Socket> allSockets;
 
     addPortsToSocketsList(allSockets, config.getPorts());
+
+    int s = 0;
+    for (std::vector<Socket>::iterator it = allSockets.begin(); it != allSockets.end(); ++it)
+	{
+		s++;
+	}
+	std::cout << "created SV	s= " << s << std::endl;
+
     return (allSockets);
 }
