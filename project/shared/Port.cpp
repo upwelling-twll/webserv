@@ -41,7 +41,7 @@ void	Port::listenConnectionSocket()
 void	Port::bindSocket()
 {
 	int	i;
-	struct sockaddr_in	addr;
+	struct sockaddr	addr;
 
 	// addr.sin_len = sizeof(addr);
 	addr.sin_family = AF_INET;
@@ -49,7 +49,7 @@ void	Port::bindSocket()
 	addr.sin_addr.s_addr = inet_addr( this->_ip.c_str());
 	std::cout << "	Binding socket start" << std::endl;
 	std::cout << *this << std::endl;
-	i = bind(this->_listenSocket, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr));
+	i = bind(this->_listenSocket, (&addr), sizeof(addr));
 	std::cout << i << std::endl;
 	if (i < 0)
 	{

@@ -6,17 +6,17 @@
 class ConnectionSocket : public Socket
 {
 private:
-    
+	bool		_listening;
 
 public:
 	/*Member functions*/
-    void method();
+    virtual bool	isListening();
+	virtual int		handle();
 
 	/*Getters and Setters*/
 
 	/*Constructors*/
-    ConnectionSocket(/*Parameterized Constructor*/);
-	ConnectionSocket(void);
+    ConnectionSocket(int fd);
 
 	/*Destructors*/
     ~ConnectionSocket( void );

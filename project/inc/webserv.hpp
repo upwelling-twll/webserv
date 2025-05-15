@@ -6,6 +6,8 @@
 
 # include "../shared/Config.hpp"
 # include "../src/core/Socket.hpp"
+# include "../src/core/ListeningSocket.hpp"
+# include "../src/core/ConnectionSocket.hpp"
 # include "../src/core/Engine.hpp"
 
 

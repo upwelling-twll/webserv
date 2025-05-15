@@ -1,17 +1,27 @@
 #include "ListeningSocket.hpp"
 
 /*Member functions*/
-void ListeningSocket::method()
+bool	isListening()
 {
-    // Method implementation
+	return true; // Placeholder implementation
 }
+
+int		handle()
+{
+	return 0; // Placeholder implementation
+}
+
 
 /*Getters and Setters*/
 
 /*Constructors*/
-ListeningSocket::ListeningSocket(/*Parameterized Constructor*/)
+ListeningSocket::ListeningSocket(int fd) : Socket(fd)
 {
    std::cout << "ListeningSocket parameterized constructor is called" << std::endl;
+`   _fd = fd;
+   _listening = true;
+   _port = 0;
+   _ip = "";
 }
 
 ListeningSocket::ListeningSocket()

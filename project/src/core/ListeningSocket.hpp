@@ -12,8 +12,8 @@ private:
 
 public:
 	/*Member functions*/
-	virtual bool	isListening() const;
-    void			handle();
+	virtual bool	isListening();
+    virtual void	handle();
 
 	/*Getters and Setters*/
 

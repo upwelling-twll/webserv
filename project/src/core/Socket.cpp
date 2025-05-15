@@ -29,19 +29,9 @@ Socket::~Socket( void )
 }
 
 /*Overload operators*/
-// Socket& Socket::operator=(const Socket& src)
-// {
-// 	std::cout << "Socket copy assignment is called" << std::endl;
-// 	if (this != &src)
-// 	{
-// 		// Assinment variables
-// 	}
-// 	return (*this);
-// }
 
 std::ostream& operator<<(std::ostream& output_stream, Socket& src)
 {
 	output_stream << "Socket: fd=" << src.getFd() << std::endl;
 	return output_stream;
 }
-
