@@ -1,9 +1,24 @@
 #include "./Server.hpp"
 
+Socket Server::initListeningSocket()
+{
+	
+}
+
 void	Server::addLocation(std::vector<Location> src)
 {
 	this->locations = src;
 	return ;
+}
+
+std::string Server::getListen() const
+{
+	return (this->listen);
+}
+
+std::string Server::getServerName() const
+{
+	return (this->server_name);
 }
 
 Server::Server()

@@ -18,15 +18,9 @@ int		handle()
 ListeningSocket::ListeningSocket(int fd) : Socket(fd)
 {
    std::cout << "ListeningSocket parameterized constructor is called" << std::endl;
-`   _fd = fd;
    _listening = true;
    _port = 0;
    _ip = "";
-}
-
-ListeningSocket::ListeningSocket()
-{
-    std::cout << "ListeningSocket default constructor is called" << std::endl;
 }
 
 /*Destructors*/

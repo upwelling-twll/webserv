@@ -6,7 +6,7 @@
 class Socket
 {
 protected:
-	int			_fd;
+	int					_fd;
 
 	struct sockaddr		_addr;
 	socklen_t			_addr_len;

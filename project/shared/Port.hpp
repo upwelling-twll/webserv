@@ -9,6 +9,8 @@
 # include <cstring>
 # include <unistd.h>
 
+# include "../inc/webserv.hpp"
+
 # define S_DOMAIN AF_INET
 
 class Port

@@ -1,11 +1,12 @@
 #ifndef SERVER_HPP
-#define SERVER_HPP
+# define SERVER_HPP
 
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <string>
+# include <iostream>
+# include <vector>
+# include <fstream>
+# include <string>
 
+# include "../inc/webserv.hpp"
 class Location
 {
 private:
@@ -38,7 +39,11 @@ private:
 	std::vector<Location> locations;
 
 public:
-	void addLocation(std::vector<Location> src);
+	void	addLocation(std::vector<Location> src);
+	Socket	initListeningSocket();
+
+	std::string getListen() const;
+	std::string getServerName() const;
 
 	Server();
 	~Server(void);

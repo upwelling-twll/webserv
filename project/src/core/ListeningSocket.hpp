@@ -2,7 +2,7 @@
 # define LISTENINGSOCKET_HPP
 
 # include <iostream>
-
+# include "../../inc/webserv.hpp"
 class ListeningSocket : public Socket
 {
 private:
@@ -13,7 +13,7 @@ private:
 public:
 	/*Member functions*/
 	virtual bool	isListening();
-    virtual void	handle();
+    virtual int		handle();
 
 	/*Getters and Setters*/
 

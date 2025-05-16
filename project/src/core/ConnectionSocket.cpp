@@ -17,7 +17,6 @@ int		handle()
 ConnectionSocket::ConnectionSocket(int fd) : Socket(fd)
 {
    std::cout << "ConnectionSocket parameterized constructor is called" << std::endl;
-   _fd = fd;
    _listening = false;
 }
 

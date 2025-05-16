@@ -2,18 +2,16 @@
 # define CONFIG_HPP
 
 # include <iostream>
-# include "Server.hpp"
-# include "Port.hpp"
-
 # include <sys/socket.h>
 
-
+# include "../inc/webserv.hpp"
 class Config
 {
 private:
     std::vector<Server> _servers;
 	std::vector<Port>	_ports;
 
+	std::vector<Socket> _allSockets;
 public:
 	/*Member functions*/
 	bool	startWebServ();

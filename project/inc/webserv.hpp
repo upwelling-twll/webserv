@@ -5,6 +5,8 @@
 # include <list>
 
 # include "../shared/Config.hpp"
+# include "../shared/Server.hpp"
+# include "../shared/Port.hpp"
 # include "../src/core/Socket.hpp"
 # include "../src/core/ListeningSocket.hpp"
 # include "../src/core/ConnectionSocket.hpp"

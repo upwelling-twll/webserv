@@ -2,7 +2,7 @@
 # define CONNECTIONSOCKET_HPP
 
 # include <iostream>
-
+# include "../../inc/webserv.hpp"
 class ConnectionSocket : public Socket
 {
 private:
