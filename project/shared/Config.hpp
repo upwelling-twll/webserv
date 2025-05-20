@@ -27,7 +27,7 @@ public:
 	/*Getters and Setters*/
 	std::vector<Server>	const	getServers();
 	std::vector<Port> 			getPorts();
-
+	std::vector<Socket*>		getAllSockets() const;
 
 	/*Constructors*/
     Config(std::vector<Server> servers, std::vector<Port> ports);

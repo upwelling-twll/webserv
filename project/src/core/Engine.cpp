@@ -29,16 +29,16 @@ int Engine::engineRoutine(Config& config)
 {
 	(void)config;
 
-	// std::vector<struct pollfd> fds;
+	std::vector<struct pollfd> fds;
 
-	// std::cout << "	Engine routine is called" << std::endl;
-	// int s = 0;
-	// for (std::vector<Socket>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
-	// {
-	// 	fds.push_back(createNewFd(it->getFd(), POLLIN, 0));
-	// 	s++;
-	// }
-	// std::cout << "	s= " << s << std::endl;
+	std::cout << "	Engine routine is called" << std::endl;
+	int s = 0;
+	for (std::vector<Socket*>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
+	{
+		fds.push_back(createNewFd((*it)->getFd(), POLLIN, 0));
+		s++;
+	}
+	std::cout << "	s= " << s << std::endl;
 	// // int maxFd = _allSockets.back().getFd();
 	// while(true)
 	// {

@@ -47,7 +47,7 @@ int main()
 		std::cout << "Server start impossible" << std::endl;
 	}
 	
-	Engine	engine(createSocketVec(newConf));
+	Engine	engine(newConf.getAllSockets());
 
 	if (!engine.engineRoutine(newConf))
 	{

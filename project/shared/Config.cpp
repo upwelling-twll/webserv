@@ -4,6 +4,7 @@
 
 void Config::addSocketToVector(Socket *s)
 {
+	std::cout << "adding socket to vector:" << s->getFd() << std::endl;
 	this->_allSockets.push_back(s);
 }
 
@@ -45,6 +46,11 @@ std::vector<Server>	const Config::getServers()
 std::vector<Port> Config::getPorts()
 {
 	return (this->_ports);
+}
+
+std::vector<Socket*> Config::getAllSockets() const
+{
+	return (this->_allSockets);
 }
 
 /*Constructors*/
