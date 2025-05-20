@@ -1,6 +1,7 @@
 
 #include <iostream>
 #include "./parsing/Parser.hpp"
+#include "./parsing/errorHandler/HandleError.hpp"
 
 int main(int argc, char** argv)
 {
@@ -11,9 +12,10 @@ int main(int argc, char** argv)
 	try {
 		std::vector<Server> server_vector;
 		Parser parser(file, server_vector);
-		for(int i = 0; i < (int)server_vector.size(); i++){
-			server_vector[i].print();
-		}
+		HandleError::errorHandler(server_vector);
+		//for(int i = 0; i < (int)server_vector.size(); i++){
+		//	server_vector[i].print();
+		//}
 	}
 	catch (const std::exception& e) {
 		std::cerr << "Error: " << e.what() << '\n';
