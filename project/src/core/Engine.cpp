@@ -39,49 +39,49 @@ int Engine::engineRoutine(Config& config)
 		s++;
 	}
 	std::cout << "	s= " << s << std::endl;
-	// // int maxFd = _allSockets.back().getFd();
-	// while(true)
-	// {
-	// 	//timeout=0, then poll() will return without blocking.
-	// 	int n = poll(fds.data(), fds.size(), 0);
-	// 	if (n < 0)
-	// 	{
-	// 		perror("poll");
-	// 		continue;
-	// 	}
+	// int maxFd = _allSockets.back().getFd();
+	while(true)
+	{
+		//timeout=0, then poll() will return without blocking.
+		int n = poll(fds.data(), fds.size(), 0);
+		if (n < 0)
+		{
+			perror("poll");
+			continue;
+		}
 	// 	int f = 0;
 	// 	for (std::vector<struct pollfd>::iterator it =fds.begin(); it != fds.end(); ++it)
 	// 	{
 	// 		f++;
 	// 	}
-	// 	// std::cout << "	fds= " << f << std::endl;
-	// 	// std::cout << "	waiting here" << std::endl;
-	// 	for (size_t i = 0; i < fds.size(); i++)
-	// 	{
-	// 		// std::cout << "	checking fds" << std::endl;
-	// 		if (fds[i].revents & POLLIN)
-	// 		{
-	// 			std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
-	// 			if (isListeningSocket(fds[i].fd, _allSockets[i])) //	acceptNewClients(_allSockets);
-	// 			{
-	// 				struct sockaddr addr;
-	// 				socklen_t	size = sizeof(addr);
-	// 				int new_client = accept(fds[i].fd, &addr, &size);
-	// 				fds.push_back(createNewFd(new_client, POLLIN, 0));
-	// 				_allSockets.push_back(Socket(new_client, "client"));
-	// 			}
-	// 			else
-	// 				std::cout <<"receiveFromClients" << std::endl;
-	// 				// receiveFromClients(allSockets);
-	// 		}
-	// 	}
-	// 	if (haveResponse(fds[i]))
-	// 		sendToClients();
-	// 		// else
-	// 		// 	std::cout <<"nothing happens" << std::endl;
-	// 	}
-	// 	//  break ; 
-	// }
+	// // 	// std::cout << "	fds= " << f << std::endl;
+		// std::cout << "	waiting here" << std::endl;
+		for (size_t i = 0; i < fds.size(); i++)
+		{
+			// std::cout << "	checking fds" << std::endl;
+			if (fds[i].revents & POLLIN)
+			{
+				std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
+				if (_allSockets[i]->isListening())
+				{
+					struct sockaddr addr;
+					socklen_t	size = sizeof(addr);
+					int new_client = accept(fds[i].fd, &addr, &size);
+					fds.push_back(createNewFd(new_client, POLLIN, 0));
+					_allSockets.push_back(new ListeningSocket(new_client));
+				}
+				else
+					std::cout <<"receiveFromClients" << std::endl;
+					// receiveFromClients(allSockets);
+			}
+		}
+		// if (haveResponse(fds[i]))
+		// 	sendToClients();
+		// 	// else
+		// 	// 	std::cout <<"nothing happens" << std::endl;
+		// }
+		//  break ; 
+	}
 	return (1);
 }
 
