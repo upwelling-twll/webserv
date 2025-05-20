@@ -4,7 +4,7 @@
 Config initMockConfig()
 {
 	std::cout << "Mock server 1" << std::endl;
-    Server					mockServer;
+    Server					mockServer("127.0.0.1", 8080);
 	Location				mockLocation;
     Port   					mockPort("127.0.0.1", 8080);
 	std::vector<Location>	locs;
@@ -17,7 +17,7 @@ Config initMockConfig()
     ports.push_back(mockPort);
 
 	std::cout << "Mock server 2" << std::endl;
-	Server					mockServer2;
+	Server					mockServer2("127.0.0.1", 1025);
 	Location				mockLocation2;
     Port   					mockPort2("127.0.0.1", 1025);
 	std::vector<Location>	locs2;

@@ -68,11 +68,11 @@ void	ListeningSocket::bindSocket()
 }
 
 /*Getters and Setters*/
-void	ListeningSocket::setData(std::string data)
+void	ListeningSocket::setData(std::string ip, int port)
 {
 	std::cout << "	Setting data" << std::endl;
-	this->_ip = data.substr(0, data.find(':'));
-	this->_port = std::stoi(data.substr(data.find(':') + 1));
+	this->_ip = ip;
+	this->_port = port;
 	std::cout << "	IP: " << this->_ip << std::endl;
 	std::cout << "	PORT: " << this->_port << std::endl;
 	return ;

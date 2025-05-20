@@ -34,7 +34,8 @@ public:
 class Server
 {
 private:
-	std::string listen;
+	std::string ip;
+	int 		port;
 	std::string server_name;
 	std::string root;
 	std::string index;
@@ -47,10 +48,11 @@ public:
 	void	addLocation(std::vector<Location> src);
 	Socket*	initListeningSocket();
 
-	std::string getListen() const;
+	std::string getIp() const;
+	std::string getAddr() const;
 	std::string getServerName() const;
 
-	Server();
+	Server(std::string addr, int port);
 	~Server(void);
 };
 

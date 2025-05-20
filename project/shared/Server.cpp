@@ -9,7 +9,7 @@ Socket* Server::initListeningSocket()
 	if (s_fd == -1)
 		throw;
 	ListeningSocket* listeningSocket = new ListeningSocket(s_fd);
-	listeningSocket->setData(this->listen);
+	listeningSocket->setData(this->ip, this->port);
 	listeningSocket->configureSocketOptions();
 	listeningSocket->bindSocket();
 	listeningSocket->listenConnectionSocket();
@@ -23,9 +23,14 @@ void	Server::addLocation(std::vector<Location> src)
 	return ;
 }
 
-std::string Server::getListen() const
+std::string Server::getIp() const
 {
-	return (this->listen);
+	return (this->ip);
+}
+
+std::string Server::getAddr() const
+{
+	return (this->ip + ":" + std::to_string(this->port));
 }
 
 std::string Server::getServerName() const
@@ -33,9 +38,10 @@ std::string Server::getServerName() const
 	return (this->server_name);
 }
 
-Server::Server()
+Server::Server(std::string addr, int port)
 {
-	this->listen = "80";
+	this->ip = addr;
+	this->port = port;
 	this->server_name = "";
 	this->root = "";
 	this->index = "index.html";

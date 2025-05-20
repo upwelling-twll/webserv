@@ -23,7 +23,7 @@ public:
 	void			listenConnectionSocket();
 
 	/*Getters and Setters*/
-	void			setData(std::string data);
+	void			setData(std::string ip, int port);
 	/*Constructors*/
     ListeningSocket(int fd);
 
