@@ -2,13 +2,15 @@
 # define SOCKET_HPP
 
 # include <iostream>
+#include <netinet/in.h>  // For sockaddr_in
+#include <arpa/inet.h> 
 
 class Socket
 {
 protected:
 	int					_fd;
 
-	struct sockaddr		_addr;
+	struct sockaddr_in		_addr;
 	socklen_t			_addr_len;
 	size_t				_addr_text_len;
 
@@ -19,7 +21,7 @@ public:
 
 	/*Getters and Setters*/
 	int		getFd() const;
-	void	setAddrInfo(struct sockaddr _addr, socklen_t _addr_len, size_t _addr_text_len);
+	void	setAddrInfo(struct sockaddr_in _addr, socklen_t _addr_len, size_t _addr_text_len);
 	
 /*Constructors*/
     Socket(int fd);

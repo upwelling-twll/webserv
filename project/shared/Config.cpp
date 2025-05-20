@@ -2,10 +2,14 @@
 
 /*Member functions*/
 
-
+void Config::addSocketToVector(Socket *s)
+{
+	this->_allSockets.push_back(s);
+}
 
 bool Config::startWebServ()
 {
+
     std::cout << "	Starting Web Serv" << std::endl;
 	{
 		for (std::vector<Server>::iterator it = this->_servers.begin(); it != this->_servers.end(); ++it)

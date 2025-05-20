@@ -4,12 +4,12 @@
 
 /*Getters and Setters*/
 
-int	Socket::getFd()
+int	Socket::getFd() const
 {
 	return(this->_fd);
 }
 
-void	setAddrInfo(struct sockaddr _addr, socklen_t _addr_len, size_t _addr_text_len)
+void	Socket::setAddrInfo(struct sockaddr_in _addr, socklen_t _addr_len, size_t _addr_text_len)
 {
 	this->_addr = _addr;
 	this->_addr_len = _addr_len;
