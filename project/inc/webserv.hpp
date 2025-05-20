@@ -2,7 +2,6 @@
 # define WEBSERV_HPP
 
 # include <sys/socket.h>
-# include <list>
 
 # include "../shared/Config.hpp"
 # include "../shared/Server.hpp"
@@ -14,6 +13,6 @@
 
 
 void                addPortsToSocketsList(std::vector<Socket>& allSockets, std::vector<Port> ports);
-std::vector<Socket> createSocketVec(Config config);
+std::vector<Socket*> createSocketVec(Config config);
 
 #endif

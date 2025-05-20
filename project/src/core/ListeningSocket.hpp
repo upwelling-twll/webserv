@@ -2,7 +2,11 @@
 # define LISTENINGSOCKET_HPP
 
 # include <iostream>
+#include <netinet/in.h>  // For sockaddr_in
+#include <arpa/inet.h> 
+
 # include "../../inc/webserv.hpp"
+
 class ListeningSocket : public Socket
 {
 private:
@@ -12,11 +16,14 @@ private:
 
 public:
 	/*Member functions*/
-	virtual bool	isListening();
+	virtual bool	isListening() const;
     virtual int		handle();
+	void			configureSocketOptions();
+	void			bindSocket();
+	void			listenConnectionSocket();
 
 	/*Getters and Setters*/
-
+	void			setData(std::string data);
 	/*Constructors*/
     ListeningSocket(int fd);
 

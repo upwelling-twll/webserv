@@ -1,12 +1,12 @@
 #include "ConnectionSocket.hpp"
 
 /*Member functions*/
-bool	isListening()
+bool	ConnectionSocket::isListening() const
 {
 	return false;
 }
 
-int		handle()
+int		ConnectionSocket::handle()
 {
 	return 0;
 }
@@ -30,7 +30,7 @@ ConnectionSocket::~ConnectionSocket( void )
 
 std::ostream& operator<<(std::ostream& output_stream, ConnectionSocket& src)
 {
-	output_stream << "* ConnectionSocket Class info*" << std::endl;
+	output_stream << "ConnectionSocket Class info:" << src.getFd() << std::endl;
 
 	return output_stream;
 }

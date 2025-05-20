@@ -7,6 +7,11 @@
 # include <string>
 
 # include "../inc/webserv.hpp"
+
+class Socket;
+class Port;
+
+
 class Location
 {
 private:
@@ -40,7 +45,7 @@ private:
 
 public:
 	void	addLocation(std::vector<Location> src);
-	Socket	initListeningSocket();
+	Socket*	initListeningSocket();
 
 	std::string getListen() const;
 	std::string getServerName() const;

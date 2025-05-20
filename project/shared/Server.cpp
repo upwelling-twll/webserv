@@ -1,8 +1,20 @@
 #include "./Server.hpp"
 
-Socket Server::initListeningSocket()
+Socket* Server::initListeningSocket()
 {
+	int	s_fd;
 	
+	std::cout << "	Creating socket" << std::endl;
+	s_fd = socket(S_DOMAIN, SOCK_STREAM, 0);
+	if (s_fd == -1)
+		throw;
+	ListeningSocket* listeningSocket = new ListeningSocket(s_fd);
+	listeningSocket->setData(this->listen);
+	listeningSocket->configureSocketOptions();
+	listeningSocket->bindSocket();
+	listeningSocket->listenConnectionSocket();
+	//TODO : there is a list of errors returned in case of socket() fail, i may need to catch them as they all a macros 
+	return (listeningSocket);
 }
 
 void	Server::addLocation(std::vector<Location> src)

@@ -5,17 +5,24 @@
 # include <sys/socket.h>
 
 # include "../inc/webserv.hpp"
+# include "./Server.hpp"
+
+class Server;
+class Port;
+class Socket;
+
 class Config
 {
 private:
     std::vector<Server> _servers;
 	std::vector<Port>	_ports;
 
-	std::vector<Socket> _allSockets;
+	std::vector<Socket*> _allSockets;
 public:
 	/*Member functions*/
 	bool	startWebServ();
 	void	closeAllFds();
+	void	addSocketToVector(Socket *s);
 
 	/*Getters and Setters*/
 	std::vector<Server>	const	getServers();

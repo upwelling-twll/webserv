@@ -22,10 +22,6 @@ private:
 
 public:
 	/*Member functions*/
-	void	optionsSocket();
-	void	listenConnectionSocket();
-	void	bindSocket();
-    int 	createSocket();
 	void	closeFd();
 
 	/*Getters and Setters*/

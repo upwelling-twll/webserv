@@ -6,15 +6,13 @@
 
 bool Config::startWebServ()
 {
-	int	listenSocket;
-
     std::cout << "	Starting Web Serv" << std::endl;
 	{
 		for (std::vector<Server>::iterator it = this->_servers.begin(); it != this->_servers.end(); ++it)
 		{
 			try
 			{
-				addSocketToVector(it.initListeningSocket());
+				addSocketToVector(it->initListeningSocket());
 			}
 			catch(const std::exception& e)
 			{

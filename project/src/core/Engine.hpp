@@ -6,19 +6,21 @@
 
 # include "../../inc/webserv.hpp"
 
+class Config;
+
 class Engine
 {
 private:
-    std::vector<Socket> _allSockets;
+    std::vector<Socket*> _allSockets;
 
 public:
 	/*Member functions*/
-    int engineRoutine(Config config);
+    int engineRoutine(Config& config);
 
 	/*Getters and Setters*/
 
 	/*Constructors*/
-    Engine(std::vector<Socket> allSockets);
+    Engine(std::vector<Socket*> allSockets);
 	// Engine(void);
 
 	/*Destructors*/
