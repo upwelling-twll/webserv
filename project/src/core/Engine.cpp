@@ -68,11 +68,13 @@ int Engine::engineRoutine(Config& config)
 					socklen_t	size = sizeof(addr);
 					int new_client = accept(fds[i].fd, &addr, &size);
 					fds.push_back(createNewFd(new_client, POLLIN, 0));
-					_allSockets.push_back(new ListeningSocket(new_client));
+					_allSockets.push_back(new ConnectionSocket(new_client));
 				}
 				else
+				{
 					std::cout <<"receiveFromClients" << std::endl;
-					// receiveFromClients(allSockets);
+					allSockets[i]->receiveFromClients();
+				}
 			}
 		}
 		// if (haveResponse(fds[i]))

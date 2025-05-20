@@ -10,7 +10,6 @@ void Config::addSocketToVector(Socket *s)
 
 bool Config::startWebServ()
 {
-
     std::cout << "	Starting Web Serv" << std::endl;
 	{
 		for (std::vector<Server>::iterator it = this->_servers.begin(); it != this->_servers.end(); ++it)
