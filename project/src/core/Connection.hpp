@@ -17,19 +17,24 @@ private:
 	std::vector<std::string>	_rawMessage;
 	std::string					_buffer;
 	std::string					_status;
-	time_t						_timeLastConnection;
+	time_t						_timeLastUsed;
 
 	ListeningSocket*			_serverListeningSocket;
 	ConnectionSocket*			_clientConnectionSocket;
 	httpRequest*				_request;
-	bool						_stayAlive;
+	bool						_active;
+
+	struct pollfd				_pollFd;
 
 public:
 	/*Member functions*/
-    // bool	createConnectionSocket();
+	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
+
 	// bool	disconnectSocket();
 
 	/*Getters and Setters*/
+	bool			isActive();
+	struct pollfd	getPollFd() const;
 
 	/*Constructors*/
     Connection(ListeningSocket* serverListeningSocket);

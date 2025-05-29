@@ -8,11 +8,11 @@
 class Socket
 {
 protected:
-	int					_fd;
+	int						_fd;
 
 	struct sockaddr_in		_addr;
-	socklen_t			_addr_len;
-	size_t				_addr_text_len;
+	socklen_t				_addr_len;
+	size_t					_addr_text_len;
 
 public:
 	/*Member functions*/

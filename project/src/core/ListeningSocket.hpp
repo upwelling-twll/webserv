@@ -10,9 +10,9 @@
 class ListeningSocket : public Socket
 {
 private:
-    bool		_listening;
-	int			_port;
-	std::string	_ip;
+    bool			_listening;
+	int				_port;
+	std::string		_ip;
 
 public:
 	/*Member functions*/

@@ -14,7 +14,7 @@ private:
 
 	std::string							startLine;
 	std::map<std::string, std::string>	headers; //optional
-	std::string							body;
+	// std::string							body;
 
 	
 	public:

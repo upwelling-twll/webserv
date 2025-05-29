@@ -1,17 +1,19 @@
 #include "Engine.hpp"
 
 /*Member functions*/
-struct pollfd createNewFd(int _fd, short events, short revents)
+
+struct pollfd Engine::createPollFd(int fd, short events, short revents)
 {
-	struct pollfd newFd;
+	struct pollfd newPollFd;
 	
-	newFd.fd = _fd;
-	newFd.events = events;
-	newFd.revents = revents;
-	return(newFd);
+	newPollFd.fd = fd;
+	newPollFd.events = events;
+	newPollFd.revents = revents;
+
+	return (newPollFd);
 }
 
-bool	haveResponse(struct pollfd fd)
+bool	Engine::haveResponse(struct pollfd fd)
 {
 	// std::cout << "	Need to check my response" << std::endl;
 	if (fd.fd)
@@ -19,65 +21,17 @@ bool	haveResponse(struct pollfd fd)
 	return (false);
 }
 
-bool	sendToClients()
+bool	Engine::sendToClients()
 {
+	//TODO move this methos to Connection class
 	// std::cout << "	Giving my response to the client" << std::endl;
 	return (false);
 }
 
-int Engine::engineRoutine(Config& config)
+void	Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, std::map<const Socket*, Connection*>& activeConnections)
 {
-	(void)config;
-
-	std::vector<struct pollfd> fds;
-
-	std::cout << "	Engine routine is called" << std::endl;
-	int s = 0;
-	for (std::vector<Socket*>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
-	{
-		fds.push_back(createNewFd((*it)->getFd(), POLLIN, 0));
-		s++;
-	}
-	std::cout << "	s= " << s << std::endl;
-	// int maxFd = _allSockets.back().getFd();
-	while(true)
-	{
-		//timeout=0, then poll() will return without blocking.
-		int n = poll(fds.data(), fds.size(), 0);
-		if (n < 0)
-		{
-			perror("poll");
-			continue;
-		}
-	// 	int f = 0;
-	// 	for (std::vector<struct pollfd>::iterator it =fds.begin(); it != fds.end(); ++it)
-	// 	{
-	// 		f++;
-	// 	}
-	// // 	// std::cout << "	fds= " << f << std::endl;
-		// std::cout << "	waiting here" << std::endl;
-		for (size_t i = 0; i < fds.size(); i++)
-		{
-			// std::cout << "	checking fds" << std::endl;
-			if (fds[i].revents & POLLIN)
-			{
-				std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
-				if (_allSockets[i]->isListening())
-				{
-					struct sockaddr addr;
-					socklen_t	size = sizeof(addr);
-					int new_client = accept(fds[i].fd, &addr, &size);
-					fds.push_back(createNewFd(new_client, POLLIN, 0));
-					_allSockets.push_back(new ConnectionSocket(new_client));
-				}
-				else
-				{
-					std::cout <<"receiveFromClients" << std::endl;
-					_allSockets[i]->handle();
-				}
-			}
-		}
-		for (size_t i = 0; i < fds.size(); i++)
+	(void)activeConnections; // Suppress unused variable warning
+	for (size_t i = 0; i < fds.size(); i++)
 		{
 			if (haveResponse(fds[i]))
 			{
@@ -87,6 +41,57 @@ int Engine::engineRoutine(Config& config)
 			}
 			//  break ; 
 		}
+}
+
+void Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, std::map<const Socket*, Connection*>& activeConnections)
+{
+	for (size_t i = 0; i < fds.size(); i++)
+		{
+			if (fds[i].revents & POLLIN)
+			{
+				std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
+				if (_allSockets[i]->isListening())
+				{
+					Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]));			
+					activeConnections.insert(std::make_pair(_allSockets[i], newConnection));
+					fds.push_back(newConnection->getPollFd());
+				}
+				else
+				{
+					std::cout <<"receiveFromClients" << std::endl;
+					_allSockets[i]->handle();
+				}
+			}
+		}
+}
+
+int Engine::engineRoutine(Config& config)
+{
+	(void)config;
+
+	// Removed unused variable to avoid errors
+	std::map<const Socket*, Connection*> activeConnections;
+	std::vector<struct pollfd> fds;
+
+	std::cout << "	Engine routine is called" << std::endl;
+	int s = 0;
+	for (std::vector<Socket*>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
+	{
+		fds.push_back(createPollFd((*it)->getFd(), POLLIN, 0));
+		s++;
+	}
+	std::cout << "	s= " << s << std::endl;
+	// int maxFd = _allSockets.back().getFd();
+	while(true)
+	{
+		int n = poll(fds.data(), fds.size(), 0); //timeout=0, then poll() will return without blocking.
+		if (n < 0)
+		{
+			perror("poll");
+			continue;
+		}
+		polloutSocketsHandle(fds, activeConnections);
+		pollinSocketsHandle(fds, activeConnections);
 	}
 	return (1);
 }

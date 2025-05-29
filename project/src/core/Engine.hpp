@@ -7,15 +7,25 @@
 # include "../../inc/webserv.hpp"
 
 class Config;
+class Connection;
 
 class Engine
 {
 private:
-    std::vector<Socket*> _allSockets;
+    std::vector<Socket*> 	_allSockets;
+	std::vector<Connection> _allConnections;
 
 public:
 	/*Member functions*/
-    int engineRoutine(Config& config);
+    int 			engineRoutine(Config& config);
+	void			polloutSocketsHandle(std::vector<struct pollfd>& fds,
+											std::map<const Socket*, Connection*>& activeConnections);
+	void			pollinSocketsHandle(std::vector<struct pollfd>& fds,
+											std::map<const Socket*, Connection*>& activeConnections);
+
+	struct pollfd	createPollFd(int fd, short events, short revents);
+	bool			haveResponse(struct pollfd fd);
+	bool			sendToClients();
 
 	/*Getters and Setters*/
 

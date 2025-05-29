@@ -1,12 +1,30 @@
 #include "Connection.hpp"
 
 /*Member functions*/
-// void Connection::method()
-// {
-//     // Method implementation
-// }
+
+struct pollfd Connection::createConnectionSocket(ListeningSocket* serverListeningSocket)
+{
+	struct sockaddr	addr;
+	socklen_t		size = sizeof(addr);
+	int				_fd = accept(serverListeningSocket->getFd(), &addr, &size);
+	struct pollfd	newPollFd;
+	
+	newPollFd.fd = _fd;
+	newPollFd.events = POLLIN;
+	newPollFd.revents = 0;
+	return (newPollFd);
+}
 
 /*Getters and Setters*/
+bool Connection::isActive()
+{
+	return _active;
+}
+
+struct pollfd Connection::getPollFd() const
+{
+	return _pollFd;
+}
 
 /*Constructors*/
 Connection::Connection(ListeningSocket* serverListeningSocket) :
@@ -15,11 +33,12 @@ Connection::Connection(ListeningSocket* serverListeningSocket) :
 															   _serverListeningSocket(serverListeningSocket),   
 															   _clientConnectionSocket(nullptr),  
 															   _request(nullptr), 
-															   _stayAlive(true)
+															   _active(true)
 {
-	_timeLastConnection = std::time(nullptr);
-	std::cout << "Connection parameterized constructor is called. Time:" \
-    << std::asctime(std::localtime(&_timeLastConnection)) << std::endl;
+	_timeLastUsed = std::time(nullptr);
+	std::cout << "Connection parameterized constructor is called. Time Last Used:" \
+    << std::asctime(std::localtime(&_timeLastUsed)) << std::endl;
+	_pollFd = createConnectionSocket(serverListeningSocket);
 }
 
 /*Destructors*/
