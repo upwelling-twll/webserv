@@ -8,6 +8,11 @@ bool	ConnectionSocket::isListening() const
 
 int		ConnectionSocket::handle()
 {
+	int 	i;
+	char	buf[1000];
+
+	i = recv(_fd, buf, sizeof(buf), 0);
+	std::cout << buf <<" i=" << i << std::endl;
 	return 0;
 }
 

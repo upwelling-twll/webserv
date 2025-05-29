@@ -30,7 +30,7 @@ std::string Server::getIp() const
 
 std::string Server::getAddr() const
 {
-	return (this->ip + ":" + std::to_string(this->port));
+	return (this->ip ); //+ ":" + std::to_string(this->port)
 }
 
 std::string Server::getServerName() const

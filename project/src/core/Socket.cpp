@@ -16,7 +16,7 @@ void	Socket::setAddrInfo(struct sockaddr_in _addr, socklen_t _addr_len, size_t _
 	this->_addr_text_len = _addr_text_len;
 }
 
-/*Constructors*/
+/*Constructors*/ 
 Socket::Socket(int fd) : _fd(fd)
 {
    std::cout << "Socket parameterized constructor is called" << std::endl;

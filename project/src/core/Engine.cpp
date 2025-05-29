@@ -73,15 +73,16 @@ int Engine::engineRoutine(Config& config)
 				else
 				{
 					std::cout <<"receiveFromClients" << std::endl;
-					allSockets[i]->receiveFromClients();
+					_allSockets[i]->handle();
 				}
 			}
 		}
-		// if (haveResponse(fds[i]))
-		// 	sendToClients();
-		// 	// else
-		// 	// 	std::cout <<"nothing happens" << std::endl;
-		// }
+		if (haveResponse(fds[i]))
+		{
+			sendToClients();
+			// else
+			// 	std::cout <<"nothing happens" << std::endl;
+		}
 		//  break ; 
 	}
 	return (1);
