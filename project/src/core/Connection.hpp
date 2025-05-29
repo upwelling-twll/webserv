@@ -2,25 +2,37 @@
 # define CONNECTION_HPP
 
 # include <iostream>
+# include <ctime>
+
+# include "../../inc/webserv.hpp"
 
 class httpRequest;
+class ListeningSocket;
+class ConnectionSocket;
 
 class Connection
 {
 private:
-    httpRequest _request;
-	bool		_stayAlive;
+	/*Private members*/
+	std::vector<std::string>	_rawMessage;
+	std::string					_buffer;
+	std::string					_status;
+	time_t						_timeLastConnection;
+
+	ListeningSocket*			_serverListeningSocket;
+	ConnectionSocket*			_clientConnectionSocket;
+	httpRequest*				_request;
+	bool						_stayAlive;
 
 public:
 	/*Member functions*/
-    bool	connectSocket();
-	bool	disconnectSocket();
+    // bool	createConnectionSocket();
+	// bool	disconnectSocket();
 
 	/*Getters and Setters*/
 
 	/*Constructors*/
-    Connection(/*Parameterized Constructor*/);
-	Connection(void);
+    Connection(ListeningSocket* serverListeningSocket);
 
 	/*Destructors*/
     ~Connection( void );

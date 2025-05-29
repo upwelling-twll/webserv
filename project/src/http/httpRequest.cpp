@@ -1,21 +1,32 @@
 #include "httpRequest.hpp"
 
 /*Member functions*/
-void httpRequest::method()
-{
-    // Method implementation
-}
+// void httpRequest::method()
+// {
+//     // Method implementation
+// }
 
 /*Getters and Setters*/
+std::string httpRequest::getMethod() const
+{
+	return method;
+}
+std::string httpRequest::getUrl() const
+{
+	return url;
+}
+std::string httpRequest::getVersion() const
+{
+	return version;
+}
 
 /*Constructors*/
-httpRequest::httpRequest(/*Parameterized Constructor*/)
-{
-   std::cout << "httpRequest parameterized constructor is called" << std::endl;
-}
 
 httpRequest::httpRequest()
 {
+	method = "GET";
+	url = "/";
+	version = "HTTP/1.1";
     std::cout << "httpRequest default constructor is called" << std::endl;
 }
 
@@ -38,6 +49,7 @@ httpRequest& httpRequest::operator=(const httpRequest& src)
 
 std::ostream& operator<<(std::ostream& output_stream, httpRequest& src)
 {
+	(void)src; // Suppress unused variable warning
 	output_stream << "* httpRequest Class info*" << std::endl;
 	return output_stream;
 }

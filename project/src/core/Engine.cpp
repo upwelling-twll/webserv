@@ -77,13 +77,16 @@ int Engine::engineRoutine(Config& config)
 				}
 			}
 		}
-		if (haveResponse(fds[i]))
+		for (size_t i = 0; i < fds.size(); i++)
 		{
-			sendToClients();
-			// else
-			// 	std::cout <<"nothing happens" << std::endl;
+			if (haveResponse(fds[i]))
+			{
+				sendToClients();
+				// else
+				// 	std::cout <<"nothing happens" << std::endl;
+			}
+			//  break ; 
 		}
-		//  break ; 
 	}
 	return (1);
 }

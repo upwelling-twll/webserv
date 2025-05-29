@@ -2,6 +2,9 @@
 # define WEBSERV_HPP
 
 # include <sys/socket.h>
+# include <vector>
+# include <iostream>
+# include <map>
 
 # include "../shared/Config.hpp"
 # include "../shared/Server.hpp"
@@ -10,6 +13,8 @@
 # include "../src/core/ListeningSocket.hpp"
 # include "../src/core/ConnectionSocket.hpp"
 # include "../src/core/Engine.hpp"
+# include "../src/core/Connection.hpp"
+# include "../src/http/httpRequest.hpp"
 
 
 void                addPortsToSocketsList(std::vector<Socket>& allSockets, std::vector<Port> ports);

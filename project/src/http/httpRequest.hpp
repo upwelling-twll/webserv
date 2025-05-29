@@ -2,20 +2,36 @@
 # define HTTPREQUEST_HPP
 
 # include <iostream>
+# include "../../inc/webserv.hpp"
 
 class httpRequest
 {
 private:
-    // Add member variables here
+	/*Private members*/
+	std::string							method;
+	std::string							url; //target 
+	std::string							version;
 
-public:
-	/*Member functions*/
-    void method();
+	std::string							startLine;
+	std::map<std::string, std::string>	headers; //optional
+	std::string							body;
+
+	
+	public:
+	/*Parsing member functions*/
+	// void parseRequestLine(const std::string& requestLine);
+	// void parseHeaders(const std::string& headers);
+	// void parseBody(const std::string& body);
+	
+	/*Handling request member functions*/
+    // void method();
 
 	/*Getters and Setters*/
+	std::string getMethod() const;
+	std::string getUrl() const;
+	std::string getVersion() const;
 
 	/*Constructors*/
-    httpRequest(/*Parameterized Constructor*/);
 	httpRequest(void);
 
 	/*Destructors*/
