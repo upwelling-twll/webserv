@@ -18,14 +18,12 @@ private:
 public:
 	/*Member functions*/
     int 			engineRoutine(Config& config);
-	void			polloutSocketsHandle(std::vector<struct pollfd>& fds,
+	void			polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i,
 											std::map<const Socket*, Connection*>& activeConnections);
-	void			pollinSocketsHandle(std::vector<struct pollfd>& fds,
+	void			pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i,
 											std::map<const Socket*, Connection*>& activeConnections);
 
 	struct pollfd	createPollFd(int fd, short events, short revents);
-	bool			haveResponse(struct pollfd fd);
-	bool			sendToClients();
 
 	/*Getters and Setters*/
 

@@ -28,6 +28,8 @@ private:
 
 public:
 	/*Member functions*/
+	bool			haveResponse(struct pollfd fd);
+	bool			sendToClients();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
 
 	// bool	disconnectSocket();

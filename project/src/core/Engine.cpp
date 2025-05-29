@@ -13,63 +13,37 @@ struct pollfd Engine::createPollFd(int fd, short events, short revents)
 	return (newPollFd);
 }
 
-bool	Engine::haveResponse(struct pollfd fd)
-{
-	// std::cout << "	Need to check my response" << std::endl;
-	if (fd.fd)
-		return (true);
-	return (false);
-}
-
-bool	Engine::sendToClients()
-{
-	//TODO move this methos to Connection class
-	// std::cout << "	Giving my response to the client" << std::endl;
-	return (false);
-}
-
-void	Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, std::map<const Socket*, Connection*>& activeConnections)
+void	Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
 	(void)activeConnections; // Suppress unused variable warning
-	for (size_t i = 0; i < fds.size(); i++)
-		{
-			if (haveResponse(fds[i]))
-			{
-				sendToClients();
+	if (_allConnections[i].haveResponse(fds[i]))
+	{
+		_allConnections[i].sendToClients();
 				// else
 				// 	std::cout <<"nothing happens" << std::endl;
-			}
-			//  break ; 
-		}
+	}
 }
 
-void Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, std::map<const Socket*, Connection*>& activeConnections)
+void Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
-	for (size_t i = 0; i < fds.size(); i++)
-		{
-			if (fds[i].revents & POLLIN)
-			{
-				std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
-				if (_allSockets[i]->isListening())
-				{
-					Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]));			
-					activeConnections.insert(std::make_pair(_allSockets[i], newConnection));
-					fds.push_back(newConnection->getPollFd());
-				}
-				else
-				{
-					std::cout <<"receiveFromClients" << std::endl;
-					_allSockets[i]->handle();
-				}
-			}
-		}
+	std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
+	if (_allSockets[i]->isListening())
+	{
+		Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]));			
+		activeConnections.insert(std::make_pair(_allSockets[i], newConnection));
+		fds.push_back(newConnection->getPollFd());
+	}
+	else
+	{
+		std::cout <<"receiveFromClients" << std::endl;
+		_allSockets[i]->handle();
+	}
 }
 
 int Engine::engineRoutine(Config& config)
 {
 	(void)config;
 
-	// Removed unused variable to avoid errors
 	std::map<const Socket*, Connection*> activeConnections;
 	std::vector<struct pollfd> fds;
 
@@ -80,8 +54,6 @@ int Engine::engineRoutine(Config& config)
 		fds.push_back(createPollFd((*it)->getFd(), POLLIN, 0));
 		s++;
 	}
-	std::cout << "	s= " << s << std::endl;
-	// int maxFd = _allSockets.back().getFd();
 	while(true)
 	{
 		int n = poll(fds.data(), fds.size(), 0); //timeout=0, then poll() will return without blocking.
@@ -90,8 +62,13 @@ int Engine::engineRoutine(Config& config)
 			perror("poll");
 			continue;
 		}
-		polloutSocketsHandle(fds, activeConnections);
-		pollinSocketsHandle(fds, activeConnections);
+		for (size_t i = 0; i < fds.size(); i++)
+		{
+			if (fds[i].revents & POLLOUT)
+				polloutSocketsHandle(fds, i, activeConnections);
+			else if (fds[i].revents & POLLIN)
+				pollinSocketsHandle(fds, i, activeConnections);
+		}
 	}
 	return (1);
 }
