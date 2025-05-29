@@ -1,10 +1,10 @@
-#ifndef HTTPREQUEST_HPP
-# define HTTPREQUEST_HPP
+#ifndef AHTTPREQUEST_HPP
+# define AHTTPREQUEST_HPP
 
 # include <iostream>
 # include "../../inc/webserv.hpp"
 
-class httpRequest
+class AHttpRequest
 {
 private:
 	/*Private members*/
@@ -32,15 +32,15 @@ private:
 	std::string getVersion() const;
 
 	/*Constructors*/
-	httpRequest(void);
+	AHttpRequest(void);
 
 	/*Destructors*/
-    ~httpRequest( void );
+    ~AHttpRequest( void );
 
 	/*Overload operators*/
-	httpRequest &operator=(const httpRequest& src);
+	AHttpRequest &operator=(const AHttpRequest& src);
 };
 
-std::ostream& operator<<(std::ostream &output_stream, httpRequest& src);
+std::ostream& operator<<(std::ostream &output_stream, AHttpRequest& src);
 
-#endif // HTTPREQUEST_HPP
+#endif // AHTTPREQUEST_HPP

@@ -6,7 +6,7 @@
 
 # include "../../inc/webserv.hpp"
 
-class httpRequest;
+class AHttpRequest;
 class ListeningSocket;
 class ConnectionSocket;
 
@@ -21,7 +21,7 @@ private:
 
 	ListeningSocket*			_serverListeningSocket;
 	ConnectionSocket*			_clientConnectionSocket;
-	httpRequest*				_request;
+	AHttpRequest*				_request;
 	bool						_active;
 
 	struct pollfd				_pollFd;

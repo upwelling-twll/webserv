@@ -14,7 +14,7 @@
 # include "../src/core/ConnectionSocket.hpp"
 # include "../src/core/Engine.hpp"
 # include "../src/core/Connection.hpp"
-# include "../src/http/httpRequest.hpp"
+# include "../src/http/AHttpRequest.hpp"
 
 
 void                addPortsToSocketsList(std::vector<Socket>& allSockets, std::vector<Port> ports);
