@@ -2,7 +2,6 @@
 
 /*Member functions*/
 
-
 bool	Connection::haveResponse(struct pollfd fd)
 {
 	// std::cout << "	Need to check my response" << std::endl;
@@ -46,12 +45,9 @@ struct pollfd Connection::getPollFd() const
 Connection::Connection(ListeningSocket* serverListeningSocket) :
 															   _buffer(""), 
 															   _status("establisted"),
-															   _serverListeningSocket(serverListeningSocket),   
-															   _clientConnectionSocket(nullptr),  
-															   _request(nullptr), 
+															   _serverListeningSocket(serverListeningSocket),
 															   _active(true)
 {
-	_timeLastUsed = std::time(nullptr);
 	std::cout << "Connection parameterized constructor is called. Time Last Used:" \
     << std::asctime(std::localtime(&_timeLastUsed)) << std::endl;
 	_pollFd = createConnectionSocket(serverListeningSocket);
