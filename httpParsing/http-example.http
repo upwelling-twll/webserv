@@ -1,0 +1,7 @@
+GET /index.html HTTP/1.1
+Host: example.com
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5_0)
+Accept: text/html,application/xhtml+xml
+Accept-Language: ru,en;q=0.9
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
