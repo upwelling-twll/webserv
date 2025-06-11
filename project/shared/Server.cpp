@@ -111,7 +111,7 @@ void Server::print() const
     for (std::size_t i = 0; i < serverPropertiesRange; ++i)
     {
         const std::string& cur = values[i].empty() ? "" : values[i].back();
-        bool changed = cur != defaults[i];                       // ← NEW
+        bool changed = cur != defaults[i];
         std::cout << "  " << properties[i] << ": "
                   << (changed ? "\033[32m" : "\033[33m")
                   << (cur.empty() ? "<unset>" : cur)

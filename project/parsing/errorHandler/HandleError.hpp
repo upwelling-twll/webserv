@@ -2,10 +2,12 @@
 #define HANDLE_ERROR_HPP
 
 #include "../../shared/Server.hpp"
+#include <vector>
+#include <string>
+#include <regex>
 
 class HandleError
 {
-	// порядок этих enum-констант СТРОГО совпадает с массивом имён
 	enum ServerVar
 	{
 		LISTEN,
@@ -16,8 +18,11 @@ class HandleError
 
 	static const char *const multiplieVarsServer[SERVER_VAR_COUNT];
 
+	static bool handleListen(Server &srv);
+	static bool handleServerName(Server &srv);
+	static bool handleErrorPage(Server &srv);
+
 public:
-	// возвращает false, если найдена ошибка
 	static bool errorHandler(std::vector<Server> &servers);
 };
 
