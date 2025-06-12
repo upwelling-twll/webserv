@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <regex>
+#include <algorithm> // std::find for linux
 
 class HandleError
 {

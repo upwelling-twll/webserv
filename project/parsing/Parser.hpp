@@ -6,6 +6,8 @@
 #include <fstream>
 #include <sstream>
 
+#include <algorithm> // std::find for linux
+
 class Parser
 {
 public:
