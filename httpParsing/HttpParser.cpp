@@ -1,7 +1,6 @@
 #include "./HttpParser.hpp"
 #include <sstream>
 
-// HELPERS ----------------------------------------------------------
 std::string HttpRequest::trimSides(const std::string &s)
 {
 	std::size_t first = 0;
@@ -18,11 +17,7 @@ void HttpRequest::removeTrailingCRLF(std::string &s)
 	while (!s.empty() && (s[s.size() - 1] == '\r' || s[s.size() - 1] == '\n'))
 		s.erase(s.size() - 1);
 }
-// HELPERS ----------------------------------------------------------
 
-
-
-// HEADERS ----------------------------------------------------------
 const char *const HttpRequest::stdHeaders[] = {
 	"Host", "User-Agent", "Accept", "Accept-Language",
 	"Accept-Encoding", "Connection", "Content-Type",
@@ -31,28 +26,26 @@ const char *const HttpRequest::stdHeaders[] = {
 
 const std::size_t HttpRequest::stdHeadersCount =
 	sizeof(HttpRequest::stdHeaders) / sizeof(HttpRequest::stdHeaders[0]);
-// HEADERS ----------------------------------------------------------
 
-
-
-// CONSTRUCTOR ----------------------------------------------------------
 HttpRequest::HttpRequest(std::string req)
 {
-
 	for (std::size_t i = 0; i < stdHeadersCount; ++i)
 		headers[stdHeaders[i]] = "";
+
 	std::istringstream ss(req);
 	std::string line;
 
-	// request-line -----------------------------------------------------------
 	if (std::getline(ss, line))
 	{
 		removeTrailingCRLF(line);
 		std::istringstream rl(line);
+		std::string method, uri, version;
 		rl >> method >> uri >> version;
+		vars["method"] = method;
+		vars["uri"] = uri;
+		vars["version"] = version;
 	}
 
-	// headers ----------------------------------------------------------------
 	while (std::getline(ss, line))
 	{
 		removeTrailingCRLF(line);
@@ -66,7 +59,6 @@ HttpRequest::HttpRequest(std::string req)
 		headers[key] = val;
 	}
 
-	// body -------------------------------------------------------------------
 	std::string bodyBuf;
 	while (std::getline(ss, line))
 	{
@@ -75,38 +67,56 @@ HttpRequest::HttpRequest(std::string req)
 		if (!ss.eof())
 			bodyBuf += '\n';
 	}
-	body = bodyBuf;
-}
-// CONSTRUCTOR ----------------------------------------------------------
-
-
-
-std::string HttpRequest::getHeader(std::string key)
-{
-	std::map<std::string, std::string>::iterator it = headers.find(key);
-	return it == headers.end() ? std::string("") : it->second;
+	vars["body"] = bodyBuf;
 }
 
-void HttpRequest::print() const
+std::string HttpRequest::get(VarKey key)
 {
-	std::cout << "==== Parsed HTTP request ====\n";
-	std::cout << method << ' ' << uri << ' ' << version << '\n';
+	switch (key)
+	{
+		case METHOD:  return vars["method"];
+		case URI:     return vars["uri"];
+		case VERSION: return vars["version"];
+		case BODY:    return vars["body"];
+		default:      return "";
+	}
+}
 
-	for (std::map<std::string, std::string>::const_iterator it = headers.begin();
-		 it != headers.end(); ++it)
-		std::cout << it->first << ": "
-				  << (it->second.empty() ? "<empty>" : it->second) << '\n';
+std::string HttpRequest::get(HeaderKey key)
+{
+	static const char *const hdrNames[] = {
+		"Host", "User-Agent", "Accept", "Accept-Language",
+		"Accept-Encoding", "Connection", "Content-Type",
+		"Content-Length", "Cookie", "Referer",
+		"Cache-Control", "Upgrade-Insecure-Requests"};
 
-	if (!body.empty())
-		std::cout << "\n"
-				  << body << '\n';
+	const std::size_t idx = static_cast<std::size_t>(key);
+	if (idx >= sizeof(hdrNames) / sizeof(hdrNames[0]))
+		return "";
 
-	std::cout << "=============================\n";
+	std::map<std::string, std::string>::const_iterator it =
+		headers.find(hdrNames[idx]);
+	return it != headers.end() ? it->second : "";
 }
 
 void HttpRequest::setHeader(std::string key, std::string value)
 {
 	headers[key] = value;
+}
+
+void HttpRequest::print() const
+{
+	std::cout << "==== Parsed HTTP request ====\n";
+	std::cout << vars.find("method")->second << ' '
+			  << vars.find("uri")->second << ' '
+			  << vars.find("version")->second << '\n';
+	for (std::map<std::string, std::string>::const_iterator it = headers.begin();
+		 it != headers.end(); ++it)
+		std::cout << it->first << ": "
+				  << (it->second.empty() ? "<empty>" : it->second) << '\n';
+	if (!vars.find("body")->second.empty())
+		std::cout << "\n" << vars.find("body")->second << '\n';
+	std::cout << "=============================\n";
 }
 
 HttpRequest::~HttpRequest() {}

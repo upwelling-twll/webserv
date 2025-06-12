@@ -1,6 +1,7 @@
 #include "./HttpParser.hpp"
 
-int main() {
+int main()
+{
 	std::string httpRequest =
 		"GET /index.html HTTP/1.1\r\n"
 		"Host: example.com\r\n"
@@ -13,6 +14,10 @@ int main() {
 	HttpRequest req(httpRequest);
 	req.print();
 
-	std::cout << "\nHost header value: " << req.getHeader("Host") << std::endl;
+	// USAGE ------------------
+	std::cout << req.get(METHOD) << std::endl;
+	std::cout << req.get(URI) << std::endl;
+	// USAGE ------------------
+
 	return 0;
 }

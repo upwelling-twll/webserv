@@ -39,3 +39,6 @@ run:
 	fi
 	$(MAKE) build_and_clean
 	./$(NAME) example.conf
+
+del:
+	rm -f $(NAME)
