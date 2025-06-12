@@ -17,7 +17,6 @@ private:
 public:
 	/*Member functions*/
 	virtual bool	isListening() const;
-    virtual int		handle();
 	void			configureSocketOptions();
 	void			bindSocket();
 	void			listenConnectionSocket();

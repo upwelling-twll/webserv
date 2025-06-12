@@ -2,6 +2,18 @@
 
 /*Member functions*/
 
+void	Connection::handleInEvent()
+{
+	// std::cout << "	Handling my input event" << std::endl;
+	int 	i;
+	char	buf[1000];
+
+	std::cout << "ConnectionSocket::handleInEvent() is called" << std::endl;
+	i = recv(_clientConnectionSocket->getFd(), buf, sizeof(buf), 0);
+	std::cout << buf <<" i=" << i << std::endl;
+	return ;
+}
+
 bool	Connection::haveResponse(struct pollfd fd)
 {
 	// std::cout << "	Need to check my response" << std::endl;
@@ -51,6 +63,8 @@ Connection::Connection(ListeningSocket* serverListeningSocket) :
 	std::cout << "Connection parameterized constructor is called. Time Last Used:" \
     << std::asctime(std::localtime(&_timeLastUsed)) << std::endl;
 	_pollFd = createConnectionSocket(serverListeningSocket);
+	ConnectionSocket* newClientConnectionSocket = new ConnectionSocket(_pollFd.fd);
+	_clientConnectionSocket = newClientConnectionSocket;
 }
 
 /*Destructors*/
@@ -63,8 +77,11 @@ Connection::~Connection( void )
 
 std::ostream& operator<<(std::ostream& output_stream, Connection& src)
 {
-	(void)src; // Suppress unused variable warning
 	output_stream << "* Connection Class info*" << std::endl;
+	output_stream << "Status: " << src.getStatus() << std::endl;
+	output_stream << "Time Last Used: " << src.getTimeLastUsed() << std::endl;
+	output_stream << "Server Listening Socket FD: " << src.getServerListeningSocket()->getFd() << std::endl;
+	output_stream << "Client Connection Socket FD: " << src.getClientConnectionSocket()->getFd() << std::endl;
 	return output_stream;
 }
 

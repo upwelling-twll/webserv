@@ -17,7 +17,6 @@ protected:
 public:
 	/*Member functions*/
     virtual bool	isListening() const = 0;
-	virtual int		handle() = 0;
 
 	/*Getters and Setters*/
 	int		getFd() const;

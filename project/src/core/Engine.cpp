@@ -13,7 +13,7 @@ struct pollfd Engine::createPollFd(int fd, short events, short revents)
 	return (newPollFd);
 }
 
-void	Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
+void	Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
 	(void)activeConnections; // Suppress unused variable warning
 	if (_allConnections[i].haveResponse(fds[i]))
@@ -24,19 +24,28 @@ void	Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std:
 	}
 }
 
-void Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
+void Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
-	std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl; 
+	std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl;
+	std::cout << "Socket info: " << *_allSockets[i] << std::endl;
+	std::cout << activeConnections[_allSockets[i]] << std::endl;
 	if (_allSockets[i]->isListening())
 	{
-		Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]));			
-		activeConnections.insert(std::make_pair(_allSockets[i], newConnection));
+		std::cout << "New connection is being accepted" << std::endl;
+		Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]));
+		std::cout << "New connection created: " << *newConnection << std::endl;
+		//add Client`s ConnectionSocket to _allSockets vector to use it as a key
+		_allSockets.push_back(newConnection->getClientConnectionSocket());
+		//add  new connection to activeConnections map to use its methods for recv and send
+		activeConnections.insert(std::make_pair(_allSockets.back(), newConnection));
+		//add new connection`s fd to _allConnections vector for poll()
 		fds.push_back(newConnection->getPollFd());
+		std::cout << "New connection created and added to active connections." << std::endl;
 	}
 	else
 	{
-		std::cout <<"receiveFromClients" << std::endl;
-		_allSockets[i]->handle();
+		std::cout <<"receiveFromClient" << std::endl;
+		activeConnections[_allSockets[i]]->handleInEvent();
 	}
 }
 
@@ -47,7 +56,7 @@ int Engine::engineRoutine(Config& config)
 	std::map<const Socket*, Connection*> activeConnections;
 	std::vector<struct pollfd> fds;
 
-	std::cout << "	Engine routine is called" << std::endl;
+	std::cout << "\n	*Engine routine has started*" << std::endl;
 	int s = 0;
 	for (std::vector<Socket*>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
 	{
@@ -64,10 +73,10 @@ int Engine::engineRoutine(Config& config)
 		}
 		for (size_t i = 0; i < fds.size(); i++)
 		{
-			if (fds[i].revents & POLLOUT)
-				polloutSocketsHandle(fds, i, activeConnections);
-			else if (fds[i].revents & POLLIN)
+			if (fds[i].revents & POLLIN)
 				pollinSocketsHandle(fds, i, activeConnections);
+			else if (fds[i].revents & POLLOUT)
+				polloutSocketsHandle(fds, i, activeConnections);
 		}
 	}
 	return (1);

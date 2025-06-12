@@ -6,11 +6,6 @@ bool	ListeningSocket::isListening() const
 	return true; // Placeholder implementation
 }
 
-int		ListeningSocket::handle()
-{
-	return 0; // Placeholder implementation
-}
-
 void	ListeningSocket::listenConnectionSocket()
 {
 	int	i;

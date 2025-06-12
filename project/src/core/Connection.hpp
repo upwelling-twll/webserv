@@ -28,15 +28,23 @@ private:
 
 public:
 	/*Member functions*/
+	void			handleInEvent();
 	bool			haveResponse(struct pollfd fd);
 	bool			sendToClients();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
-
 	// bool	disconnectSocket();
 
 	/*Getters and Setters*/
 	bool			isActive();
 	struct pollfd	getPollFd() const;
+
+	/*Getters for private members*/
+	std::vector<std::string>	getRawMessage() const { return _rawMessage; }
+	std::string					getBuffer() const { return _buffer; }
+	std::string					getStatus() const { return _status; }
+	time_t						getTimeLastUsed() const { return _timeLastUsed; }
+	ListeningSocket*			getServerListeningSocket() const { return _serverListeningSocket; }
+	ConnectionSocket*			getClientConnectionSocket() const { return _clientConnectionSocket; }
 
 	/*Constructors*/
     Connection(ListeningSocket* serverListeningSocket);
