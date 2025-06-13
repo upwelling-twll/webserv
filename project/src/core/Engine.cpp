@@ -45,8 +45,8 @@ void Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std:
 	else
 	{
 		std::cout <<"receiveFromClient" << std::endl;
-		activeConnections[_allSockets[i]]->handleInEvent();
-		activeConnections[_allSockets[i]]->updateConnection();
+		activeConnections[_allSockets[i]]->receiveMessage();
+		activeConnections[_allSockets[i]]->processConnectionStatus();
 	}
 }
 

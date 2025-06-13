@@ -45,8 +45,8 @@ private:
 
 public:
 	/*Member functions*/
-	void			handleInEvent();
-	void			updateConnection();
+	void			receiveMessage();
+	void			processConnectionStatus();
 	bool			haveResponse();
 	bool			sendToClients();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);

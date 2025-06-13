@@ -22,12 +22,13 @@ void	Connection::changeSocketMode(short mode)
 	std::cout << "Socket mode changed successfully "<< std::endl;
 }
 
-void	Connection::updateConnection()
+void	Connection::processConnectionStatus()
 {
 	if (_status == READY_FOR_FORMATTING_RESPONSE)
 	{
 		changeSocketMode(POLLOUT);
 		std::cout << "Connection is ready for formatting response, changing socket mode to POLLOUT" << std::endl;
+		std::cout << "		*raw request*	\n" << _rawMessage << std::endl; 
 	}
 	else if (_status == WAITING_FOR_DATA)
 	{
@@ -59,7 +60,7 @@ void	Connection::updateConnection()
 	}
 }
 
-void	Connection::handleInEvent()
+void	Connection::receiveMessage()
 {
 	// std::cout << "	Handling my input event" << std::endl;
 	int 	i;
@@ -76,6 +77,8 @@ void	Connection::handleInEvent()
 			buf[i] = '\0'; // Null-terminate the buffer to treat it as a string
 			std::cout << "buf:" << buf <<"$, i=" << i << std::endl;
 			_rawMessage += buf; // Append the received data to _rawMessage
+			
+			std::memset(buf, 0, sizeof(buf)); // Clear the buffer for the next read
 			if (locateSymbol(_rawMessage, '\n') == true)
 			{
 				std::cout << "Enough data to parse request (have nl)" << std::endl;
