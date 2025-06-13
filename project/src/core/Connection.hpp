@@ -29,7 +29,7 @@ private:
 public:
 	/*Member functions*/
 	void			handleInEvent();
-	bool			haveResponse(struct pollfd fd);
+	bool			haveResponse();
 	bool			sendToClients();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
 	// bool	disconnectSocket();

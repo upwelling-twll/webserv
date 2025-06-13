@@ -15,8 +15,8 @@ struct pollfd Engine::createPollFd(int fd, short events, short revents)
 
 void	Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
-	(void)activeConnections; // Suppress unused variable warning
-	if (_allConnections[i].haveResponse(fds[i]))
+	(void)fds; // to avoid unused parameter warning
+	if (activeConnections[_allSockets[i]]->haveResponse())
 	{
 		_allConnections[i].sendToClients();
 				// else

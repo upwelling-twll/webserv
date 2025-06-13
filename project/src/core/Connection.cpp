@@ -14,11 +14,10 @@ void	Connection::handleInEvent()
 	return ;
 }
 
-bool	Connection::haveResponse(struct pollfd fd)
+bool	Connection::haveResponse()
 {
 	// std::cout << "	Need to check my response" << std::endl;
-	if (fd.fd)
-		return (true);
+	//TODO : check if we have response to send 
 	return (false);
 }
 
