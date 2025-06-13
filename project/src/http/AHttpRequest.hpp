@@ -4,6 +4,15 @@
 # include <iostream>
 # include "../../inc/webserv.hpp"
 
+enum RequestStatus
+{
+	WAITING_START_LINE,
+	WAITING_HEADER,
+	WAITING_BODY,
+	READY,
+	ERROR_REQUEST,
+};
+
 class AHttpRequest
 {
 private:
@@ -11,25 +20,30 @@ private:
 	std::string							method;
 	std::string							url; //target 
 	std::string							version;
+	RequestStatus						status;
 
 	std::string							startLine;
 	std::map<std::string, std::string>	headers; //optional
-	// std::string							body;
+	// std::string							body; //optional
 
 	
 	public:
 	/*Parsing member functions*/
-	// void parseRequestLine(const std::string& requestLine);
+	// void parseStartingLine(const std::string& requestLine);
 	// void parseHeaders(const std::string& headers);
 	// void parseBody(const std::string& body);
 	
-	/*Handling request member functions*/
-    // void method();
+	/*Member functions*/
+    RequestStatus	insert(std::string rawMessage);
 
 	/*Getters and Setters*/
-	std::string getMethod() const;
-	std::string getUrl() const;
-	std::string getVersion() const;
+	std::string 	getMethod() const;
+	std::string 	getUrl() const;
+	std::string		getVersion() const;
+	// std::string getBody() const;
+	// std::map<std::string, std::string> getHeaders() const;	
+
+	RequestStatus	getStatus() const;
 
 	/*Constructors*/
 	AHttpRequest(void);
