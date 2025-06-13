@@ -10,6 +10,7 @@ void	Connection::handleInEvent()
 
 	std::cout << "ConnectionSocket::handleInEvent() is called" << std::endl;
 	i = recv(_clientConnectionSocket->getFd(), buf, sizeof(buf), 0);
+	buf[i] = '\0'; // Null-terminate the buffer to treat it as a string
 	std::cout << buf <<" i=" << i << std::endl;
 	return ;
 }
