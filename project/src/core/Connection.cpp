@@ -22,28 +22,30 @@ void	Connection::changeSocketMode(short mode)
 	std::cout << "Socket mode changed successfully "<< std::endl;
 }
 
+void	Connection::processConnectionStatusResponce()
+{
+	if (_status == SENT_TO_CLIENT)
+	{
+		std::cout << "Connection has sent response to client, changing socket mode to POLLIN" << std::endl;
+		changeSocketMode(POLLIN);
+		_status = IDLE; // Reset status to IDLE after sending response
+	}
+	else
+	{
+		std::cout << "Connection is in default state, no changes" << std::endl;
+	}
+}
+
 void	Connection::processConnectionStatus()
 {
+	std::cout << "	process Connection Status, status:" << _status << std::endl;
 	if (_status == READY_FOR_FORMATTING_RESPONSE)
 	{
 		changeSocketMode(POLLOUT);
 		std::cout << "Connection is ready for formatting response, changing socket mode to POLLOUT" << std::endl;
-		std::cout << "		*raw request*	\n" << _rawMessage << std::endl; 
-	}
-	else if (_status == WAITING_FOR_DATA)
-	{
-		std::cout << "Connection is waiting for data, no changes" << std::endl;
-	}
-	else if ( _status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_REQUEST_RECEIVED)
-	{
-		changeSocketMode(POLLOUT);
-		//TODO : will form BadRequest error responce and send it to client and then close the connection
-		std::cout << "Connection is in error state, changing socket mode to POLLIN" << std::endl;
-	}
-	else if (_status == ERROR_RECEIVING_DATA_CLOSE_CONNECTION)
-	{
-		//TODO : just close the connection, no response to send
-		std::cout << "Connection is in seriouse error state, close it" << std::endl;
+		std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
+		//TODO : form response and send it to client
+		_status = PREPARED_RESPONCE; // Set status to PREPARED_RESPONCE after formatting response
 	}
 	else if (_status == CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE)
 	{
@@ -51,11 +53,30 @@ void	Connection::processConnectionStatus()
 		// TODO : form response and send it to client 
 		// TODO : if request had "Connection : close" header, then close the connection after sending response
 		// TODO : if request had "Connection : keep-alive" header, then keep the connection open for further requests
+		_status = PREPARED_RESPONCE; // Set status to PREPARED_RESPONCE after formatting response
 		std::cout << "Connection is ready for formatting response after client closed sending side, changing socket mode to POLLOUT" << std::endl;
+	}
+	else if ( _status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_REQUEST_RECEIVED)
+	{
+		changeSocketMode(POLLOUT);
+		//TODO : will form BadRequest error responce and send it to client and then close the connection
+		// set Connection status to ERROR_CONNECTION (?)
+		std::cout << "Connection is in error state, changing socket mode to POLLIN" << std::endl;
+	}
+	else if (_status == WAITING_FOR_DATA)
+	{
+		std::cout << "Connection is waiting for data, no changes" << std::endl;
+	}
+	else if (_status == ERROR_RECEIVING_DATA_CLOSE_CONNECTION)
+	{
+		//TODO : just close the connection, no response to send
+		// set Connection status to ERROR_CONNECTION (?)
+		std::cout << "Connection is in seriouse error state, close it" << std::endl;
 	}
 	else
 	{
 		changeSocketMode(POLLIN);
+		// set Connection status to ERROR_CONNECTION (?)
 		std::cout << "Connection is in default state, changing socket mode to POLLIN" << std::endl;
 	}
 }
@@ -67,7 +88,6 @@ void	Connection::receiveMessage()
 	char	buf[1000];
 	RequestStatus rstatus;
 
-	std::cout << "ConnectionSocket::handleInEvent() is called" << std::endl;
 	rstatus = _request->getStatus();
 	while (rstatus != ERROR_REQUEST && rstatus != READY)
 	{
@@ -151,15 +171,17 @@ void	Connection::receiveMessage()
 
 bool	Connection::haveResponse()
 {
-	// std::cout << "	Need to check my response" << std::endl;
-	//TODO : check if we have response to send 
+	std::cout << "	Need to check my response" << std::endl; 
+	//TODO : might check through _reponse->status == READY_RESPONSE and remove PREPARED_RESPONCE from connection statuses
+	if (_status == PREPARED_RESPONCE)
+		return (true);
 	return (false);
 }
 
-bool	Connection::sendToClients()
+bool	Connection::sendToClient()
 {
 	//TODO move this methos to Connection class
-	// std::cout << "	Giving my response to the client" << std::endl;
+	std::cout << "	Giving my response to the client" << std::endl;
 	return (false);
 }
 

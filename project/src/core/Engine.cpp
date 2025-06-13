@@ -16,11 +16,19 @@ struct pollfd Engine::createPollFd(int fd, short events, short revents)
 void	Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
 	(void)fds; // to avoid unused parameter warning
-	if (activeConnections[_allSockets[i]]->haveResponse())
+	ConnectionStatus status = activeConnections[_allSockets[i]]->getStatus();
+	if (status == PREPARED_RESPONCE)
 	{
-		_allConnections[i].sendToClients();
-				// else
-				// 	std::cout <<"nothing happens" << std::endl;
+		std::cout << "Connection has response, sending it to client" << std::endl;
+		activeConnections[_allSockets[i]]->sendToClient();
+		activeConnections[_allSockets[i]]->processConnectionStatusResponce(); //might not need
+	}
+	else if (status == PROCESSING_RESPONSE)
+		std::cout << "Connection is processing response, nothing to send" << std::endl;
+	else
+	{
+		std::cout << "Connection has no response, changing socket mode to POLLIN" << std::endl;
+		activeConnections[_allSockets[i]]->changeSocketMode(POLLIN);
 	}
 }
 
@@ -75,7 +83,10 @@ int Engine::engineRoutine(Config& config)
 		for (size_t i = 0; i < fds.size(); i++)
 		{
 			if (fds[i].revents & POLLIN)
+			{
 				pollinSocketsHandle(fds, i, activeConnections);
+				// break;
+			}
 			else if (fds[i].revents & POLLOUT)
 				polloutSocketsHandle(fds, i, activeConnections);
 		}

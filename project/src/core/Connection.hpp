@@ -12,19 +12,22 @@ class ConnectionSocket;
 
 enum ConnectionStatus
 {
-	IDLE,
-	RECEIVING_REQUEST,
+	IDLE, 						//0
+	RECEIVING_REQUEST,			//1
+	PROCESSING_RESPONSE,		//2
 	// HAS_REQUEST,
 	// WAITING_FOR_RESPONSE,
 	// HAS_RESPONSE,
-	READY_FOR_FORMATTING_RESPONSE,				 //used in handleInEvent
-	ERROR_REQUEST_RECEIVED,								 //used in handleInEvent
-	WAITING_FOR_DATA,							 //used in handleInEvent
-	CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE,	 //used in handleInEvent
-	CLIENT_CLOSED_ERROR_RECEIVING_DATA, 		 //used in handleInEvent
-	ERROR_RECEIVING_DATA_CLOSE_CONNECTION,		 //used in handleInEvent
+	READY_FOR_FORMATTING_RESPONSE,	//3			 	 //used in handleInEvent
+	ERROR_REQUEST_RECEIVED,			//4			 	 //used in handleInEvent
+	WAITING_FOR_DATA,				//5			 	 //used in handleInEvent
+	CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE, //6	 //used in handleInEvent
+	CLIENT_CLOSED_ERROR_RECEIVING_DATA, 		//7	 //used in handleInEvent
+	ERROR_RECEIVING_DATA_CLOSE_CONNECTION,		//8	 //used in handleInEvent
 	// CLOSED,
-	ERROR_CONNECTION,
+	PREPARED_RESPONCE,				//9 		 //used in handleOutEvent
+	SENT_TO_CLIENT,					//10		 //used in handleOutEvent
+	ERROR_CONNECTION,				//11
 };
 
 class Connection
@@ -47,8 +50,9 @@ public:
 	/*Member functions*/
 	void			receiveMessage();
 	void			processConnectionStatus();
+	void			processConnectionStatusResponce();
 	bool			haveResponse();
-	bool			sendToClients();
+	bool			sendToClient();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
 	void			changeSocketMode(short mode);
 	// bool	disconnectSocket();
