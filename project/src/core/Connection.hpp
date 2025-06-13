@@ -17,7 +17,12 @@ enum ConnectionStatus
 	// HAS_REQUEST,
 	// WAITING_FOR_RESPONSE,
 	// HAS_RESPONSE,
-	CLIENT_CLOSED,
+	READY_FOR_FORMATTING_RESPONSE,				 //used in handleInEvent
+	ERROR_REQUEST_RECEIVED,								 //used in handleInEvent
+	WAITING_FOR_DATA,							 //used in handleInEvent
+	CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE,	 //used in handleInEvent
+	CLIENT_CLOSED_ERROR_RECEIVING_DATA, 		 //used in handleInEvent
+	ERROR_RECEIVING_DATA_CLOSE_CONNECTION,		 //used in handleInEvent
 	// CLOSED,
 	ERROR_CONNECTION,
 };
@@ -28,7 +33,7 @@ private:
 	/*Private members*/
 	std::string					_rawMessage;
 	std::string					_buffer;
-	std::string					_status;
+	ConnectionStatus			_status;
 	time_t						_timeLastUsed;
 
 	ListeningSocket*			_serverListeningSocket;
@@ -41,9 +46,11 @@ private:
 public:
 	/*Member functions*/
 	void			handleInEvent();
+	void			updateConnection();
 	bool			haveResponse();
 	bool			sendToClients();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
+	void			changeSocketMode(short mode);
 	// bool	disconnectSocket();
 
 	/*Getters and Setters*/
@@ -53,7 +60,7 @@ public:
 	/*Getters for private members*/
 	std::string					getRawMessage() const;
 	std::string					getBuffer() const;
-	std::string					getStatus() const;
+	ConnectionStatus			getStatus() const;
 	time_t						getTimeLastUsed() const;
 	ListeningSocket*			getServerListeningSocket() const;
 	ConnectionSocket*			getClientConnectionSocket() const;

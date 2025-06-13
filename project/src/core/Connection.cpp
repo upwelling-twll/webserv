@@ -11,6 +11,54 @@ bool locateSymbol(const std::string& string, char symbol)
 		return false;
 }
 
+void	Connection::changeSocketMode(short mode)
+{
+	_pollFd.events = mode;
+	if (poll(&_pollFd, 1, 0) == -1)
+	{
+		std::cerr << "Error changing socket mode: " << strerror(errno) << std::endl;
+		return ;
+	}
+	std::cout << "Socket mode changed successfully "<< std::endl;
+}
+
+void	Connection::updateConnection()
+{
+	if (_status == READY_FOR_FORMATTING_RESPONSE)
+	{
+		changeSocketMode(POLLOUT);
+		std::cout << "Connection is ready for formatting response, changing socket mode to POLLOUT" << std::endl;
+	}
+	else if (_status == WAITING_FOR_DATA)
+	{
+		std::cout << "Connection is waiting for data, no changes" << std::endl;
+	}
+	else if ( _status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_REQUEST_RECEIVED)
+	{
+		changeSocketMode(POLLOUT);
+		//TODO : will form BadRequest error responce and send it to client and then close the connection
+		std::cout << "Connection is in error state, changing socket mode to POLLIN" << std::endl;
+	}
+	else if (_status == ERROR_RECEIVING_DATA_CLOSE_CONNECTION)
+	{
+		//TODO : just close the connection, no response to send
+		std::cout << "Connection is in seriouse error state, close it" << std::endl;
+	}
+	else if (_status == CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE)
+	{
+		changeSocketMode(POLLOUT);
+		// TODO : form response and send it to client 
+		// TODO : if request had "Connection : close" header, then close the connection after sending response
+		// TODO : if request had "Connection : keep-alive" header, then keep the connection open for further requests
+		std::cout << "Connection is ready for formatting response after client closed sending side, changing socket mode to POLLOUT" << std::endl;
+	}
+	else
+	{
+		changeSocketMode(POLLIN);
+		std::cout << "Connection is in default state, changing socket mode to POLLIN" << std::endl;
+	}
+}
+
 void	Connection::handleInEvent()
 {
 	// std::cout << "	Handling my input event" << std::endl;
@@ -34,13 +82,13 @@ void	Connection::handleInEvent()
 				rstatus = _request->insert(_rawMessage);
 				if (rstatus == READY)
 				{
-					_status = "readyForFormattingResponse";
-					std::cout << "Request is ready for formatting response" << std::endl;
+					_status = READY_FOR_FORMATTING_RESPONSE;
+					std::cout << "Request is ready to form response" << std::endl;
 					return ;
 				}
 				else if (rstatus == ERROR_REQUEST)
 				{
-					_status = "errorrRequest";
+					_status = ERROR_REQUEST_RECEIVED;
 					std::cout << "Error in request parsing" << std::endl;
 					break ;
 				}
@@ -48,8 +96,9 @@ void	Connection::handleInEvent()
 						rstatus == WAITING_HEADER || 
 						rstatus == WAITING_BODY)
 				{
-					_status = "waitingForData";
+					_status = WAITING_FOR_DATA;
 					std::cout << "Request is not ready yet, waiting for more data" << std::endl;
+					continue ;
 				}
 			}
 			else
@@ -60,20 +109,37 @@ void	Connection::handleInEvent()
 		}
 		if (i == 0)
 		{
-			std::cout << "Client has closed the connection" << std::endl;
-			_status = "clientClosed";
+			std::cout << "Client has closed the sending side" << std::endl;
+			if (_request->getStatus() == READY)
+			{
+				_status = CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE;
+				std::cout << "Request is ready to form response, client closed the sending side" << std::endl;
+			}
+			else
+			{
+				_status = CLIENT_CLOSED_ERROR_RECEIVING_DATA;
+				std::cout << "Error receiving data from client, client closed the sending side" << std::endl;
+			}
 			return ;
 		}
 		else if (i == EAGAIN || i == EWOULDBLOCK)
 		{
+			_status = WAITING_FOR_DATA;
 			std::cout << "No more data to read, waiting for more data chunks" << std::endl;
-			_status = "waitingForData";
 			return ;
+		}
+		else if (i == EINTR)
+		{
+			// Interrupted by a signal, continue receiving data
+			std::cout << "Receiving data interrupted by a signal, continuing to receive data" << std::endl;
+			continue ;
 		}
 		else
 		{
+			_status = ERROR_RECEIVING_DATA_CLOSE_CONNECTION;
+			//TODO : might need to set request status to ERROR_REQUEST,
+			// but must not send the responce, just !! close connection !!
 			std::cerr << "Error receiving data from client: " << strerror(errno) << std::endl;
-			_status = "errorReceivingData";
 			return ;
 		}
 	}
@@ -127,7 +193,7 @@ std::string Connection::getBuffer() const
 {
 	return _buffer;
 }
-std::string Connection::getStatus() const
+ConnectionStatus	Connection::getStatus() const
 {
 	return _status;
 }
@@ -148,7 +214,7 @@ ConnectionSocket* Connection::getClientConnectionSocket() const
 /*Constructors*/
 Connection::Connection(ListeningSocket* serverListeningSocket) :
 															   _buffer(""), 
-															   _status("establisted"),
+															   _status(IDLE),
 															   _serverListeningSocket(serverListeningSocket),
 															   _active(true)
 {
