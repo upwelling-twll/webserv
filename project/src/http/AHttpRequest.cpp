@@ -1,65 +1,150 @@
-#include "AHttpRequest.hpp"
+#include "./AHttpRequest.hpp"
+#include <sstream>
 
-/*Member functions*/
-RequestStatus AHttpRequest::insert(std::string rawMessage)
+std::string AHttpRequest::trimSides(const std::string &s)
 {
-	(void)rawMessage; // Suppress unused variable warning
-	status = READY;
-	return (status);
-    // Method implementation
+	std::size_t first = 0;
+	while (first < s.size() && (s[first] == ' ' || s[first] == '\t'))
+		++first;
+	std::size_t last = s.size();
+	while (last > first && (s[last - 1] == ' ' || s[last - 1] == '\t'))
+		--last;
+	return s.substr(first, last - first);
 }
 
-/*Getters and Setters*/
-std::string AHttpRequest::getMethod() const
+void AHttpRequest::removeTrailingCRLF(std::string &s)
 {
-	return method;
-}
-std::string AHttpRequest::getUrl() const
-{
-	return url;
-}
-std::string AHttpRequest::getVersion() const
-{
-	return version;
+	while (!s.empty() && (s[s.size() - 1] == '\r' || s[s.size() - 1] == '\n'))
+		s.erase(s.size() - 1);
 }
 
-RequestStatus AHttpRequest::getStatus() const
-{
-	return status;
-}
+const char *const AHttpRequest::stdHeaders[] = {
+	"Host", "User-Agent", "Accept", "Accept-Language",
+	"Accept-Encoding", "Connection", "Content-Type",
+	"Content-Length", "Cookie", "Referer",
+	"Cache-Control", "Upgrade-Insecure-Requests"};
 
-/*Constructors*/
+const std::size_t AHttpRequest::stdHeadersCount =
+	sizeof(AHttpRequest::stdHeaders) / sizeof(AHttpRequest::stdHeaders[0]);
 
-AHttpRequest::AHttpRequest()
+AHttpRequest::AHttpRequest(std::string req)
 {
-	method = "";
-	url = "";
-	version = "";
-	status = WAITING_START_LINE;
-    std::cout << "AHttpRequest default constructor is called" << std::endl;
-}
+	for (std::size_t i = 0; i < stdHeadersCount; ++i)
+		headers[stdHeaders[i]] = "";
 
-/*Destructors*/
-AHttpRequest::~AHttpRequest( void )
-{
-    std::cout << "AHttpRequest destructor is called" << std::endl;
-}
+	std::istringstream ss(req);
+	std::string line;
 
-/*Overload operators*/
-AHttpRequest& AHttpRequest::operator=(const AHttpRequest& src)
-{
-	std::cout << "AHttpRequest copy assignment is called" << std::endl;
-	if (this != &src)
+	if (std::getline(ss, line))
 	{
-		// Assinment variables
+		removeTrailingCRLF(line);
+		std::istringstream rl(line);
+		std::string method, uri, version;
+		rl >> method >> uri >> version;
+		vars["method"] = method;
+		vars["uri"] = uri;
+		vars["version"] = version;
 	}
-	return (*this);
+
+	while (std::getline(ss, line))
+	{
+		removeTrailingCRLF(line);
+		if (line.empty())
+			break;
+		std::size_t pos = line.find(':');
+		if (pos == std::string::npos)
+			continue;
+		std::string key = trimSides(line.substr(0, pos));
+		std::string val = trimSides(line.substr(pos + 1));
+		headers[key] = val;
+	}
+
+	std::string bodyBuf;
+	while (std::getline(ss, line))
+	{
+		removeTrailingCRLF(line);
+		bodyBuf += line;
+		if (!ss.eof())
+			bodyBuf += '\n';
+	}
+	vars["body"] = bodyBuf;
 }
 
-std::ostream& operator<<(std::ostream& output_stream, AHttpRequest& src)
+std::string AHttpRequest::get(VarKey key)
 {
-	(void)src; // Suppress unused variable warning
-	output_stream << "* AHttpRequest Class info*" << std::endl;
-	return output_stream;
+	switch (key)
+	{
+	case METHOD:
+		return vars["method"];
+	case URI:
+		return vars["uri"];
+	case VERSION:
+		return vars["version"];
+	case BODY:
+		return vars["body"];
+	default:
+		return "";
+	}
 }
 
+std::string AHttpRequest::get(HeaderKey key)
+{
+	static const char *const hdrNames[] = {
+		"Host", "User-Agent", "Accept", "Accept-Language",
+		"Accept-Encoding", "Connection", "Content-Type",
+		"Content-Length", "Cookie", "Referer",
+		"Cache-Control", "Upgrade-Insecure-Requests"};
+
+	const std::size_t idx = static_cast<std::size_t>(key);
+	if (idx >= sizeof(hdrNames) / sizeof(hdrNames[0]))
+		return "";
+
+	std::map<std::string, std::string>::const_iterator it =
+		headers.find(hdrNames[idx]);
+	return it != headers.end() ? it->second : "";
+}
+
+void AHttpRequest::setHeader(std::string key, std::string value)
+{
+	headers[key] = value;
+}
+
+void AHttpRequest::print() const
+{
+	std::cout << "==== Parsed HTTP request ====\n";
+	std::cout << vars.find("method")->second << ' '
+			  << vars.find("uri")->second << ' '
+			  << vars.find("version")->second << '\n';
+	for (std::map<std::string, std::string>::const_iterator it = headers.begin();
+		 it != headers.end(); ++it)
+		std::cout << it->first << ": "
+				  << (it->second.empty() ? "<empty>" : it->second) << '\n';
+	if (!vars.find("body")->second.empty())
+		std::cout << "\n"
+				  << vars.find("body")->second << '\n';
+	std::cout << "=============================\n";
+}
+
+RequestStatus AHttpRequest::insert(std::string buffer)
+{
+	while (buffer.find('\n') != std::string::npos)
+	{
+		switch (STATUS)
+		{
+		case WAITING_START_LINE:
+			checkVars();
+			break;
+		case WAITING_HEADER:
+			checkHeaders();
+			break;
+		case WAITING_BODY:
+			checkBody();
+			break;
+		case ERROR_REQUEST:
+			return STATUS;
+		}
+	}
+
+	return STATUS;
+}
+AHttpRequest::~AHttpRequest() {}
