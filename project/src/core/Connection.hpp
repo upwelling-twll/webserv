@@ -25,9 +25,10 @@ enum ConnectionStatus
 	CLIENT_CLOSED_ERROR_RECEIVING_DATA, 		//7	 //used in handleInEvent
 	ERROR_RECEIVING_DATA_CLOSE_CONNECTION,		//8	 //used in handleInEvent
 	// CLOSED,
-	PREPARED_RESPONCE,				//9 		 //used in handleOutEvent
-	SENT_TO_CLIENT,					//10		 //used in handleOutEvent
+	PREPARED_RESPONCE,				//9 			 //used in handleOutEvent
+	SENT_TO_CLIENT,					//10			 //used in handleOutEvent
 	ERROR_CONNECTION,				//11
+	CLIENT_CLOSED_ERROR_SENDING_DATA,	//12
 };
 
 class Connection
@@ -49,12 +50,12 @@ private:
 public:
 	/*Member functions*/
 	void			receiveMessage();
-	void			processConnectionStatus();
-	void			processConnectionStatusResponce();
+	void			processConnectionStatus(pollfd& pollFd);
+	void			processConnectionStatusResponce(pollfd& pollFd);
 	bool			haveResponse();
 	bool			sendToClient();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
-	void			changeSocketMode(short mode);
+	void			changeSocketMode(short mode, pollfd& pollFd);
 	// bool	disconnectSocket();
 
 	/*Getters and Setters*/
