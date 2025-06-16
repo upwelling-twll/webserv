@@ -87,7 +87,7 @@ int Engine::engineRoutine(Config& config)
 				// break;
 				std::cout << "completed pollin socket handle" << std::endl;
 			}
-			if ((_fds[i].revents & POLLOUT) && activeConnections[_allSockets[i]]->getStatus() == PREPARED_RESPONCE)
+			else if ((_fds[i].revents & POLLOUT) && activeConnections[_allSockets[i]]->getStatus() == PREPARED_RESPONCE)
 			{
 				std::cout << "WILL POLLOUT event on socket fd=" << _fds[i].fd << std::endl;
 				polloutSocketsHandle(i, activeConnections);
