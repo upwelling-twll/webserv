@@ -5,6 +5,8 @@
 #include "../../inc/webserv.hpp"
 #include <string>
 #include <map>
+#include <regex>
+#include <sstream>
 
 enum RequestStatus
 {
@@ -38,6 +40,7 @@ enum HeaderKey
 	CACHE_CONTROL,
 	UPGRADE_INSECURE_REQUESTS
 };
+
 class AHttpRequest
 {
 private:
@@ -48,6 +51,10 @@ private:
 	static const char *const stdHeaders[];
 	static const std::size_t stdHeadersCount;
 
+	std::string buf;
+	std::string raw;
+	std::size_t contentLength;
+
 	void checkVars();
 	void checkHeaders();
 	void checkBody();
@@ -56,6 +63,7 @@ private:
 	static void removeTrailingCRLF(std::string &s);
 
 public:
+	AHttpRequest();
 	explicit AHttpRequest(std::string req);
 
 	void setHeader(std::string key, std::string value);

@@ -1,5 +1,4 @@
 #include "./AHttpRequest.hpp"
-#include <sstream>
 
 std::string AHttpRequest::trimSides(const std::string &s)
 {
@@ -27,47 +26,11 @@ const char *const AHttpRequest::stdHeaders[] = {
 const std::size_t AHttpRequest::stdHeadersCount =
 	sizeof(AHttpRequest::stdHeaders) / sizeof(AHttpRequest::stdHeaders[0]);
 
-AHttpRequest::AHttpRequest(std::string req)
+AHttpRequest::AHttpRequest() : STATUS(WAITING_START_LINE), contentLength(0) {}
+
+AHttpRequest::AHttpRequest(std::string req) : STATUS(WAITING_START_LINE), contentLength(0)
 {
-	for (std::size_t i = 0; i < stdHeadersCount; ++i)
-		headers[stdHeaders[i]] = "";
-
-	std::istringstream ss(req);
-	std::string line;
-
-	if (std::getline(ss, line))
-	{
-		removeTrailingCRLF(line);
-		std::istringstream rl(line);
-		std::string method, uri, version;
-		rl >> method >> uri >> version;
-		vars["method"] = method;
-		vars["uri"] = uri;
-		vars["version"] = version;
-	}
-
-	while (std::getline(ss, line))
-	{
-		removeTrailingCRLF(line);
-		if (line.empty())
-			break;
-		std::size_t pos = line.find(':');
-		if (pos == std::string::npos)
-			continue;
-		std::string key = trimSides(line.substr(0, pos));
-		std::string val = trimSides(line.substr(pos + 1));
-		headers[key] = val;
-	}
-
-	std::string bodyBuf;
-	while (std::getline(ss, line))
-	{
-		removeTrailingCRLF(line);
-		bodyBuf += line;
-		if (!ss.eof())
-			bodyBuf += '\n';
-	}
-	vars["body"] = bodyBuf;
+	insert(req);
 }
 
 std::string AHttpRequest::get(VarKey key)
@@ -125,26 +88,34 @@ void AHttpRequest::print() const
 	std::cout << "=============================\n";
 }
 
-RequestStatus AHttpRequest::insert(std::string buffer)
+RequestStatus AHttpRequest::insert(std::string chunk)
 {
-	while (buffer.find('\n') != std::string::npos)
+	raw += chunk;
+	buf += chunk;
+
+	while (true)
 	{
 		switch (STATUS)
 		{
 		case WAITING_START_LINE:
+			if (buf.find('\n') == std::string::npos)
+				return STATUS;
 			checkVars();
 			break;
 		case WAITING_HEADER:
+			if (buf.find('\n') == std::string::npos)
+				return STATUS;
 			checkHeaders();
 			break;
 		case WAITING_BODY:
 			checkBody();
 			break;
-		case ERROR_REQUEST:
+		default:
 			return STATUS;
 		}
+		if (STATUS == READY || STATUS == ERROR_REQUEST)
+			return STATUS;
 	}
-
-	return STATUS;
 }
+
 AHttpRequest::~AHttpRequest() {}
