@@ -25,7 +25,7 @@ enum ConnectionStatus
 	CLIENT_CLOSED_ERROR_RECEIVING_DATA, 		//7	 //used in handleInEvent
 	ERROR_RECEIVING_DATA_CLOSE_CONNECTION,		//8	 //used in handleInEvent
 	// CLOSED,
-	PREPARED_RESPONCE,				//9 			 //used in handleOutEvent
+	PREPARED_RESPONSE,				//9 			 //used in handleOutEvent
 	SENT_TO_CLIENT,					//10			 //used in handleOutEvent
 	ERROR_CONNECTION,				//11
 	CLIENT_CLOSED_ERROR_SENDING_DATA,	//12

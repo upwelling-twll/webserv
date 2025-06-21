@@ -42,7 +42,7 @@ void	Connection::processConnectionStatus(pollfd& pollFd)
 		std::cout << "Connection is ready for formatting response" << std::endl;
 		std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
 		//TODO : form response and send it to client
-		_status = PREPARED_RESPONCE; // Set status to PREPARED_RESPONCE after formatting response
+		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 	}
 	else if (_status == CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE)
 	{
@@ -50,7 +50,7 @@ void	Connection::processConnectionStatus(pollfd& pollFd)
 		// TODO : form response and send it to client 
 		// TODO : if request had "Connection : close" header, then close the connection after sending response
 		// TODO : if request had "Connection : keep-alive" header, then keep the connection open for further requests
-		_status = PREPARED_RESPONCE; // Set status to PREPARED_RESPONCE after formatting response
+		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 		std::cout << "Connection is ready for formatting response after client closed sending side" << std::endl;
 	}
 	else if ( _status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_REQUEST_RECEIVED)
@@ -169,8 +169,8 @@ void	Connection::receiveMessage()
 bool	Connection::haveResponse()
 {
 	std::cout << "	Need to check my response" << std::endl; 
-	//TODO : might check through _reponse->status == READY_RESPONSE and remove PREPARED_RESPONCE from connection statuses
-	if (_status == PREPARED_RESPONCE)
+	//TODO : might check through _reponse->status == READY_RESPONSE and remove PREPARED_RESPONSE from connection statuses
+	if (_status == PREPARED_RESPONSE)
 		return (true);
 	return (false);
 }

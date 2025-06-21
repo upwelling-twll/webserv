@@ -17,7 +17,7 @@ void	Engine::polloutSocketsHandle(size_t i, std::map<const Socket*, Connection*>
 {
 	(void)_fds; // to avoid unused parameter warning
 	ConnectionStatus status = activeConnections[_allSockets[i]]->getStatus();
-	if (status == PREPARED_RESPONCE)
+	if (status == PREPARED_RESPONSE)
 	{
 		std::cout << "Connection has response, sending it to client" << std::endl;
 		activeConnections[_allSockets[i]]->sendToClient();
@@ -87,7 +87,7 @@ int Engine::engineRoutine(Config& config)
 				// break;
 				std::cout << "completed pollin socket handle" << std::endl;
 			}
-			else if ((_fds[i].revents & POLLOUT) && activeConnections[_allSockets[i]]->getStatus() == PREPARED_RESPONCE)
+			else if ((_fds[i].revents & POLLOUT) && activeConnections[_allSockets[i]]->getStatus() == PREPARED_RESPONSE)
 			{
 				std::cout << "WILL POLLOUT event on socket fd=" << _fds[i].fd << std::endl;
 				polloutSocketsHandle(i, activeConnections);
