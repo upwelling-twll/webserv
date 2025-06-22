@@ -65,11 +65,9 @@ int Engine::engineRoutine(Config& config)
 	std::map<const Socket*, Connection*> activeConnections;
 
 	std::cout << "\n	*Engine routine has started*" << std::endl;
-	int s = 0;
 	for (std::vector<Socket*>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
 	{
 		_fds.push_back(createPollFd((*it)->getFd(), POLLIN | POLLOUT, 0));
-		s++;
 	}
 	while(true)
 	{

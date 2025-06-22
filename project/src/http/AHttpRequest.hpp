@@ -71,6 +71,9 @@ public:
 	std::string get(VarKey key);
 
 	RequestStatus insert(std::string buffer);
+	RequestStatus getStatus(){
+		return this->STATUS;
+	}
 
 	void print() const;
 	~AHttpRequest();
