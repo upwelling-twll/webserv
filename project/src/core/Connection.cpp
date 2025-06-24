@@ -218,7 +218,7 @@ struct pollfd Connection::createConnectionSocket(ListeningSocket* serverListenin
 	struct pollfd	newPollFd;
 	
 	newPollFd.fd = _fd;
-	newPollFd.events = POLLIN;
+	newPollFd.events = POLLIN | POLLOUT;
 	newPollFd.revents = 0;
 	return (newPollFd);
 }
