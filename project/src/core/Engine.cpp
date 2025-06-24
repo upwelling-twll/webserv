@@ -58,6 +58,19 @@ void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>&
 	}
 }
 
+void print_pfds(const std::vector<struct pollfd>& pfds)
+{
+	std::cout << "Current pollfds:" << std::endl;
+	for (size_t i = 0; i < pfds.size(); i++)
+	{
+		std::cout << "fd: " << pfds[i].fd
+				  << ", events: " << pfds[i].events
+				  << ", revents: " << pfds[i].revents << std::endl;
+	}
+	std::cout << "Total pollfds: " << pfds.size() << std::endl;
+	std::cout << "------------------------" << std::endl;
+}
+
 int Engine::engineRoutine(Config& config)
 {
 	(void)config;
@@ -71,8 +84,12 @@ int Engine::engineRoutine(Config& config)
 		_fds.push_back(createPollFd((*it)->getFd(), POLLIN | POLLOUT, 0));
 		s++;
 	}
+	int dbg = 0;
 	while(true)
 	{
+		dbg++;
+		if (dbg % 10000000 == 0)
+			print_pfds(_fds);
 		int n = poll(_fds.data(), _fds.size(), 0); //timeout=0, then poll() will return without blocking.
 		if (n < 0)
 		{
