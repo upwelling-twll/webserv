@@ -9,7 +9,11 @@ int main(int argc, char** argv)
 	const char* file = argv[1];
 
 	try {
-		Parser parser(file);
+		std::vector<Server> server_vector;
+		Parser parser(file, server_vector);
+		for(int i = 0; i < (int)server_vector.size(); i++){
+			server_vector[i].print();
+		}
 	}
 	catch (const std::exception& e) {
 		std::cerr << "Error: " << e.what() << '\n';

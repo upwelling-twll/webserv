@@ -9,7 +9,7 @@ SRC       := $(shell find . -type f -name '*.cpp')
 OBJ       := $(SRC:.cpp=.o)
 
 # ──────────────────────────────── Цели по умолчанию ───────────────────────── #
-.PHONY: all clean fclean re run
+.PHONY: all clean fclean re run build_and_clean
 
 all: $(NAME)
 
@@ -28,6 +28,14 @@ fclean: clean
 
 re: fclean all
 
+# ─────────────────────────────── Сборка и удаление .o ──────────────────────── #
+build_and_clean: $(NAME)
+	@$(MAKE) clean
+
 # ─────────────────────────────── Запуск ────────────────────────────────────── #
-run: $(NAME)
+run:
+	@if [ -f $(NAME) ]; then \
+		$(MAKE) fclean; \
+	fi
+	$(MAKE) build_and_clean
 	./$(NAME) example.conf

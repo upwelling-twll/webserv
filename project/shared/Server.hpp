@@ -1,46 +1,42 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <iostream>
 #include <vector>
-#include <fstream>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 class Location
 {
-private:
-	std::string path_prefix;
-	std::string root_sd;
-	std::string index_sd;
-	std::string autoindex;
-	std::string limit_except;
-	std::string returns;
-	std::string cgi_pass;
-	std::string upload_store;
-	std::string client_max_body_size_sd;
-	std::string error_page_sd;
+	static const std::size_t K = 10;
+	static const char *properties[K];
+	std::vector<std::string> values[K];
 
 public:
 	Location();
-	~Location();
+	bool hasProperty(const std::string &key) const;
+	std::string get(const std::string &key) const;
+	void set(const std::string &key, const std::string &val);
+	std::string getProperties() const;
+	void print(int indent = 1) const;
 };
+
 class Server
 {
-private:
-	std::string listen;
-	std::string server_name;
-	std::string root;
-	std::string index;
-	std::string client_max_blody_size;
-	std::string error_page;
-
+	static const std::size_t K = 6;
+	static const char *properties[K];
+	std::vector<std::string> values[K];
 	std::vector<Location> locations;
 
 public:
 	Server();
-	~Server(void);
+	bool hasProperty(const std::string &key) const;
+	std::string get(const std::string &key) const;
+	void set(const std::string &key, const std::string &val);
+	void addLocation(const Location &loc);
+	const std::vector<Location> &getLocations() const;
+	std::string getProperties() const;
+	void print() const;
 };
-
-std::ostream &operator<<(std::ostream &output_stream, Server &src);
 
 #endif
