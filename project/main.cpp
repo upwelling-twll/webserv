@@ -33,8 +33,26 @@ Config initMockConfig()
     return (mockConf);
 }
 
-int main()
+int main(int argc, char** argv)
 {
+	if (argc != 2)
+		return 1;
+	const char* file = argv[1];
+
+	try
+	{
+		std::vector<ServerParse> server_vector;
+		Parser parser(file, server_vector);
+		// HandleError::errorHandler(server_vector);
+		for(int i = 0; i < (int)server_vector.size(); i++){
+			server_vector[i].print();
+		}
+	}
+	catch (const std::exception& e) {
+	std::cerr << "Error: " << e.what() << '\n';
+	return 1;
+	}
+
     Config newConf = initMockConfig();
 
 	std::cout << "Data for Mock config is created" << std::endl;
@@ -46,7 +64,7 @@ int main()
 	{
 		std::cout << "Server start impossible" << std::endl;
 	}
-	
+	//TODO : for each IP:PORT check that the is running deamon of this server 
 	Engine	engine(newConf.getAllSockets());
 
 	if (!engine.engineRoutine(newConf))
