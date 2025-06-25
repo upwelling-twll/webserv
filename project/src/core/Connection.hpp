@@ -13,27 +13,23 @@ class ConnectionSocket;
 
 enum ConnectionStatus
 {
-	IDLE,
-	RECEIVING_REQUEST,
+	IDLE, 						//0
+	RECEIVING_REQUEST,			//1
+	PROCESSING_RESPONSE,		//2
 	// HAS_REQUEST,
 	// WAITING_FOR_RESPONSE,
 	// HAS_RESPONSE,
-	CLIENT_CLOSED,
+	READY_FOR_FORMATTING_RESPONSE,	//3			 	 //used in handleInEvent
+	ERROR_REQUEST_RECEIVED,			//4			 	 //used in handleInEvent
+	WAITING_FOR_DATA,				//5			 	 //used in handleInEvent
+	CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE, //6	 //used in handleInEvent
+	CLIENT_CLOSED_ERROR_RECEIVING_DATA, 		//7	 //used in handleInEvent
+	ERROR_RECEIVING_DATA_CLOSE_CONNECTION,		//8	 //used in handleInEvent
 	// CLOSED,
-	ERROR,
-};
-
-enum RequestReceivingStage
-{
-	START,
-	NO_METHOD,
-	HTTP_GET_METHOD,
-	OTHER_METHOD,
-	PARSE_CONTENT_LENGTH_VALUE,
-	RECEIVING_BODY,
-	MORE_CHUNKS,
-	END,
-	ERROR,
+	PREPARED_RESPONCE,				//9 			 //used in handleOutEvent
+	SENT_TO_CLIENT,					//10			 //used in handleOutEvent
+	ERROR_CONNECTION,				//11
+	CLIENT_CLOSED_ERROR_SENDING_DATA,	//12
 };
 
 class Connection
@@ -41,8 +37,8 @@ class Connection
 private:
 	/*Private members*/
 	std::string					_rawMessage;
-	std::vector<char>			_buffer;
-	enum ConnectionStatus		_cstatus;
+	std::string					_buffer;
+	ConnectionStatus			_status;
 	time_t						_timeLastUsed;
 	struct pollfd				_pollFd;
 
@@ -57,11 +53,13 @@ private:
 
 public:
 	/*Member functions*/
-	void			receiveRequest();
-	void			handleInEvent();
-	bool			haveResponse(struct pollfd fd);
-	bool			sendToClients();
+	void			receiveMessage();
+	void			processConnectionStatus(pollfd& pollFd);
+	void			processConnectionStatusResponce(pollfd& pollFd);
+	bool			haveResponse();
+	bool			sendToClient();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
+	void			changeSocketMode(short mode, pollfd& pollFd);
 	// bool	disconnectSocket();
 
 	/*Getters and Setters*/
@@ -69,13 +67,12 @@ public:
 	struct pollfd	getPollFd() const;
 
 	/*Getters for private members*/
-	std::string					getRawMessage() const { return _rawMessage; }
-	std::string					getBuffer() const { return  _buffer.data(); }
-	ConnectionStatus			getStatus() const { return _cstatus; }
-	std::string					getStatusAsString() const;
-	time_t						getTimeLastUsed() const { return _timeLastUsed; }
-	ListeningSocket*			getServerListeningSocket() const { return _serverListeningSocket; }
-	ConnectionSocket*			getClientConnectionSocket() const { return _clientConnectionSocket; }
+	std::string					getRawMessage() const;
+	std::string					getBuffer() const;
+	ConnectionStatus			getStatus() const;
+	time_t						getTimeLastUsed() const;
+	ListeningSocket*			getServerListeningSocket() const;
+	ConnectionSocket*			getClientConnectionSocket() const;
 
 	/*Constructors*/
     Connection(ListeningSocket* serverListeningSocket);

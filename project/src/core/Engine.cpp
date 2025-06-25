@@ -13,20 +13,28 @@ struct pollfd Engine::createPollFd(int fd, short events, short revents)
 	return (newPollFd);
 }
 
-void	Engine::polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
+void	Engine::polloutSocketsHandle(size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
-	(void)activeConnections; // Suppress unused variable warning
-	if (_allConnections[i].haveResponse(fds[i]))
+	(void)_fds; // to avoid unused parameter warning
+	ConnectionStatus status = activeConnections[_allSockets[i]]->getStatus();
+	if (status == PREPARED_RESPONCE)
 	{
-		_allConnections[i].sendToClients();
-				// else
-				// 	std::cout <<"nothing happens" << std::endl;
+		std::cout << "Connection has response, sending it to client" << std::endl;
+		activeConnections[_allSockets[i]]->sendToClient();
+		activeConnections[_allSockets[i]]->processConnectionStatusResponce(_fds[i]); //might not need
+	}
+	else if (status == PROCESSING_RESPONSE)
+		std::cout << "Connection is processing response, nothing to send" << std::endl;
+	else
+	{
+		std::cout << "Connection has no response" << std::endl;
+		// activeConnections[_allSockets[i]]->changeSocketMode(POLLIN, _fds[i]);
 	}
 }
 
-void Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std::map<const Socket*, Connection*>& activeConnections)
+void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
-	std::cout << "Have event on socket(fd=" << fds[i].fd << ")" << std::endl;
+	std::cout << "Have event on socket(fd=" << _fds[i].fd << ")" << std::endl;
 	std::cout << "Socket info: " << *_allSockets[i] << std::endl;
 	std::cout << activeConnections[_allSockets[i]] << std::endl;
 	if (_allSockets[i]->isListening())
@@ -39,13 +47,14 @@ void Engine::pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i, std:
 		//add  new connection to activeConnections map to use its methods for recv and send
 		activeConnections.insert(std::make_pair(_allSockets.back(), newConnection));
 		//add new connection`s fd to _allConnections vector for poll()
-		fds.push_back(newConnection->getPollFd());
+		_fds.push_back(newConnection->getPollFd());
 		std::cout << "New connection created and added to active connections." << std::endl;
 	}
 	else
 	{
 		std::cout <<"receiveFromClient" << std::endl;
-		activeConnections[_allSockets[i]]->handleInEvent();
+		activeConnections[_allSockets[i]]->receiveMessage();
+		activeConnections[_allSockets[i]]->processConnectionStatus(_fds[i]);
 	}
 }
 
@@ -54,29 +63,42 @@ int Engine::engineRoutine(Config& config)
 	(void)config;
 
 	std::map<const Socket*, Connection*> activeConnections;
-	std::vector<struct pollfd> fds;
 
 	std::cout << "\n	*Engine routine has started*" << std::endl;
-	int s = 0;
 	for (std::vector<Socket*>::iterator it = _allSockets.begin(); it != _allSockets.end(); ++it)
 	{
-		fds.push_back(createPollFd((*it)->getFd(), POLLIN, 0));
-		s++;
+		_fds.push_back(createPollFd((*it)->getFd(), POLLIN | POLLOUT, 0));
 	}
 	while(true)
 	{
-		int n = poll(fds.data(), fds.size(), 0); //timeout=0, then poll() will return without blocking.
+		int n = poll(_fds.data(), _fds.size(), 0); //timeout=0, then poll() will return without blocking.
 		if (n < 0)
 		{
 			perror("poll");
 			continue;
 		}
-		for (size_t i = 0; i < fds.size(); i++)
+		for (size_t i = 0; i < _fds.size(); i++)
 		{
-			if (fds[i].revents & POLLIN)
-				pollinSocketsHandle(fds, i, activeConnections);
-			else if (fds[i].revents & POLLOUT)
-				polloutSocketsHandle(fds, i, activeConnections);
+			if (_fds[i].revents & POLLIN)
+			{
+				pollinSocketsHandle(i, activeConnections);
+				// break;
+				std::cout << "completed pollin socket handle" << std::endl;
+			}
+			else if ((_fds[i].revents & POLLOUT) && activeConnections[_allSockets[i]]->getStatus() == PREPARED_RESPONCE)
+			{
+				std::cout << "WILL POLLOUT event on socket fd=" << _fds[i].fd << std::endl;
+				polloutSocketsHandle(i, activeConnections);
+				break;
+			}
+			// int p = 0;
+			// for (size_t j = 0; j < _fds.size(); j++)
+			// 	{
+			// 		if (_fds[j].events & POLLOUT)
+			// 			p++;
+			// 	}
+			// if (p > 0)
+			// 	break;
 		}
 	}
 	return (1);

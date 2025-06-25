@@ -12,15 +12,16 @@ class Connection;
 class Engine
 {
 private:
-    std::vector<Socket*> 	_allSockets;
-	std::vector<Connection> _allConnections;
+    std::vector<Socket*> 		_allSockets;
+	std::vector<Connection>		_allConnections;
+	std::vector<struct pollfd>	_fds;
 
 public:
 	/*Member functions*/
     int 			engineRoutine(Config& config);
-	void			polloutSocketsHandle(std::vector<struct pollfd>& fds, size_t i,
+	void			polloutSocketsHandle(size_t i,
 											std::map<const Socket*, Connection*>& activeConnections);
-	void			pollinSocketsHandle(std::vector<struct pollfd>& fds, size_t i,
+	void			pollinSocketsHandle(size_t i,
 											std::map<const Socket*, Connection*>& activeConnections);
 
 	struct pollfd	createPollFd(int fd, short events, short revents);

@@ -1,46 +1,82 @@
 #ifndef AHTTPREQUEST_HPP
-# define AHTTPREQUEST_HPP
+#define AHTTPREQUEST_HPP
 
-# include <iostream>
-# include "../../inc/webserv.hpp"
+#include <iostream>
+#include "../../inc/webserv.hpp"
+#include <string>
+#include <map>
+#include <regex>
+#include <sstream>
+
+enum RequestStatus
+{
+	WAITING_START_LINE,
+	WAITING_HEADER,
+	WAITING_BODY,
+	READY,
+	ERROR_REQUEST,
+};
+
+enum VarKey
+{
+	METHOD = 0,
+	URI,
+	VERSION,
+	BODY
+};
+
+enum HeaderKey
+{
+	HOST = 0,
+	USER_AGENT,
+	ACCEPT,
+	ACCEPT_LANGUAGE,
+	ACCEPT_ENCODING,
+	CONNECTION,
+	CONTENT_TYPE,
+	CONTENT_LENGTH,
+	COOKIE,
+	REFERER,
+	CACHE_CONTROL,
+	UPGRADE_INSECURE_REQUESTS
+};
 
 class AHttpRequest
 {
 private:
-	/*Private members*/
-	std::string							method;
-	std::string							url; //target 
-	std::string							version;
+	RequestStatus STATUS;
+	std::map<std::string, std::string> vars;
+	std::map<std::string, std::string> headers;
 
-	std::string							startLine;
-	std::map<std::string, std::string>	headers; //optional
-	// std::string							body;
+	static const char *const stdHeaders[];
+	static const std::size_t stdHeadersCount;
 
-	
-	public:
-	/*Parsing member functions*/
-	// void parseRequestLine(const std::string& requestLine);
-	// void parseHeaders(const std::string& headers);
-	// void parseBody(const std::string& body);
-	
-	/*Handling request member functions*/
-    // void method();
+	std::string buf;
+	std::string raw;
+	std::size_t contentLength;
 
-	/*Getters and Setters*/
-	std::string getMethod() const;
-	std::string getUrl() const;
-	std::string getVersion() const;
+	void checkVars();
+	void checkHeaders();
+	void checkBody();
 
-	/*Constructors*/
-	AHttpRequest(void);
+	static std::string trimSides(const std::string &s);
+	static void removeTrailingCRLF(std::string &s);
 
-	/*Destructors*/
-    ~AHttpRequest( void );
+public:
+	AHttpRequest();
+	explicit AHttpRequest(std::string req);
 
-	/*Overload operators*/
-	AHttpRequest &operator=(const AHttpRequest& src);
+	void setHeader(std::string key, std::string value);
+	std::string get(HeaderKey key);
+	std::string get(VarKey key);
+
+	RequestStatus insert(std::string buffer);
+	RequestStatus getStatus(){
+		return this->STATUS;
+	}
+
+	void print() const;
+	~AHttpRequest();
 };
 
-std::ostream& operator<<(std::ostream &output_stream, AHttpRequest& src);
-
-#endif // AHTTPREQUEST_HPP
+#endif
