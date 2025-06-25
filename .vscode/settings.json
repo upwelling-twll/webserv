@@ -1,8 +1,8 @@
 {
 	"files.associations": {
+		"*.dbclient-js": "javascript",
 		"*.sqlbook": "sql",
 		"*.ndjson": "jsonl",
-		"*.dbclient-js": "javascript",
 		"vector": "cpp",
 		"algorithm": "cpp",
 		"cmath": "cpp",
@@ -50,6 +50,7 @@
 		"__tree": "cpp",
 		"fstream": "cpp",
 		"map": "cpp",
-		"sstream": "cpp"
+		"sstream": "cpp",
+		"memory": "cpp"
 	}
 }
