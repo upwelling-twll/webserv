@@ -46,7 +46,8 @@ int main()
 	{
 		std::cout << "Server start impossible" << std::endl;
 	}
-	
+	//TODO : for each IP:PORT check that this server is alive
+
 	Engine	engine(newConf.getAllSockets());
 
 	if (!engine.engineRoutine(newConf))
