@@ -9,6 +9,7 @@
 class AHttpRequest;
 class ListeningSocket;
 class ConnectionSocket;
+class HttpStream;
 
 enum ConnectionStatus
 {
@@ -42,6 +43,7 @@ private:
 
 	ListeningSocket*			_serverListeningSocket;
 	ConnectionSocket*			_clientConnectionSocket;
+
 	AHttpRequest*				_request;
 	bool						_active;
 
