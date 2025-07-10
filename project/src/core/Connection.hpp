@@ -29,7 +29,7 @@ enum ConnectionStatus
 	PREPARED_RESPONSE,				//9 			 //used in handleOutEvent
 	SENT_TO_CLIENT,					//10			 //used in handleOutEvent
 	ERROR_CONNECTION,				//11
-	CLIENT_CLOSED_ERROR_SENDING_DATA,	//12
+	CLIENT_CLOSED_ERROR_SENDING_DATA_CONNECTION,	//12
 };
 
 class Connection

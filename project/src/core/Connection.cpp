@@ -200,7 +200,7 @@ bool	Connection::sendToClient()
 	else if (n == 0)
 	{
 		std::cout << "Client has closed the receiving side" << std::endl;
-		_status = CLIENT_CLOSED_ERROR_SENDING_DATA; // Set status to CLIENT_CLOSED_ERROR_RECEIVING_DATA
+		_status = CLIENT_CLOSED_ERROR_SENDING_DATA_CONNECTION; // Set status to CLIENT_CLOSED_ERROR_RECEIVING_DATA
 		return (false);
 	}
 	else
