@@ -259,6 +259,7 @@ ConnectionSocket* Connection::getClientConnectionSocket() const
 Connection::Connection(ListeningSocket* serverListeningSocket) :
 															   _buffer(""), 
 															   _status(IDLE),
+															   _bytesSent(0),
 															   _serverListeningSocket(serverListeningSocket),
 															   _active(true)
 {

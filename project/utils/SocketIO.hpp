@@ -13,19 +13,19 @@ enum SocketIOStatus
 	IDLE_SOCKETIO,
 	CLOSED_ERROR_SENDING_SOCKETIO,
 	CLOSED_ERROR_RECEIVING_SOCKETIO,
-
 };
 
 class AHttpRequest; // Forward declaration of AHttpRequest class
 class SocketIO
 {
 private:
-    std::string			_buffer;
+    // std::string			_buffer;
 	SocketIOStatus		_status;
+
 
 public:
 	/*Member functions*/
-	int		writeToClient(const std::string& message, int fd);
+	size_t	writeToClient(const std::string& message, int fd);
 	int		readFromClient(int fd, AHttpRequest* _request, std::string _rawMessage);
 
 	int		writeToDemon(const std::string& message, int fd);

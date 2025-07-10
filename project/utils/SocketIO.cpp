@@ -1,41 +1,49 @@
 #include "SocketIO.hpp"
 
 /*Member functions*/
-int SocketIO::writeToClient(const std::string& message, int fd)
+size_t SocketIO::writeToClient(const std::string& message, int fd)
 {
 	//TODO check that responce data is updated and cleaned properly
 	std::cout << "	SocketIO writeToClient" << std::endl;
-	int n = send(fd, message.c_str(), message.size(), 0);
-	if (n < 0)
+	size_t messageSize = message.size();
+	size_t sentSize = 0;
+	while (sentSize < messageSize || _status != ERROR_SOCKETIO)
 	{
-		std::cerr << "Error writeToClient: " << strerror(errno) << std::endl;
-		_status = ERROR_SOCKETIO; // Set status to ERROR if sending fails
-		return (false);
+		int n = send(fd, message.c_str(), message.size(), 0);
+		if (n < 0)
+		{
+			std::cerr << "Error writeToClient: " << strerror(errno) << std::endl;
+			_status = ERROR_SOCKETIO; // Set status to ERROR if sending fails
+			return (sentSize);
+		}
+		else if (n == 0)
+		{
+			std::cout << "writeToClient:Client has closed the receiving side" << std::endl;
+			_status = CLOSED_ERROR_SENDING_SOCKETIO; // Set status to CLIENT_CLOSED_ERROR_RECEIVING_DATA
+			return (sentSize);
+		}
+		else if (n == static_cast<int>(message.size()))
+		{
+			sentSize += n; // Update the total sent size
+			std::cout << "writeToClient:Response sent successfully, bytes sent: " << n << std::endl;
+			_status = SENT_SOCKETIO;
+			return (sentSize);
+		}
+		else if (n < static_cast<int>(message.size()))
+		{
+			sentSize += n; // Update the total sent size
+			std::cout << "writeToClient:Partial response sent, bytes sent: " << n << std::endl;
+			_status = BUSY_SOCKETIO; // Set status to BUSY if partial data is sent
+		}
+		else
+		{
+			_status = ERROR_SOCKETIO; // Set status to ERROR if sending fail
+			std::cerr << "writeToClient:Unexpected behavior in writeToClient, bytes sent: " << n << std::endl;
+			return (sentSize);
+		}
 	}
-	else if (n == 0)
-	{
-		std::cout << "Client has closed the receiving side" << std::endl;
-		_status = CLOSED_ERROR_SENDING_SOCKETIO; // Set status to CLIENT_CLOSED_ERROR_RECEIVING_DATA
-		return (false);
-	}
-	else if (n == static_cast<int>(message.size()))
-	{
-		std::cout << "Response sent successfully, bytes sent: " << n << std::endl;
-		_status = SENT_SOCKETIO;
-	}
-	else if (n < static_cast<int>(message.size()))
-	{
-		std::cout << "Partial response sent, bytes sent: " << n << std::endl;
-		_status = BUSY_SOCKETIO; // Set status to BUSY if partial data is sent
-		return (false);
-	}
-	else
-	{
-		std::cerr << "Unexpected behavior in writeToClient, bytes sent: " << n << std::endl;
-		return (false);
-	}
-	_buffer.clear();
-	return (true);
+	// _buffer.clear();
+	return (sentSize);
 }
 
 int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMessage)
@@ -81,6 +89,7 @@ int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMes
 					// CONNECTION STATUS : _status = WAITING_FOR_DATA;
 					std::cout << "Request is not ready yet, waiting for more data" << std::endl;
 					_rawMessage.clear(); // Clear the raw message after processing
+					rstatus = _request->getStatus();
 					continue ;
 				}
 			}
@@ -88,6 +97,7 @@ int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMes
 			{
 				_status = BUSY_SOCKETIO;
 				std::cout << "No enough data to parse request (no nl)" << std::endl;
+				rstatus = _request->getStatus();
 				continue ;
 			}
 		}
@@ -118,6 +128,7 @@ int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMes
 			// Interrupted by a signal, continue receiving data
 			_status = BUSY_SOCKETIO;
 			std::cout << "Receiving data interrupted by a signal, continuing to receive data" << std::endl;
+			rstatus = _request->getStatus();
 			continue ;
 		}
 		else
@@ -128,6 +139,7 @@ int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMes
 			std::cerr << "Error receiving data from client: " << strerror(errno) << std::endl;
 			return (ERROR_RECEIVING_DATA_CLOSE_CONNECTION);
 		}
+		rstatus = _request->getStatus();
 	}
 	return (WAITING_FOR_DATA);
 }

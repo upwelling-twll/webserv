@@ -40,6 +40,7 @@ private:
 	std::string					_buffer;
 	ConnectionStatus			_status;
 	time_t						_timeLastUsed;
+	size_t						_bytesSent;
 
 	ListeningSocket*			_serverListeningSocket;
 	ConnectionSocket*			_clientConnectionSocket;
