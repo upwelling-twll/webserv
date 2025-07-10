@@ -2,15 +2,6 @@
 
 /*Member functions*/
 
-bool locateSymbol(const std::string& string, char symbol)
-{
-	std::string::size_type pos = string.find(symbol);
-	if (pos != std::string::npos)
-		return true;
-	else
-		return false;
-}
-
 void	Connection::changeSocketMode(short mode, pollfd& pollFd)
 {
 	pollFd.events = mode;

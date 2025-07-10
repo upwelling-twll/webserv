@@ -20,7 +20,8 @@
 # include "../utils/SocketIO.hpp"
 
 
-void                addPortsToSocketsList(std::vector<Socket>& allSockets, std::vector<Port> ports);
-std::vector<Socket*> createSocketVec(Config config);
+void                    addPortsToSocketsList(std::vector<Socket>& allSockets, std::vector<Port> ports);
+std::vector<Socket*>    createSocketVec(Config config);
+bool                    locateSymbol(const std::string& string, char symbol);
 
 #endif

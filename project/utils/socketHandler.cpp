@@ -1,4 +1,16 @@
 #include "../src/core/Socket.hpp"
+#include "../utils/SocketIO.hpp"
+#include "../src/core/Connection.hpp"
+#include "../inc/webserv.hpp"
+
+bool locateSymbol(const std::string& string, char symbol)
+{
+	std::string::size_type pos = string.find(symbol);
+	if (pos != std::string::npos)
+		return true;
+	else
+		return false;
+}
 
 // bool    isListeningSocket(int fd, Socket s)
 // {
