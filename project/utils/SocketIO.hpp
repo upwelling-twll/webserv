@@ -1,0 +1,46 @@
+#ifndef SOCKETIO_HPP
+# define SOCKETIO_HPP
+
+# include <iostream>
+# include "../inc/webserv.hpp"
+
+enum SocketIOStatus
+{
+	SENT_SOCKETIO,
+	RECEIVED_SOCKETIO,
+	ERROR_SOCKETIO,
+	BUSY_SOCKETIO,
+	IDLE_SOCKETIO,
+	CLIENT_CLOSED_ERROR_SENDING_SOCKETIO,
+
+};
+
+class SocketIO
+{
+private:
+    std::string			_buffer;
+	SocketIOStatus		_status;
+
+public:
+	/*Member functions*/
+	int		writeToClient(const std::string& message, int fd);
+	int		readFromClient(int fd);
+
+	int		writeToDemon(const std::string& message, int fd);
+	int		readFromDemon(int fd);
+
+	/*Getters and Setters*/
+	int		getStatus() const;
+
+	/*Constructors*/
+    SocketIO();
+
+
+	/*Destructors*/
+    ~SocketIO( void );
+	
+};
+
+std::ostream& operator<<(std::ostream &output_stream, SocketIO& src);
+
+#endif // SocketIO_HPP

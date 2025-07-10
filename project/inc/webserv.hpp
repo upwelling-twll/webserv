@@ -17,6 +17,7 @@
 # include "../src/core/Connection.hpp"
 # include "../src/http/AHttpRequest.hpp"
 # include "../parsing/Parser.hpp"
+# include "../utils/SocketIO.hpp"
 
 
 void                addPortsToSocketsList(std::vector<Socket>& allSockets, std::vector<Port> ports);
