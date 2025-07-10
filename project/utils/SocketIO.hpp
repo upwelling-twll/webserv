@@ -29,7 +29,7 @@ public:
 	int		readFromClient(int fd, AHttpRequest* _request, std::string _rawMessage);
 
 	int		writeToDemon(const std::string& message, int fd);
-	int		readFromDemon(int fd);
+	int		readFromDemon(int fd, std::string _messageReseived);
 
 	/*Getters and Setters*/
 	int		getStatus() const;

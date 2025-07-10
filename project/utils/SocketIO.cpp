@@ -19,20 +19,20 @@ size_t SocketIO::writeToClient(const std::string& message, int fd)
 		else if (n == 0)
 		{
 			std::cout << "writeToClient:Client has closed the receiving side" << std::endl;
-			_status = CLOSED_ERROR_SENDING_SOCKETIO; // Set status to CLIENT_CLOSED_ERROR_RECEIVING_DATA
+			_status = CLOSED_ERROR_SENDING_SOCKETIO; // Set sta  tus to CLIENT_CLOSED_ERROR_RECEIVING_DATA
 			return (sentSize);
 		}
 		else if (n == static_cast<int>(message.size()))
 		{
 			sentSize += n; // Update the total sent size
-			std::cout << "writeToClient:Response sent successfully, bytes sent: " << n << std::endl;
+			std::cout << "writeToClient:Message sent successfully, bytes sent: " << n << std::endl;
 			_status = SENT_SOCKETIO;
 			return (sentSize);
 		}
 		else if (n < static_cast<int>(message.size()))
 		{
 			sentSize += n; // Update the total sent size
-			std::cout << "writeToClient:Partial response sent, bytes sent: " << n << std::endl;
+			std::cout << "writeToClient:Partial message sent, bytes sent: " << n << std::endl;
 			_status = BUSY_SOCKETIO; // Set status to BUSY if partial data is sent
 		}
 		else
@@ -49,7 +49,7 @@ size_t SocketIO::writeToClient(const std::string& message, int fd)
 int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMessage)
 {
 	int 	i;
-	char	buf[1000];
+	char	buf[65536];
 	RequestStatus rstatus;
 
 	rstatus = _request->getStatus();
@@ -147,17 +147,103 @@ int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMes
 int SocketIO::writeToDemon(const std::string& message, int fd)
 {
 	// Method implementation
-	(void)fd; // to avoid unused parameter warning
-	(void)message; // to avoid unused parameter warning
-	return 0;
+	std::cout << "	SocketIO writeToDemon" << std::endl;
+	size_t messageSize = message.size();
+	size_t sentSize = 0;
+	while (sentSize < messageSize || _status != ERROR_SOCKETIO)
+	{
+		int n = send(fd, message.c_str(), message.size(), 0);
+		if (n < 0)
+		{
+			std::cerr << "Error writeToDemon: " << strerror(errno) << std::endl;
+			_status = ERROR_SOCKETIO; // Set status to ERROR if sending fails
+			return (sentSize);
+		}
+		else if (n == 0)
+		{
+			std::cout << "writeToDemon:Demon has closed the receiving side" << std::endl;
+			_status = CLOSED_ERROR_SENDING_SOCKETIO; // Set sta  tus to CLIENT_CLOSED_ERROR_RECEIVING_DATA
+			return (sentSize);
+		}
+		else if (n == static_cast<int>(message.size()))
+		{
+			sentSize += n; // Update the total sent size
+			std::cout << "writeToDemon:Message sent successfully, bytes sent: " << n << std::endl;
+			_status = SENT_SOCKETIO;
+			return (sentSize);
+		}
+		else if (n < static_cast<int>(message.size()))
+		{
+			sentSize += n; // Update the total sent size
+			std::cout << "writeToDemon:Partial message sent, bytes sent: " << n << std::endl;
+			_status = BUSY_SOCKETIO; // Set status to BUSY if partial data is sent
+		}
+		else
+		{
+			_status = ERROR_SOCKETIO; // Set status to ERROR if sending fail
+			std::cerr << "writeToDemon:Unexpected behavior in writeToDemon, bytes sent: " << n << std::endl;
+			return (sentSize);
+		}
+	}
+	// _buffer.clear();
+	return (sentSize);
 }
 
-int SocketIO::readFromDemon(int fd)
+int SocketIO::readFromDemon(int fd, std::string _messageReseived)
 {
-	// Method implementation
-	(void)fd; // to avoid unused parameter warning
-	return 0;
+	int 	i;
+	char	buf[65536];
+
+	while (_status != ERROR_SOCKETIO)
+	{
+		i = recv(fd, buf, sizeof(buf), 0);
+		if (i > 0)
+		{
+			_messageReseived += buf;
+		}
+		if (i == 0)
+		{
+			std::cout << "Client has closed the sending side" << std::endl;
+			if (_request->getStatus() == READY)
+			{
+				_status = RECEIVED_SOCKETIO; 
+				std::cout << "Request is ready to form response, client closed the sending side" << std::endl;
+				return (CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE);
+			}
+			else
+			{
+				_status = CLOSED_ERROR_RECEIVING_SOCKETIO;
+				std::cout << "Error receiving data from client, client closed the sending side" << std::endl;
+				return (CLIENT_CLOSED_ERROR_RECEIVING_DATA);
+			}
+		}
+		else if (i == EAGAIN || i == EWOULDBLOCK)
+		{
+			_status = BUSY_SOCKETIO;
+			std::cout << "No more data to read, waiting for more data chunks" << std::endl;
+			return (WAITING_FOR_DATA);
+		}
+		else if (i == EINTR)
+		{
+			// Interrupted by a signal, continue receiving data
+			_status = BUSY_SOCKETIO;
+			std::cout << "Receiving data interrupted by a signal, continuing to receive data" << std::endl;
+			rstatus = _request->getStatus();
+			continue ;
+		}
+		else
+		{
+			_status = CLOSED_ERROR_RECEIVING_SOCKETIO;
+			//TODO : might need to set request status to ERROR_REQUEST,
+			// but must not send the responce, just !! close connection !!
+			std::cerr << "Error receiving data from client: " << strerror(errno) << std::endl;
+			return (ERROR_RECEIVING_DATA_CLOSE_CONNECTION);
+		}
+		rstatus = _request->getStatus();
+	}
+	return (WAITING_FOR_DATA);
 }
+
 
 /*Getters and Setters*/
 int	SocketIO::getStatus() const
