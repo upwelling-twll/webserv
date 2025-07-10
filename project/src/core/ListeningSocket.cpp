@@ -89,15 +89,6 @@ ListeningSocket::~ListeningSocket( void )
 }
 
 /*Overload operators*/
-ListeningSocket& ListeningSocket::operator=(const ListeningSocket& src)
-{
-	std::cout << "ListeningSocket copy assignment is called" << std::endl;
-	if (this != &src)
-	{
-		// Assinment variables
-	}
-	return (*this);
-}
 
 std::ostream& operator<<(std::ostream& output_stream, ListeningSocket& src)
 {

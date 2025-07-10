@@ -29,8 +29,6 @@ public:
 	/*Destructors*/
     ~ListeningSocket( void );
 
-	/*Overload operators*/
-	ListeningSocket &operator=(const ListeningSocket& src);
 };
 
 std::ostream& operator<<(std::ostream &output_stream, ListeningSocket& src);
