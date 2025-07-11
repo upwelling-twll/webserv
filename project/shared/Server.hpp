@@ -10,7 +10,7 @@
 class Location
 {
 private:
-	static const std::size_t locationPropertiesRange = 10;
+	static const std::size_t locationPropertiesRange = 11;
 
 	static const char *properties[locationPropertiesRange];
 	static const char *defaults[locationPropertiesRange]; // ← NEW

@@ -4,11 +4,11 @@
 // ───── Static Tables ────────────────────────────────────
 const char* Location::properties[Location::locationPropertiesRange] = {
     "path_prefix", "root", "index_sd", "autoindex", "limit_except",
-    "return", "cgi_pass", "upload_store", "client_max_body_size_sd", "error_page_sd"};
+    "return", "cgi_pass", "upload_store", "client_max_body_size_sd", "error_page_sd", "proxy_pass"};
 
 const char* Location::defaults[Location::locationPropertiesRange] = {
     "-", "server_default", "server_default", "off", "GET POST DELETE HEAD",
-    "",  "off", "forbidden", "server_default", "server_default"};
+    "",  "off", "forbidden", "server_default", "server_default", ""};
 
 const char* Server::properties[Server::serverPropertiesRange] = {
     "listen", "server_name", "root", "index", "client_max_body_size", "error_page"};
