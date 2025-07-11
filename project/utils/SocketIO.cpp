@@ -189,25 +189,68 @@ int SocketIO::writeToDemon(const std::string& message, int fd)
 	return (sentSize);
 }
 
-int SocketIO::readFromDemon(int fd, std::string _messageReseived)
+int SocketIO::readFromDemon(int fd, HttpResponse* _response, std::string _rawMessage)
 {
-	int 	i;
-	char	buf[65536];
+	int 			i;
+	char			buf[65536];
+	ResponseStatus	rpstatus;
 
-	while (_status != ERROR_SOCKETIO)
+	rpstatus = _response->getStatus();
+	while (rpstatus != ERROR_RESPONSE && rpstatus != READY_RESPONSE)
 	{
 		i = recv(fd, buf, sizeof(buf), 0);
 		if (i > 0)
 		{
-			_messageReseived += buf;
+			buf[i] = '\0'; // Null-terminate the buffer to treat it as a string
+			std::cout << "buf:" << buf <<"$, i=" << i << std::endl;
+			_rawMessage += buf; // Append the received data to _rawMessage
+			
+			std::memset(buf, 0, sizeof(buf)); // Clear the buffer for the next read
+			if (locateSymbol(_rawMessage, '\n') == true)
+			{
+				std::cout << "Enough data to parse response (have nl)" << std::endl;
+				rpstatus = _response->insert(_rawMessage);
+				if (rpstatus == READY_RESPONSE)
+				{
+					_status = RECEIVED_SOCKETIO;
+					std::cout << "response is ready to form response" << std::endl;
+					_rawMessage.clear(); // Clear the raw message after processing
+					return (READY_FOR_FORMATTING_RESPONSE);
+				}
+				else if (rpstatus == ERROR_RESPONSE)
+				{
+					_status = RECEIVED_SOCKETIO; //may be ERROR_SOCKETIO would work better
+					std::cout << "Error in response parsing" << std::endl;
+					_rawMessage.clear(); // Clear the raw message after processing
+					return (ERROR_RESPONSE_RECEIVED);
+				}
+				else if (rpstatus == WAITING_START_LINE_RESPONSE ||
+						rpstatus == WAITING_HEADER_RESPONSE ||
+						rpstatus == WAITING_BODY_RESPONSE)
+				{
+					_status = BUSY_SOCKETIO;
+					// CONNECTION STATUS : _status = WAITING_FOR_DATA;
+					std::cout << "response is not ready yet, waiting for more data" << std::endl;
+					_rawMessage.clear(); // Clear the raw message after processing
+					rpstatus = _response->getStatus();
+					continue ;
+				}
+			}
+			else
+			{
+				_status = BUSY_SOCKETIO;
+				std::cout << "No enough data to parse response (no nl)" << std::endl;
+				rpstatus = _response->getStatus();
+				continue ;
+			}
 		}
 		if (i == 0)
 		{
 			std::cout << "Client has closed the sending side" << std::endl;
-			if (_request->getStatus() == READY)
+			if (_response->getStatus() == READY_RESPONSE)
 			{
 				_status = RECEIVED_SOCKETIO; 
-				std::cout << "Request is ready to form response, client closed the sending side" << std::endl;
+				std::cout << "response is ready to form response, client closed the sending side" << std::endl;
 				return (CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE);
 			}
 			else
@@ -228,18 +271,18 @@ int SocketIO::readFromDemon(int fd, std::string _messageReseived)
 			// Interrupted by a signal, continue receiving data
 			_status = BUSY_SOCKETIO;
 			std::cout << "Receiving data interrupted by a signal, continuing to receive data" << std::endl;
-			rstatus = _request->getStatus();
+			rpstatus = _response->getStatus();
 			continue ;
 		}
 		else
 		{
 			_status = CLOSED_ERROR_RECEIVING_SOCKETIO;
-			//TODO : might need to set request status to ERROR_REQUEST,
+			//TODO : might need to set response status to ERROR_RESPONSE,
 			// but must not send the responce, just !! close connection !!
 			std::cerr << "Error receiving data from client: " << strerror(errno) << std::endl;
 			return (ERROR_RECEIVING_DATA_CLOSE_CONNECTION);
 		}
-		rstatus = _request->getStatus();
+		rpstatus = _response->getStatus();
 	}
 	return (WAITING_FOR_DATA);
 }

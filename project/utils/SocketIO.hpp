@@ -13,9 +13,44 @@ enum SocketIOStatus
 	IDLE_SOCKETIO,
 	CLOSED_ERROR_SENDING_SOCKETIO,
 	CLOSED_ERROR_RECEIVING_SOCKETIO,
+	//following statuses might be moved to other class
+	ERROR_RESPONSE_RECEIVED,
 };
 
-class AHttpRequest; // Forward declaration of AHttpRequest class
+enum ResponseStatus //will be  moved to httpResponse.hpp
+{
+	WAITING_START_LINE_RESPONSE,
+	WAITING_HEADER_RESPONSE,
+	WAITING_BODY_RESPONSE,
+	READY_RESPONSE,
+	ERROR_RESPONSE,
+};
+
+//HttpResponse class dummy
+class HttpResponse
+{
+private:
+	ResponseStatus _status;
+public:
+	HttpResponse(): _status(WAITING_START_LINE_RESPONSE) {};
+	~HttpResponse(){};
+
+	ResponseStatus getStatus() const {
+		return _status;
+	}
+
+	ResponseStatus insert(const std::string& rawMessage) {
+		// Dummy implementation for the sake of example
+		if (rawMessage.empty()) {
+			_status = ERROR_RESPONSE;
+			return _status;
+		}
+		_status = READY_RESPONSE;
+		return _status;
+	}
+};
+
+
 class SocketIO
 {
 private:
@@ -29,7 +64,7 @@ public:
 	int		readFromClient(int fd, AHttpRequest* _request, std::string _rawMessage);
 
 	int		writeToDemon(const std::string& message, int fd);
-	int		readFromDemon(int fd, std::string _messageReseived);
+	int		readFromDemon(int fd, HttpResponse* _response, std::string _rawMessage);
 
 	/*Getters and Setters*/
 	int		getStatus() const;
