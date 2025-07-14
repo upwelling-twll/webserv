@@ -1,5 +1,8 @@
 #include "./Server.hpp"
 
+
+// ───── Server ────────────────────────────────────────────
+
 Socket* Server::initListeningSocket()
 {
 	int	s_fd;
@@ -9,6 +12,7 @@ Socket* Server::initListeningSocket()
 	if (s_fd == -1)
 		throw;
 	ListeningSocket* listeningSocket = new ListeningSocket(s_fd);
+	std::cout << "initListeningSocket this->ip = : " <<this->ip  << std::endl;
 	listeningSocket->setData(this->ip, this->port);
 	listeningSocket->configureSocketOptions();
 	listeningSocket->bindSocket();
@@ -28,9 +32,14 @@ std::string Server::getIp() const
 	return (this->ip);
 }
 
+int Server::getPort() const
+{
+	return (this->port);
+}
+
 std::string Server::getAddr() const
 {
-	return (this->ip ); //+ ":" + std::to_string(this->port)
+	return (this->ip + ":" + std::to_string(this->port));
 }
 
 std::string Server::getServerName() const
@@ -38,7 +47,7 @@ std::string Server::getServerName() const
 	return (this->server_name);
 }
 
-Server::Server(std::string addr, int port)
+Server::Server(std::string addr, int port) //constructor for mock servers
 {
 	this->ip = addr;
 	this->port = port;
@@ -51,12 +60,45 @@ Server::Server(std::string addr, int port)
 	std::vector<Location> locations;
 }
 
+Server::Server(const ServerParse& src) //constructor taking the ServerParse object
+{
+	std::cout << "Server constructor is called" << std::endl;
+	std::cout << "listen = " << src.get("listen").front() << std::endl;
+	
+	std::string listen = src.get("listen").front();
+
+	std::cout << "ip set to = " << listen.substr(0, listen.find(':')) << std::endl;
+	
+	this->ip = listen.substr(0, listen.find(':'));
+
+	std::cout << "ip was set to = " << this->ip << std::endl;
+
+	this->port = std::stoi(listen.substr(listen.find(':') + 1));
+
+	std::cout << "port set to = " << std::stoi(listen.substr(listen.find(':') + 1)) << std::endl;
+
+	this->server_name = src.get("server_name").front();
+	this->root = src.get("root").front();
+	this->index = src.get("index").front();
+	this->client_max_body_size = src.get("client_max_body_size").front();
+	this->error_page = src.get("error_page").front();
+
+	for (std::vector<LocationParse>::const_iterator it = src.getLocations().begin(); it != src.getLocations().end(); ++it)
+	{
+		Location loc(*it); // Create a Location object from the LocationParse object
+		this->locations.push_back(loc);
+	}
+}
+
 Server::~Server()
 {
 	std::cout << "Server destructor is called" << std::endl;
 }
 
-Location::Location() {
+// ───── Location ──────────────────────────────────────────
+
+Location::Location() //constructor for mock locations
+{
 	this->path_prefix = "-";
 	this->root_sd = "server_default";
 	this->index_sd = "server_default";
@@ -67,6 +109,21 @@ Location::Location() {
 	this->upload_store = "forbidden";
 	this->client_max_body_size_sd = "server_default";
 	this->error_page_sd = "server_default";
+}
+
+Location::Location(const LocationParse& src) //constructor taking the LocationParse object
+{
+	this->path_prefix = src.get("path_prefix").front();
+	this->root_sd = src.get("root").front();
+	this->index_sd = src.get("index_sd").front();
+	this->autoindex = src.get("autoindex").front();
+	this->limit_except = src.get("limit_except").front();
+	this->returns = src.get("return").front();
+	this->cgi_pass = src.get("cgi_pass").front();
+	this->upload_store = src.get("upload_store").front();
+	this->client_max_body_size_sd = src.get("client_max_body_size_sd").front();
+	this->error_page_sd = src.get("error_page_sd").front();
+	this->proxy_pass = src.get("proxy_pass").front();
 }
 
 Location::~Location(){

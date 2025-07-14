@@ -30,7 +30,8 @@ public:
 	std::vector<Socket*>		getAllSockets() const;
 
 	/*Constructors*/
-    Config(std::vector<Server> servers, std::vector<Port> ports);
+    Config(std::vector<Server> servers);
+
 	Config(void);  
 
 	/*Destructors*/

@@ -29,7 +29,7 @@ Config initMockConfig()
     ports.push_back(mockPort2);
 	
 	std::cout << "\nCreating config instance" << std::endl;
-    Config mockConf(servs, ports);
+    Config mockConf(servs);
     return (mockConf);
 }
 
@@ -39,9 +39,9 @@ int main(int argc, char** argv)
 		return 1;
 	const char* file = argv[1];
 
+	std::vector<ServerParse> server_vector;
 	try
 	{
-		std::vector<ServerParse> server_vector;
 		Parser parser(file, server_vector);
 		// HandleError::errorHandler(server_vector);
 		for(int i = 0; i < (int)server_vector.size(); i++){
@@ -49,13 +49,19 @@ int main(int argc, char** argv)
 		}
 	}
 	catch (const std::exception& e) {
-	std::cerr << "Error: " << e.what() << '\n';
-	return 1;
+		std::cerr << "Error: " << e.what() << '\n';
+		return 1;
 	}
+	
+	std::vector<Server> servers;
+	for (std::vector<ServerParse>::iterator it = server_vector.begin(); it != server_vector.end(); ++it)
+	{
+		Server server(*it); // Create a Server object from the ServerParse object
+		servers.push_back(server);
+	}
+	Config newConf(servers);
 
-    Config newConf = initMockConfig();
-
-	std::cout << "Data for Mock config is created" << std::endl;
+	std::cout << "Data for config is created" << std::endl;
     try
 	{
 		newConf.startWebServ();
