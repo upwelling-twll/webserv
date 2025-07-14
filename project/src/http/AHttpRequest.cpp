@@ -109,12 +109,16 @@ RequestStatus AHttpRequest::insert(std::string chunk)
 			break;
 		case WAITING_BODY:
 			checkBody();
+			if (STATUS == WAITING_BODY)
+				return STATUS;
 			break;
 		default:
 			return STATUS;
 		}
 		if (STATUS == READY || STATUS == ERROR_REQUEST)
+		{
 			return STATUS;
+		}
 	}
 }
 
