@@ -90,7 +90,9 @@ void	Connection::receiveMessage()
 			if (locateSymbol(_rawMessage, '\n') == true)
 			{
 				std::cout << "Enough data to parse request (have nl)" << std::endl;
+				std::cout << "Doing insert _rawMessage:" << _rawMessage << "$" << std::endl;
 				rstatus = _request->insert(_rawMessage);
+				std::cout << "Completed insert. Request status = " << rstatus << std::endl;
 				if (rstatus == READY)
 				{
 					_status = READY_FOR_FORMATTING_RESPONSE;
@@ -173,11 +175,13 @@ bool	Connection::sendToClient()
 {	
 	//TODO check that responce data is updated and cleaned properly
 	std::cout << "	Giving my response to the client" << std::endl;
-	std::string responseMock = "HTTP/1.1 200 OK\r\n"
-								"Content-Type: text/plain\r\n"
-								"Content-Length: 13\r\n"
-								"\r\n"
-								"How uncivilized\r\n";
+
+std::string responseMock = 
+    "HTTP/1.1 200 OK\r\n"
+    "Content-Type: text/plain\r\n"
+    "Content-Length: 3709\r\n"
+    "\r\n"
+	"How uncivilized";
 	// n = send(_clientConnectionSocket->getFd(), _responce->getResponseMessage().c_str(), 
 	// 								_response->getResponseMessage().size(), 0);
 	int n = send(_clientConnectionSocket->getFd(), responseMock.c_str(), 
