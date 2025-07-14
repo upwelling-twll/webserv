@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 		Server server(*it); // Create a Server object from the ServerParse object
 		servers.push_back(server);
 	}
-	Config newConf(servers);
+	Config newConf(servers); //constructor using Servers vector and creating a Locations vector during the construction
 
 	std::cout << "Data for config is created" << std::endl;
     try
