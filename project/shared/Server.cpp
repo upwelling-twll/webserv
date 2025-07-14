@@ -12,7 +12,6 @@ Socket* Server::initListeningSocket()
 	if (s_fd == -1)
 		throw;
 	ListeningSocket* listeningSocket = new ListeningSocket(s_fd);
-	std::cout << "initListeningSocket this->ip = : " <<this->ip  << std::endl;
 	listeningSocket->setData(this->ip, this->port);
 	listeningSocket->configureSocketOptions();
 	listeningSocket->bindSocket();
@@ -63,20 +62,11 @@ Server::Server(std::string addr, int port) //constructor for mock servers
 Server::Server(const ServerParse& src) //constructor taking the ServerParse object
 {
 	std::cout << "Server constructor is called" << std::endl;
-	std::cout << "listen = " << src.get("listen").front() << std::endl;
 	
-	std::string listen = src.get("listen").front();
+	std::string listen = src.get("listen").front(); 
 
-	std::cout << "ip set to = " << listen.substr(0, listen.find(':')) << std::endl;
-	
 	this->ip = listen.substr(0, listen.find(':'));
-
-	std::cout << "ip was set to = " << this->ip << std::endl;
-
 	this->port = std::stoi(listen.substr(listen.find(':') + 1));
-
-	std::cout << "port set to = " << std::stoi(listen.substr(listen.find(':') + 1)) << std::endl;
-
 	this->server_name = src.get("server_name").front();
 	this->root = src.get("root").front();
 	this->index = src.get("index").front();
