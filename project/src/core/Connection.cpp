@@ -104,12 +104,14 @@ void	Connection::receiveMessage()
 				{
 					_status = READY_FOR_FORMATTING_RESPONSE;
 					std::cout << "Request is ready to form response" << std::endl;
+					_rawMessage.clear(); // Clear the raw message after processing
 					return ;
 				}
 				else if (rstatus == ERROR_REQUEST)
 				{
 					_status = ERROR_REQUEST_RECEIVED;
 					std::cout << "Error in request parsing" << std::endl;
+					_rawMessage.clear(); // Clear the raw message after processing
 					break ;
 				}
 				else if (rstatus == WAITING_START_LINE || 
@@ -118,6 +120,7 @@ void	Connection::receiveMessage()
 				{
 					_status = WAITING_FOR_DATA;
 					std::cout << "Request is not ready yet, waiting for more data" << std::endl;
+					_rawMessage.clear(); // Clear the raw message after processing
 					continue ;
 				}
 			}
