@@ -1,38 +1,6 @@
 #include <iostream>
 #include "inc/webserv.hpp"
 
-Config initMockConfig()
-{
-	std::cout << "Mock server 1" << std::endl;
-    Server					mockServer("127.0.0.1", 8080);
-	Location				mockLocation;
-    Port   					mockPort("127.0.0.1", 8080);
-	std::vector<Location>	locs;
-    std::vector<Server> 	servs;
-    std::vector<Port>		ports;
-
-	locs.push_back(mockLocation);
-	mockServer.addLocation(locs);
-    servs.push_back(mockServer);
-    ports.push_back(mockPort);
-
-	std::cout << "Mock server 2" << std::endl;
-	Server					mockServer2("127.0.0.1", 1025);
-	Location				mockLocation2;
-    Port   					mockPort2("127.0.0.1", 1025);
-	std::vector<Location>	locs2;
-
-	locs2.push_back(mockLocation2);
-	mockServer2.addLocation(locs2);
-
-    servs.push_back(mockServer2);
-    ports.push_back(mockPort2);
-	
-	std::cout << "\nCreating config instance" << std::endl;
-    Config mockConf(servs);
-    return (mockConf);
-}
-
 int main(int argc, char** argv)
 {
 	if (argc != 2)

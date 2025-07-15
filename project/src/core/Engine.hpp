@@ -8,6 +8,7 @@
 
 class Config;
 class Connection;
+class SocketIO;
 
 class Engine
 {

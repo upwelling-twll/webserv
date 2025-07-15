@@ -3,19 +3,30 @@
 
 # include <iostream>
 # include "../../inc/webserv.hpp"
+
+enum ConnectionSocketType
+{
+	LISTENING_SOCKET,
+	CLIENT_CONNECTION_SOCKET,
+	DEMON_CONNECTION_SOCKET,
+	CGI_CONNECTION_SOCKET
+};
+
 class ConnectionSocket : public Socket
 {
 private:
-	bool		_listening;
+	bool					_listening;
+	ConnectionSocketType	_socketType;
 
 public:
 	/*Member functions*/
     virtual bool	isListening() const;
 
 	/*Getters and Setters*/
+	ConnectionSocketType	getSocketType() const;
 
 	/*Constructors*/
-    ConnectionSocket(int fd);
+    ConnectionSocket(int fd, ConnectionSocketType type);
 
 	/*Destructors*/
     ~ConnectionSocket( void );

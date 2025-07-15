@@ -19,8 +19,8 @@ public:
     virtual bool	isListening() const = 0;
 
 	/*Getters and Setters*/
-	int		getFd() const;
-	void	setAddrInfo(struct sockaddr_in _addr, socklen_t _addr_len, size_t _addr_text_len);
+	int			getFd() const;
+	void		setAddrInfo(struct sockaddr_in _addr, socklen_t _addr_len, size_t _addr_text_len);
 	
 /*Constructors*/
     Socket(int fd);

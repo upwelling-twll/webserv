@@ -8,8 +8,14 @@ bool	ConnectionSocket::isListening() const
 
 /*Getters and Setters*/
 
+SocketType Socket::getSocketType() const
+{
+	return this->_socketType;
+}
+
+
 /*Constructors*/
-ConnectionSocket::ConnectionSocket(int fd) : Socket(fd)
+ConnectionSocket::ConnectionSocket(int fd, ConnectionSocketType type) : Socket(fd), _socketType(type)
 {
    std::cout << "ConnectionSocket parameterized constructor is called" << std::endl;
    _listening = false;
