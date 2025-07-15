@@ -30,7 +30,7 @@ enum ResponseStatus //will be  moved to httpResponse.hpp
 class HttpResponse
 {
 private:
-	ResponseStatus _status;
+	ResponseStatus	_status;
 public:
 	HttpResponse(): _status(WAITING_START_LINE_RESPONSE) {};
 	~HttpResponse(){};
@@ -56,15 +56,16 @@ class SocketIO
 private:
     // std::string			_buffer;
 	SocketIOStatus		_status;
+	std::string		 _rawMessage;
 
 
 public:
 	/*Member functions*/
 	size_t	writeToClient(const std::string& message, int fd);
-	int		readFromClient(int fd, AHttpRequest* _request, std::string _rawMessage);
+	int		readFromClient(int fd, AHttpRequest* _request);
 
 	int		writeToDemon(const std::string& message, int fd);
-	int		readFromDemon(int fd, HttpResponse* _response, std::string _rawMessage);
+	int		readFromDemon(int fd, HttpResponse* _response);
 
 	/*Getters and Setters*/
 	int		getStatus() const;

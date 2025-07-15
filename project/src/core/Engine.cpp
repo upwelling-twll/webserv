@@ -15,13 +15,15 @@ struct pollfd Engine::createPollFd(int fd, short events, short revents)
 
 void	Engine::receive(Connection* connection)
 {
+	SocketIO socketIO;
 	std::cout << "Engine receive method called" << std::endl;
 	ConnectionSocketType socketType = connection->getClientConnectionSocket()->getSocketType();
 
 	if (socketType == CLIENT_CONNECTION_SOCKET)
 	{
 		std::cout << "Receiving from ClientConnectionSocket" << std::endl;
-		connection->readFromClient();
+		// socketIO->readFromClient(connection->getClientConnectionSocket(), connection->getRequest(), connection->getRawMessage());
+		connection->receiveMessage();
 	}
 	else if (socketType == DEMON_CONNECTION_SOCKET)
 	{

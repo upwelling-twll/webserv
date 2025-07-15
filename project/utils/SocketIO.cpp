@@ -46,7 +46,7 @@ size_t SocketIO::writeToClient(const std::string& message, int fd)
 	return (sentSize);
 }
 
-int SocketIO::readFromClient(int fd, AHttpRequest* _request, std::string _rawMessage)
+int SocketIO::readFromClient(int fd, AHttpRequest* _request)
 {
 	int 	i;
 	char	buf[65536];
@@ -296,7 +296,7 @@ int	SocketIO::getStatus() const
 
 /*Constructors*/
 
-SocketIO::SocketIO() : _status(IDLE_SOCKETIO)
+SocketIO::SocketIO() : _status(IDLE_SOCKETIO), _rawMessage("")
 {
     std::cout << "SocketIO default constructor is called" << std::endl;
 }
