@@ -11,7 +11,8 @@
 class Socket;
 class Port;
 
-
+class ServerParse; //needed for constructor
+class LocationParse; //needed for constructor
 class Location
 {
 private:
@@ -23,11 +24,13 @@ private:
 	std::string returns;
 	std::string cgi_pass;
 	std::string upload_store;
-	std::string client_max_body_size_sd;
+	std::string client_max_body_size_sd; //convert to bytes size_t
 	std::string error_page_sd;
+	std::string proxy_pass; //might be converted to str ip and int port
 
 public:
-	Location();
+	Location(); //constructor for mock locations
+	Location(const LocationParse& src); //constructor taking the LocationParse object
 	~Location();
 };
 
@@ -45,14 +48,16 @@ private:
 	std::vector<Location> locations;
 
 public:
-	void	addLocation(std::vector<Location> src);
-	Socket*	initListeningSocket();
+	void		addLocation(std::vector<Location> src); //not used can delete
+	Socket*		initListeningSocket();
 
 	std::string getIp() const;
+	int			getPort() const;
 	std::string getAddr() const;
 	std::string getServerName() const;
 
-	Server(std::string addr, int port);
+	Server(std::string addr, int port); //constructor for mock servers
+	Server(const ServerParse& src); //constructor taking the ServerParse object
 	~Server(void);
 };
 

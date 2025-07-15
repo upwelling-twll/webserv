@@ -39,7 +39,7 @@ public:
     ~Port( void );
 
 	/*Overload operators*/
-	Port &operator=(const Port& src);
+	// Port &operator=(const Port& src);
 };
 
 std::ostream& operator<<(std::ostream &output_stream, Port& src);

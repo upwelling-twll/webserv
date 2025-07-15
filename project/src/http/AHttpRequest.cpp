@@ -110,12 +110,16 @@ RequestStatus AHttpRequest::insert(std::string chunk)
 		case WAITING_BODY:
 			// std::cout << "STATUS = WAITING BODY" << std::endl;
 			checkBody();
+			if (STATUS == WAITING_BODY)
+				return STATUS;
 			break;
 		default:
 			return STATUS;
 		}
 		if (STATUS == READY || STATUS == ERROR_REQUEST)
+		{
 			return STATUS;
+		}
 	}
 }
 

@@ -53,9 +53,13 @@ std::vector<Socket*> Config::getAllSockets() const
 }
 
 /*Constructors*/
-Config::Config(std::vector<Server> servers, std::vector<Port> ports) : \
-	 _servers(servers), _ports(ports)
+Config::Config(std::vector<Server> servers) :  _servers(servers)
 {
+	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
+	{
+		Port port(it->getIp(), it->getPort());
+		_ports.push_back(port);
+	}
    std::cout << "Config parameterized constructor is called" << std::endl;
 }
 
