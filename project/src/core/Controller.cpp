@@ -4,7 +4,7 @@
 void	Controller::send(Connection* connection)
 {
 	std::cout << "Controller send method called" << std::endl;
-
+	size_t	sentSize = 0;
 	SocketIO socketIO;
 
 	if (!connection)
@@ -13,12 +13,15 @@ void	Controller::send(Connection* connection)
 		return;
 	}
 	ConnectionSocketType socketType = connection->getClientConnectionSocket()->getSocketType();
-
-
 	if (socketType == CLIENT_CONNECTION_SOCKET)
 	{
 		std::cout << "Sending to ClientConnectionSocket" << std::endl;
-		socketIO.writeToClient(connection->getResponse()->getResponseMessage(), connection->getClientConnectionSocket()->getFd());
+		sentSize = socketIO.writeToClient(connection->getResponse()->getResponseMessage(), connection->getClientConnectionSocket()->getFd());
+		if (sentSize == (connection->getResponse()->getResponseMessage()).length())
+		{
+			std::cout << "Response sent successfully, bytes sent: " << sentSize << std::endl;
+			connection->setStatus(SENT_TO_CLIENT);
+		}
 	}
 	else if (socketType == DEMON_CONNECTION_SOCKET)
 	{

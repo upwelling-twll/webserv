@@ -54,7 +54,7 @@ void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>&
 	else
 	{
 		std::cout <<"receive in socket" << std::endl;
-		_controller->receive(activeConnections[_allSockets[i]]);;
+		_controller->receive(activeConnections[_allSockets[i]]);
 	}
 }
 
@@ -69,6 +69,39 @@ void print_pfds(const std::vector<struct pollfd>& pfds)
 	}
 	std::cout << "Total pollfds: " << pfds.size() << std::endl;
 	std::cout << "------------------------" << std::endl;
+}
+
+void updateAliveConnections(std::map<const Socket*, Connection*>& activeConnections, std::vector<struct pollfd>& pfds)
+{
+	// std::cout << "Updating alive connections..." << std::endl;
+	for (std::map<const Socket*, Connection*>::iterator it = activeConnections.begin(); it != activeConnections.end(); )
+	{
+		if (it->first->isListening() == false &&  (it->second->getStatus() == SENT_TO_CLIENT || it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) \
+			 && it->second->isActive() == false)
+		{	
+			// Remove the corresponding pollfd from _fds
+			std::cout << "Someone will be erased from here!" << std::endl;
+			int fd = it->first->getFd();
+			for (size_t j = 0; j < pfds.size(); ++j)
+			{
+				if (pfds[j].fd == fd)
+				{
+					if (fd >= 0) // Ensure the file descriptor is valid
+					{
+						close(fd); // Close the socket file descriptor
+						std::cout << "Closed socket with fd=" << fd << std::endl;
+					}
+					pfds.erase(pfds.begin() + j);
+					std::cout << "Removed pollfd with fd=" << fd << " from pollfds." << std::endl;
+					break;
+				}
+			}
+			delete it ->second; // Delete the Connection object
+			it = activeConnections.erase(it);
+		}
+		else
+			++it;
+	}
 }
 
 int Engine::engineRoutine(Config& config)
@@ -118,6 +151,7 @@ int Engine::engineRoutine(Config& config)
 			// if (p > 0)
 			// 	break;
 		}
+		updateAliveConnections(activeConnections, _fds);
 	}
 	return (1);
 }

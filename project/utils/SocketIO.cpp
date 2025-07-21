@@ -5,6 +5,8 @@ size_t SocketIO::writeToClient(const std::string& message, int fd)
 {
 	//TODO check that responce data is updated and cleaned properly
 	std::cout << "	SocketIO writeToClient" << std::endl;
+	std::cout << "writeToClient:Message: " << message << std::endl;
+
 	size_t messageSize = message.size();
 	size_t sentSize = 0;
 	while (sentSize < messageSize || _status != ERROR_SOCKETIO)

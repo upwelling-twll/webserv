@@ -14,7 +14,8 @@ void	Connection::processConnectionStatusSending()
 	{
 		std::cout << "Connection has sent response to client, changing socket mode to POLLIN" << std::endl;
 		// changeSocketMode(POLLIN, pollFd);
-		_status = IDLE; // Reset status to IDLE after sending response
+		if (_active == true)
+			_status = IDLE; // Reset status to IDLE after sending response
 		// TODO : if request had "Connection : close" header, then close the connection after sending response
 		// TODO : if request had "Connection : keep-alive" header, then keep the connection open for further requests
 	}
@@ -33,7 +34,8 @@ void	Connection::processConnectionStatusReceiving()
 		std::cout << "Connection is ready for formatting response" << std::endl;
 		 std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
 		//TODO : form response and send it to client
-		// _response->insert("Found someone, you have, I would say, hmmmm"); 
+		_response->insert("Found someone, you have, I would say, hmmmm"); 
+		std::cout << "		*prepared response*	\n" << _response->getResponseMessage() << std::endl;
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 	}
 	else if (_status == CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE)
@@ -43,13 +45,17 @@ void	Connection::processConnectionStatusReceiving()
 		_response->insert("Found someone, you have, I would say, hmmmm"); 
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 		std::cout << "Connection is ready for formatting response after client closed sending side" << std::endl;
+		_active = false; // it a workaround to close connection after sending error response
 	}
 	else if ( _status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_REQUEST_RECEIVED)
 	{
 		// changeSocketMode(POLLOUT, pollFd);
 		//TODO : will form BadRequest error responce and send it to client and then close the connection
 		// set Connection status to ERROR_CONNECTION (?)
-		std::cout << "Connection is in error state" << std::endl;
+		_response->insert("How uncivilized... Bad Request"); //TODO: replace bu proper 400 error
+		std::cout << "Connection is in error state, but will send error message" << std::endl;
+		_status = PREPARED_RESPONSE;
+		_active = false; // it a workaround to close connection after sending error response
 	}
 	else if (_status == WAITING_FOR_DATA)
 	{
@@ -60,12 +66,14 @@ void	Connection::processConnectionStatusReceiving()
 		//TODO : just close the connection, no response to send
 		// set Connection status to ERROR_CONNECTION (?)
 		std::cout << "Connection is in seriouse error state, close it" << std::endl;
+		_active = false; // it a workaround to close connection after sending error response
 	}
 	else
 	{
 		// changeSocketMode(POLLIN, pollFd);
 		// set Connection status to ERROR_CONNECTION (?)
 		std::cout << "Connection is in default state" << std::endl;
+
 	}
 }
 
@@ -171,42 +179,42 @@ bool	Connection::haveResponse()
 	return (false);
 }
 
-bool	Connection::sendToClient()
-{	
-	//TODO check that responce data is updated and cleaned properly
-	std::cout << "	Giving my response to the client" << std::endl;
+// bool	Connection::sendToClient()
+// {	
+// 	//TODO check that responce data is updated and cleaned properly
+// 	std::cout << "	Giving my response to the client" << std::endl;
 
-std::string responseMock = 
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/plain\r\n"
-    "Content-Length: 3709\r\n"
-    "\r\n"
-	"How uncivilized";
-	// n = send(_clientConnectionSocket->getFd(), _responce->getResponseMessage().c_str(), 
-	// 								_response->getResponseMessage().size(), 0);
-	int n = send(_clientConnectionSocket->getFd(), responseMock.c_str(), 
-									responseMock.size(), 0);
-	if (n < 0)
-	{
-		std::cerr << "Error sending response to client: " << strerror(errno) << std::endl;
-		_status = ERROR_CONNECTION; // Set status to ERROR_CONNECTION if sending fails
-		return (false);
-	}
-	else if (n == 0)
-	{
-		std::cout << "Client has closed the receiving side" << std::endl;
-		_status = CLIENT_CLOSED_ERROR_SENDING_DATA_CONNECTION; // Set status to CLIENT_CLOSED_ERROR_RECEIVING_DATA
-		return (false);
-	}
-	else
-	{
-		std::cout << "Response sent successfully, bytes sent: " << n << std::endl;
-		_status = SENT_TO_CLIENT;
-	}	
-	_buffer.clear();
-	_rawMessage.clear();
-	return (false);
-}
+// std::string responseMock = 
+//     "HTTP/1.1 200 OK\r\n"
+//     "Content-Type: text/plain\r\n"
+//     "Content-Length: 3709\r\n"
+//     "\r\n"
+// 	"How uncivilized";
+// 	// n = send(_clientConnectionSocket->getFd(), _responce->getResponseMessage().c_str(), 
+// 	// 								_response->getResponseMessage().size(), 0);
+// 	int n = send(_clientConnectionSocket->getFd(), responseMock.c_str(), 
+// 									responseMock.size(), 0);
+// 	if (n < 0)
+// 	{
+// 		std::cerr << "Error sending response to client: " << strerror(errno) << std::endl;
+// 		_status = ERROR_CONNECTION; // Set status to ERROR_CONNECTION if sending fails
+// 		return (false);
+// 	}
+// 	else if (n == 0)
+// 	{
+// 		std::cout << "Client has closed the receiving side" << std::endl;
+// 		_status = CLIENT_CLOSED_ERROR_SENDING_DATA_CONNECTION; // Set status to CLIENT_CLOSED_ERROR_RECEIVING_DATA
+// 		return (false);
+// 	}
+// 	else
+// 	{
+// 		std::cout << "Response sent successfully, bytes sent: " << n << std::endl;
+// 		_status = SENT_TO_CLIENT;
+// 	}	
+// 	_buffer.clear();
+// 	_rawMessage.clear();
+// 	return (false);
+// }
 
 struct pollfd Connection::createConnectionSocket(ListeningSocket* serverListeningSocket)
 {
@@ -222,7 +230,7 @@ struct pollfd Connection::createConnectionSocket(ListeningSocket* serverListenin
 }
 
 /*Getters and Setters*/
-bool Connection::isActive()
+bool Connection::isActive() const
 {
 	return _active;
 }
@@ -284,6 +292,8 @@ Connection::Connection(ListeningSocket* serverListeningSocket) :
 	_clientConnectionSocket = newClientConnectionSocket;
 	AHttpRequest* newRequest = new AHttpRequest();
 	_request = newRequest;
+	HttpResponse* newResponse = new HttpResponse();
+	_response = newResponse;
 }
 
 /*Destructors*/

@@ -49,6 +49,13 @@ public:
 		_responseMessage = rawMessage;
 		return _status;
 	}
+	HttpResponse &operator=(const HttpResponse& src)  {
+		if (this != &src) {
+			_status = src._status;
+			_responseMessage = src._responseMessage;
+		}
+		return *this;
+	}
 };
 
 enum ConnectionStatus
@@ -103,7 +110,7 @@ public:
 	// bool	disconnectSocket();
 
 	/*Getters and Setters*/
-	bool			isActive();
+	bool			isActive() const;
 	struct pollfd	getPollFd() const;
 
 	/*Getters for private members*/
@@ -115,6 +122,10 @@ public:
 	ConnectionSocket*			getClientConnectionSocket() const;
 	AHttpRequest*				getRequest() const;
 	HttpResponse*				getResponse() const;
+
+	void						setStatus(ConnectionStatus status) {
+		_status = status;
+	}
 
 	/*Constructors*/
     Connection(ListeningSocket* serverListeningSocket);
