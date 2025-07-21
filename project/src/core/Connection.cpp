@@ -24,8 +24,6 @@ void	Connection::processConnectionStatusSending()
 	}
 }
 
-
-
 void	Connection::processConnectionStatusReceiving()
 {
 	std::cout << "	process Connection Status, status:" << _status << std::endl;
@@ -33,14 +31,16 @@ void	Connection::processConnectionStatusReceiving()
 	{
 		// changeSocketMode(POLLOUT, pollFd);
 		std::cout << "Connection is ready for formatting response" << std::endl;
-		std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
+		 std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
 		//TODO : form response and send it to client
+		// _response->insert("Found someone, you have, I would say, hmmmm"); 
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 	}
 	else if (_status == CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE)
 	{
 		// changeSocketMode(POLLOUT, pollFd);
 		// TODO : form response and send it to client 
+		_response->insert("Found someone, you have, I would say, hmmmm"); 
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 		std::cout << "Connection is ready for formatting response after client closed sending side" << std::endl;
 	}
@@ -262,6 +262,11 @@ ConnectionSocket* Connection::getClientConnectionSocket() const
 AHttpRequest* Connection::getRequest() const
 {
 	return _request;
+}
+
+HttpResponse* Connection::getResponse() const
+{
+	return _response;
 }
 
 /*Constructors*/

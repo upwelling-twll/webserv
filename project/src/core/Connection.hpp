@@ -11,6 +11,46 @@ class ListeningSocket;
 class ConnectionSocket;
 class HttpStream;
 
+enum ResponseStatus //will be  moved to httpResponse.hpp
+{
+	WAITING_START_LINE_RESPONSE,
+	WAITING_HEADER_RESPONSE,
+	WAITING_BODY_RESPONSE,
+	READY_RESPONSE,
+	ERROR_RESPONSE,
+};
+
+//HttpResponse class dummy
+class HttpResponse
+{
+private:
+	ResponseStatus	_status;
+	std::string		_responseMessage;
+
+public:
+	HttpResponse(): _status(WAITING_START_LINE_RESPONSE) {};
+	~HttpResponse(){};
+
+	ResponseStatus getStatus() const {
+		return _status;
+	}
+	
+	std::string getResponseMessage() const {
+		return _responseMessage;
+	}
+
+	ResponseStatus insert(const std::string& rawMessage) {
+		// Dummy implementation for the sake of example
+		if (rawMessage.empty()) {
+			_status = ERROR_RESPONSE;
+			return _status;
+		}
+		_status = READY_RESPONSE;
+		_responseMessage = rawMessage;
+		return _status;
+	}
+};
+
 enum ConnectionStatus
 {
 	IDLE, 						//0
@@ -46,6 +86,7 @@ private:
 	ConnectionSocket*			_clientConnectionSocket;
 
 	AHttpRequest*				_request;
+	HttpResponse*				_response;
 	bool						_active; //may remove as it is not used
 
 	struct pollfd				_pollFd;
@@ -73,6 +114,7 @@ public:
 	ListeningSocket*			getServerListeningSocket() const;
 	ConnectionSocket*			getClientConnectionSocket() const;
 	AHttpRequest*				getRequest() const;
+	HttpResponse*				getResponse() const;
 
 	/*Constructors*/
     Connection(ListeningSocket* serverListeningSocket);

@@ -1,18 +1,56 @@
 #include "Controller.hpp"
 
 /*Member functions*/
+void	Controller::send(Connection* connection)
+{
+	std::cout << "Controller send method called" << std::endl;
+
+	SocketIO socketIO;
+
+	if (!connection)
+	{
+		std::cerr << "Error: Connection is null" << std::endl;
+		return;
+	}
+	ConnectionSocketType socketType = connection->getClientConnectionSocket()->getSocketType();
+
+
+	if (socketType == CLIENT_CONNECTION_SOCKET)
+	{
+		std::cout << "Sending to ClientConnectionSocket" << std::endl;
+		socketIO.writeToClient(connection->getResponse()->getResponseMessage(), connection->getClientConnectionSocket()->getFd());
+	}
+	else if (socketType == DEMON_CONNECTION_SOCKET)
+	{
+		std::cout << "Sending to DemonConnectionSocket" << std::endl;
+		// connection->writeToDemon();
+	}
+	else if (socketType == CGI_CONNECTION_SOCKET)
+	{
+		std::cout << "Sending to CgiConnectionSocket" << std::endl;
+		// connection->writeToCgi();
+	}
+	connection->processConnectionStatusSending();
+}
+
+
 void	Controller::receive(Connection* connection)
 {
 	SocketIO socketIO;
 
 	std::cout << "Engine receive method called" << std::endl;
-	ConnectionSocketType socketType = connection->getClientConnectionSocket()->getSocketType();
+	if (!connection)
+	{
+		std::cerr << "Error: Connection is null" << std::endl;
+		return;
+	}
 
+	ConnectionSocketType socketType = connection->getClientConnectionSocket()->getSocketType();
 	if (socketType == CLIENT_CONNECTION_SOCKET)
 	{
 		std::cout << "Receiving from ClientConnectionSocket" << std::endl;
-		socketIO.readFromClient(connection->getClientConnectionSocket()->getFd(), connection->getRequest());
-		// connection->receiveMessage();
+		//socketIO.readFromClient(connection->getClientConnectionSocket()->getFd(), connection->getRequest());
+		 connection->receiveMessage();
 	}
 	else if (socketType == DEMON_CONNECTION_SOCKET)
 	{

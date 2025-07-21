@@ -14,6 +14,7 @@ private:
 public:
 	/*Member functions*/
 	void	receive(Connection* connection);
+	void	send(Connection* connection);
 	/*Getters and Setters*/
 
 	/*Constructors*/

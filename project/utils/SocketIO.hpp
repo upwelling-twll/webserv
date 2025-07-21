@@ -4,6 +4,8 @@
 # include <iostream>
 # include "../inc/webserv.hpp"
 
+class HttpResponse;
+
 enum SocketIOStatus
 {
 	SENT_SOCKETIO,
@@ -13,41 +15,8 @@ enum SocketIOStatus
 	IDLE_SOCKETIO,
 	CLOSED_ERROR_SENDING_SOCKETIO,
 	CLOSED_ERROR_RECEIVING_SOCKETIO,
-	//following statuses might be moved to other class
+	//TODO: following statuses might be moved to other class
 	ERROR_RESPONSE_RECEIVED,
-};
-
-enum ResponseStatus //will be  moved to httpResponse.hpp
-{
-	WAITING_START_LINE_RESPONSE,
-	WAITING_HEADER_RESPONSE,
-	WAITING_BODY_RESPONSE,
-	READY_RESPONSE,
-	ERROR_RESPONSE,
-};
-
-//HttpResponse class dummy
-class HttpResponse
-{
-private:
-	ResponseStatus	_status;
-public:
-	HttpResponse(): _status(WAITING_START_LINE_RESPONSE) {};
-	~HttpResponse(){};
-
-	ResponseStatus getStatus() const {
-		return _status;
-	}
-
-	ResponseStatus insert(const std::string& rawMessage) {
-		// Dummy implementation for the sake of example
-		if (rawMessage.empty()) {
-			_status = ERROR_RESPONSE;
-			return _status;
-		}
-		_status = READY_RESPONSE;
-		return _status;
-	}
 };
 
 

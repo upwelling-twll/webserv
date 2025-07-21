@@ -18,7 +18,7 @@ private:
 	std::vector<Connection>		_allConnections;
 	std::vector<struct pollfd>	_fds;
 
-	Controller					_controller;
+	Controller*					_controller;
 
 public:
 	/*Member functions*/

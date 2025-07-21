@@ -20,7 +20,8 @@ void	Engine::polloutSocketsHandle(size_t i, std::map<const Socket*, Connection*>
 	if (status == PREPARED_RESPONSE)
 	{
 		std::cout << "Connection has response, sending it to client" << std::endl;
-		activeConnections[_allSockets[i]]->sendToClient();
+		_controller->send(activeConnections[_allSockets[i]]);
+		// activeConnections[_allSockets[i]]->sendToClient();
 		activeConnections[_allSockets[i]]->processConnectionStatusSending(); //might not need
 	}
 	else if (status == PROCESSING_RESPONSE)
@@ -53,7 +54,7 @@ void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>&
 	else
 	{
 		std::cout <<"receive in socket" << std::endl;
-		_controller.receive(activeConnections[_allSockets[i]]);;
+		_controller->receive(activeConnections[_allSockets[i]]);;
 	}
 }
 
