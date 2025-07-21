@@ -8,7 +8,7 @@ bool	ConnectionSocket::isListening() const
 
 /*Getters and Setters*/
 
-SocketType Socket::getSocketType() const
+ConnectionSocketType ConnectionSocket::getSocketType() const
 {
 	return this->_socketType;
 }

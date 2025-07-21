@@ -46,15 +46,15 @@ private:
 	ConnectionSocket*			_clientConnectionSocket;
 
 	AHttpRequest*				_request;
-	bool						_active;
+	bool						_active; //may remove as it is not used
 
 	struct pollfd				_pollFd;
 
 public:
 	/*Member functions*/
 	void			receiveMessage();
-	void			processConnectionStatus(pollfd& pollFd);
-	void			processConnectionStatusResponce(pollfd& pollFd);
+	void			processConnectionStatusReceiving();
+	void			processConnectionStatusSending();
 	bool			haveResponse();
 	bool			sendToClient();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
@@ -72,6 +72,7 @@ public:
 	time_t						getTimeLastUsed() const;
 	ListeningSocket*			getServerListeningSocket() const;
 	ConnectionSocket*			getClientConnectionSocket() const;
+	AHttpRequest*				getRequest() const;
 
 	/*Constructors*/
     Connection(ListeningSocket* serverListeningSocket);

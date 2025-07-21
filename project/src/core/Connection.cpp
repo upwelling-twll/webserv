@@ -8,14 +8,15 @@ void	Connection::changeSocketMode(short mode, pollfd& pollFd)
 	std::cout << "Socket mode changed successfully "<< std::endl;
 }
 
-void	Connection::processConnectionStatusResponce(pollfd& pollFd)
+void	Connection::processConnectionStatusSending()
 {
-	(void)pollFd; // to avoid unused parameter warning
 	if (_status == SENT_TO_CLIENT)
 	{
 		std::cout << "Connection has sent response to client, changing socket mode to POLLIN" << std::endl;
 		// changeSocketMode(POLLIN, pollFd);
 		_status = IDLE; // Reset status to IDLE after sending response
+		// TODO : if request had "Connection : close" header, then close the connection after sending response
+		// TODO : if request had "Connection : keep-alive" header, then keep the connection open for further requests
 	}
 	else
 	{
@@ -23,9 +24,10 @@ void	Connection::processConnectionStatusResponce(pollfd& pollFd)
 	}
 }
 
-void	Connection::processConnectionStatus(pollfd& pollFd)
+
+
+void	Connection::processConnectionStatusReceiving()
 {
-	(void)pollFd; // to avoid unused parameter warning
 	std::cout << "	process Connection Status, status:" << _status << std::endl;
 	if (_status == READY_FOR_FORMATTING_RESPONSE)
 	{
@@ -39,8 +41,6 @@ void	Connection::processConnectionStatus(pollfd& pollFd)
 	{
 		// changeSocketMode(POLLOUT, pollFd);
 		// TODO : form response and send it to client 
-		// TODO : if request had "Connection : close" header, then close the connection after sending response
-		// TODO : if request had "Connection : keep-alive" header, then keep the connection open for further requests
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 		std::cout << "Connection is ready for formatting response after client closed sending side" << std::endl;
 	}
@@ -259,6 +259,11 @@ ConnectionSocket* Connection::getClientConnectionSocket() const
 	return _clientConnectionSocket;
 }
 
+AHttpRequest* Connection::getRequest() const
+{
+	return _request;
+}
+
 /*Constructors*/
 Connection::Connection(ListeningSocket* serverListeningSocket) :
 															   _buffer(""), 
@@ -270,7 +275,7 @@ Connection::Connection(ListeningSocket* serverListeningSocket) :
 	std::cout << "Connection parameterized constructor is called. Time Last Used:" \
     << std::asctime(std::localtime(&_timeLastUsed)) << std::endl;
 	_pollFd = createConnectionSocket(serverListeningSocket);
-	ConnectionSocket* newClientConnectionSocket = new ConnectionSocket(_pollFd.fd);
+	ConnectionSocket* newClientConnectionSocket = new ConnectionSocket(_pollFd.fd, CLIENT_CONNECTION_SOCKET);
 	_clientConnectionSocket = newClientConnectionSocket;
 	AHttpRequest* newRequest = new AHttpRequest();
 	_request = newRequest;

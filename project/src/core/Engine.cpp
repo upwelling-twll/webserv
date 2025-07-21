@@ -13,31 +13,6 @@ struct pollfd Engine::createPollFd(int fd, short events, short revents)
 	return (newPollFd);
 }
 
-void	Engine::receive(Connection* connection)
-{
-	SocketIO socketIO;
-	std::cout << "Engine receive method called" << std::endl;
-	ConnectionSocketType socketType = connection->getClientConnectionSocket()->getSocketType();
-
-	if (socketType == CLIENT_CONNECTION_SOCKET)
-	{
-		std::cout << "Receiving from ClientConnectionSocket" << std::endl;
-		// socketIO->readFromClient(connection->getClientConnectionSocket(), connection->getRequest(), connection->getRawMessage());
-		connection->receiveMessage();
-	}
-	else if (socketType == DEMON_CONNECTION_SOCKET)
-	{
-		std::cout << "Receiving from DemonConnectionSocket" << std::endl;
-		connection->readFromDemon();
-	}
-	else if (socketType == CGI_CONNECTION_SOCKET)
-	{
-		std::cout << "Receiving from CgiConnectionSocket" << std::endl;
-		connection->readFromCgi();
-	}
-}
-
-
 void	Engine::polloutSocketsHandle(size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
 	(void)_fds; // to avoid unused parameter warning
@@ -46,7 +21,7 @@ void	Engine::polloutSocketsHandle(size_t i, std::map<const Socket*, Connection*>
 	{
 		std::cout << "Connection has response, sending it to client" << std::endl;
 		activeConnections[_allSockets[i]]->sendToClient();
-		activeConnections[_allSockets[i]]->processConnectionStatusResponce(_fds[i]); //might not need
+		activeConnections[_allSockets[i]]->processConnectionStatusSending(); //might not need
 	}
 	else if (status == PROCESSING_RESPONSE)
 		std::cout << "Connection is processing response, nothing to send" << std::endl;
@@ -78,9 +53,7 @@ void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>&
 	else
 	{
 		std::cout <<"receive in socket" << std::endl;
-		receive(activeConnections[_allSockets[i]]);;
-		activeConnections[_allSockets[i]]->receiveMessage();
-		activeConnections[_allSockets[i]]->processConnectionStatus(_fds[i]);
+		_controller.receive(activeConnections[_allSockets[i]]);;
 	}
 }
 
@@ -108,6 +81,7 @@ int Engine::engineRoutine(Config& config)
 	{
 		_fds.push_back(createPollFd((*it)->getFd(), POLLIN | POLLOUT, 0));
 	}
+	
 	int dbg = 0;
 	while(true)
 	{
@@ -153,6 +127,8 @@ int Engine::engineRoutine(Config& config)
 Engine::Engine(std::vector<Socket*> allSockets) : _allSockets(allSockets)
 {
    std::cout << "Engine parameterized constructor is called" << std::endl;
+//    Controller controller;
+//    _controller = controller;
 }
 
 /*Destructors*/

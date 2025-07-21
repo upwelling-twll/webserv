@@ -5,17 +5,20 @@
 # include <poll.h> 
 
 # include "../../inc/webserv.hpp"
+# include "./Controller.hpp"
 
 class Config;
+class Controller;
 class Connection;
 class SocketIO;
-
 class Engine
 {
 private:
     std::vector<Socket*> 		_allSockets;
 	std::vector<Connection>		_allConnections;
 	std::vector<struct pollfd>	_fds;
+
+	Controller					_controller;
 
 public:
 	/*Member functions*/

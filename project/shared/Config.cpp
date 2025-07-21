@@ -20,7 +20,7 @@ bool Config::startWebServ()
 			}
 			catch(const std::exception& e)
 			{
-				std::cout << "Error creating socket for addr:" << it->getAddr() << std::endl;
+				std::cout << "Error adding socket to vector:" << it->getAddr() << std::endl;
 				std::cerr << e.what() << '\n';
 			}
 		}
