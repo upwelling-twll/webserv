@@ -64,9 +64,9 @@ void	Connection::processConnectionStatusReceiving()
 	{
 		// changeSocketMode(POLLOUT, pollFd);
 		// TODO : form response and send it to client 
-		_response->insert("Found someone, you have, I would say, hmmmm"); 
-		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
-		std::cout << "Connection is ready for formatting response after client closed sending side" << std::endl;
+		// _response->insert("Found someone, you have, I would say, hmmmm"); 
+		// _status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
+		// std::cout << "Connection is ready for formatting response after client closed sending side" << std::endl;
 		_active = false; // it a workaround to close connection after sending error response
 	}
 	else if ( _status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_REQUEST_RECEIVED)

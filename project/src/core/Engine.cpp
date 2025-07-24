@@ -74,15 +74,13 @@ void print_pfds(const std::vector<struct pollfd>& pfds)
 
 void updateAliveConnections(std::map<const Socket*, Connection*>& activeConnections, std::vector<struct pollfd>& pfds)
 {
-	for (std::map<const Socket*, Connection*>::iterator it = activeConnections.begin(); it != activeConnections.end(); it++)
-	{
-		std::cout << "Checking connection with fd=" << it->first->getFd() << std::endl;
-		if (it->first->isListening() == false)
+		// std::cout << "Updating alive connections..." << std::endl;
+		for (std::map<const Socket*, Connection*>::iterator it = activeConnections.begin(); it != activeConnections.end(); )
 		{
-			if (it->second && (it->second->getStatus() == SENT_TO_CLIENT || it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) \
-			&& it->second->isActive() == false)
-			{
-			// Remove the corresponding pollfd from _fds
+			if (it->first->isListening() == false &&  it->second && (it->second->getStatus() == SENT_TO_CLIENT \
+				|| it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) && it->second->isActive() == false)
+			{	
+				// Remove the corresponding pollfd from _fds
 				std::cout << "Someone will be erased from here!" << std::endl;
 				int fd = it->first->getFd();
 				for (size_t j = 0; j < pfds.size(); ++j)
@@ -102,9 +100,10 @@ void updateAliveConnections(std::map<const Socket*, Connection*>& activeConnecti
 				delete it ->second; // Delete the Connection object
 				it = activeConnections.erase(it);
 			}
+			else
+				++it;
 		}
 	}
-}
 
 int Engine::engineRoutine(Config& config)
 {
@@ -155,7 +154,7 @@ int Engine::engineRoutine(Config& config)
 			// if (p > 0)
 			// 	break;
 		}
-		// updateAliveConnections(activeConnections, _fds);
+		updateAliveConnections(activeConnections, _fds);
 	}
 	return (1);
 }
