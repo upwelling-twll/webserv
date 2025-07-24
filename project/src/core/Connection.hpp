@@ -139,4 +139,6 @@ public:
 
 std::ostream& operator<<(std::ostream &output_stream, Connection& src);
 
+void printActiveConnections(const std::map<const Socket*, Connection*>& activeConnections); //dbg method
+
 #endif // CONNECTION_HPP

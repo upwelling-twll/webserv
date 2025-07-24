@@ -35,25 +35,26 @@ void	Engine::polloutSocketsHandle(size_t i, std::map<const Socket*, Connection*>
 
 void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>& activeConnections)
 {
-	std::cout << "Have event on socket(fd=" << _fds[i].fd << ")" << std::endl;
-	std::cout << "Socket info: " << *_allSockets[i] << std::endl;
-	std::cout  << "Connection info activeConnection[_allSockets[" << i << "]]: "<< activeConnections[_allSockets[i]] << std::endl;
+	std::cout << "pollinSocketsHandle: Have event on socket(fd=" << _fds[i].fd << ")" << std::endl;
+	printActiveConnections(activeConnections);
+	std::cout << "pollinSocketsHandle: Socket info: " << *_allSockets[i] << std::endl;
+	std::cout  << "pollinSocketsHandle: Connection info activeConnection[_allSockets[" << i << "]]: "<< activeConnections[_allSockets[i]] << std::endl;
 	if (_allSockets[i]->isListening())
 	{
-		std::cout << "New connection is being accepted" << std::endl;
+		std::cout << "pollinSocketsHandle: New connection is being accepted" << std::endl;
 		Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]));
-		std::cout << "New connection created: " << *newConnection << std::endl;
+		std::cout << "pollinSocketsHandle: New connection created: " << *newConnection << std::endl;
 		//add Client`s ConnectionSocket to _allSockets vector to use it as a key
 		_allSockets.push_back(newConnection->getClientConnectionSocket());
 		//add  new connection to activeConnections map to use its methods for recv and send
 		activeConnections.insert(std::make_pair(_allSockets.back(), newConnection));
 		//add new connection`s fd to _allConnections vector for poll()
 		_fds.push_back(newConnection->getPollFd());
-		std::cout << "New connection created and added to active connections." << std::endl;
+		std::cout << "pollinSocketsHandle: New connection created and added to active connections." << std::endl;
 	}
 	else
 	{
-		std::cout <<"receive in socket" << std::endl;
+		std::cout <<"pollinSocketsHandle: receive in socket" << std::endl;
 		_controller->receive(activeConnections[_allSockets[i]]);
 	}
 }
@@ -73,34 +74,35 @@ void print_pfds(const std::vector<struct pollfd>& pfds)
 
 void updateAliveConnections(std::map<const Socket*, Connection*>& activeConnections, std::vector<struct pollfd>& pfds)
 {
-	// std::cout << "Updating alive connections..." << std::endl;
-	for (std::map<const Socket*, Connection*>::iterator it = activeConnections.begin(); it != activeConnections.end(); )
+	for (std::map<const Socket*, Connection*>::iterator it = activeConnections.begin(); it != activeConnections.end(); it++)
 	{
-		if (it->first->isListening() == false &&  it->second && (it->second->getStatus() == SENT_TO_CLIENT || it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) \
-			 && it->second->isActive() == false)
-		{	
-			// Remove the corresponding pollfd from _fds
-			std::cout << "Someone will be erased from here!" << std::endl;
-			int fd = it->first->getFd();
-			for (size_t j = 0; j < pfds.size(); ++j)
+		std::cout << "Checking connection with fd=" << it->first->getFd() << std::endl;
+		if (it->first->isListening() == false)
+		{
+			if (it->second && (it->second->getStatus() == SENT_TO_CLIENT || it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) \
+			&& it->second->isActive() == false)
 			{
-				if (pfds[j].fd == fd)
+			// Remove the corresponding pollfd from _fds
+				std::cout << "Someone will be erased from here!" << std::endl;
+				int fd = it->first->getFd();
+				for (size_t j = 0; j < pfds.size(); ++j)
 				{
-					if (fd >= 0) // Ensure the file descriptor is valid
+					if (pfds[j].fd == fd)
 					{
-						close(fd); // Close the socket file descriptor
-						std::cout << "Closed socket with fd=" << fd << std::endl;
+						if (fd >= 0) // Ensure the file descriptor is valid
+						{
+							close(fd); // Close the socket file descriptor
+							std::cout << "Closed socket with fd=" << fd << std::endl;
+						}
+						pfds.erase(pfds.begin() + j);
+						std::cout << "Removed pollfd with fd=" << fd << " from pollfds." << std::endl;
+						break;
 					}
-					pfds.erase(pfds.begin() + j);
-					std::cout << "Removed pollfd with fd=" << fd << " from pollfds." << std::endl;
-					break;
 				}
+				delete it ->second; // Delete the Connection object
+				it = activeConnections.erase(it);
 			}
-			delete it ->second; // Delete the Connection object
-			it = activeConnections.erase(it);
 		}
-		else
-			++it;
 	}
 }
 
@@ -132,9 +134,11 @@ int Engine::engineRoutine(Config& config)
 		{
 			if (_fds[i].revents & POLLIN)
 			{
+				std::cout << "WILL POLLIN event on socket fd=" << _fds[i].fd << std::endl;
 				pollinSocketsHandle(i, activeConnections);
-				break;
+				// break;
 				std::cout << "completed pollin socket handle" << std::endl;
+				printActiveConnections(activeConnections);
 			}
 			else if ((_fds[i].revents & POLLOUT) && activeConnections[_allSockets[i]]->getStatus() == PREPARED_RESPONSE)
 			{
@@ -151,7 +155,7 @@ int Engine::engineRoutine(Config& config)
 			// if (p > 0)
 			// 	break;
 		}
-		updateAliveConnections(activeConnections, _fds);
+		// updateAliveConnections(activeConnections, _fds);
 	}
 	return (1);
 }

@@ -2,7 +2,7 @@ NAME      := webserv
 
 # ──────────────────────────────── Компилятор ──────────────────────────────── #
 CXX       := c++
-CXXFLAGS  := -Wall -Wextra -Werror  #-std=c++98
+CXXFLAGS  := -Wall -Wextra -Werror  -std=c++98
 
 # ─────────────────────────────── Исходники ────────────────────────────────── #
 SRC       := $(shell find . -type f -name '*.cpp')

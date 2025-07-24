@@ -2,6 +2,28 @@
 
 /*Member functions*/
 
+void printActiveConnections(const std::map<const Socket*, Connection*>& activeConnections) {
+	std::cout << "--- Active Connections ---" << std::endl;
+	for (std::map<const Socket*, Connection*>::const_iterator it = activeConnections.begin(); it != activeConnections.end(); ++it) {
+		const Socket* sock = it->first;
+		const Connection* conn = it->second;
+		if (!sock) {
+			std::cout << "Invalid socket pointer." << std::endl;
+		}
+		if (!conn){
+			std::cout << "Invalid connection pointer for FD:" << sock->getFd() << std::endl;
+		}
+		if (conn)
+		std::cout << "FD: " << sock->getFd()
+		          << " | Listening: " << sock->isListening()
+		          << " | Status: " << conn->getStatus()
+		          << " | Active: " << conn->isActive()
+		          << std::endl;
+	}
+	std::cout << "--------------------------" << std::endl;
+}
+
+
 void	Connection::changeSocketMode(short mode, pollfd& pollFd)
 {
 	pollFd.events = mode;
