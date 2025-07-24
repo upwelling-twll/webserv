@@ -41,7 +41,7 @@ void	Controller::receive(Connection* connection)
 {
 	SocketIO socketIO;
 
-	std::cout << "Engine receive method called" << std::endl;
+	std::cout << "Controller receive method called" << std::endl;
 	if (!connection)
 	{
 		std::cerr << "Error: Connection is null" << std::endl;

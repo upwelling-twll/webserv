@@ -37,7 +37,7 @@ void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>&
 {
 	std::cout << "Have event on socket(fd=" << _fds[i].fd << ")" << std::endl;
 	std::cout << "Socket info: " << *_allSockets[i] << std::endl;
-	std::cout << activeConnections[_allSockets[i]] << std::endl;
+	std::cout  << "Connection info activeConnection[_allSockets[" << i << "]]: "<< activeConnections[_allSockets[i]] << std::endl;
 	if (_allSockets[i]->isListening())
 	{
 		std::cout << "New connection is being accepted" << std::endl;
@@ -133,7 +133,7 @@ int Engine::engineRoutine(Config& config)
 			if (_fds[i].revents & POLLIN)
 			{
 				pollinSocketsHandle(i, activeConnections);
-				// break;
+				break;
 				std::cout << "completed pollin socket handle" << std::endl;
 			}
 			else if ((_fds[i].revents & POLLOUT) && activeConnections[_allSockets[i]]->getStatus() == PREPARED_RESPONSE)
