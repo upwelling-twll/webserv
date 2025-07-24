@@ -1,0 +1,22 @@
+1. seg fault caused by Zombie FD
+client A connects : nc localhost 8080
+client A sends bad request
+server response with bad request. disconnecting client, removing socket from the vector
+client is closed
+client B initilizing connection : nc localhost 81
+server: seg fault
+0x0
+New connection is being accepted
+Connection parameterized constructor is called. Time Last Used:Thu Jan  1 04:00:00 1970
+
+Socket parameterized constructor is called
+ConnectionSocket parameterized constructor is called
+New connection created: * Connection Class info*
+Status: 0
+Time Last Used: 0
+Server Listening Socket FD: 3
+Client Connection Socket FD: 5
+
+New connection created and added to active connections.
+completed pollin socket handle
+zsh: segmentation fault  ./webserv example.conf
