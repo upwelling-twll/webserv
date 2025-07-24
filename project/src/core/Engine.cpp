@@ -76,7 +76,7 @@ void updateAliveConnections(std::map<const Socket*, Connection*>& activeConnecti
 	// std::cout << "Updating alive connections..." << std::endl;
 	for (std::map<const Socket*, Connection*>::iterator it = activeConnections.begin(); it != activeConnections.end(); )
 	{
-		if (it->first->isListening() == false &&  (it->second->getStatus() == SENT_TO_CLIENT || it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) \
+		if (it->first->isListening() == false &&  it->second && (it->second->getStatus() == SENT_TO_CLIENT || it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) \
 			 && it->second->isActive() == false)
 		{	
 			// Remove the corresponding pollfd from _fds
