@@ -21,13 +21,13 @@ def netcat(hostname, port, content=None, protocol='tcp'):
         s.send(str.encode('\n'))
 
         # s.sendall(content)
-        hasHacievedAnyData = False
+        hasReceivedAnyData = False
         while True:
-            s.settimeout(10)
+            s.settimeout(30)
             try:
                 data = s.recv(1024)
             except Exception:
-                if hasHacievedAnyData:
+                if hasReceivedAnyData:
                     print('Info: Timeout while expecting to receve more data')
                 else:
                     print('Error: Timeout while expecting to receve data')
@@ -35,7 +35,7 @@ def netcat(hostname, port, content=None, protocol='tcp'):
             if len(data) == 0:
                 break
             print('Received:' + str(repr(data)))
-            hasHacievedAnyData = True
+            hasReceivedAnyData = True
         s.shutdown(socket.SHUT_WR)
         s.close()
         # print('Connection closed.')
@@ -45,17 +45,15 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "-ok":
         # Send a correct HTTP request
         http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
-        netcat('localhost', 8080, http_request)
     elif len(sys.argv) > 1 and sys.argv[1] == "-bad":
         # Send a malformed HTTP request
-        bad_request = "Hello there / HTTP/1.1\r\nHost: localhost\r\n\r\n"
-        netcat('localhost', 8080, bad_request)
+        http_request = "Hello there / HTTP/1.1\r\nHost: localhost\r\n\r\n"
     elif len(sys.argv) > 1 and sys.argv[1] == "-ko":
-        netcat('localhost', 8080, 'Hello there\n')
+        http_request = "Hello there\n"
     else:
         # Default example
         http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
-        netcat('localhost', 8080, http_request)
+    netcat('localhost', 8080, http_request)
 # netcat('localhost', 3478)
 # netcat('localhost', 3478, protocol='udp')
 # netcat('localhost', 16384, 'Hello', 'udp')
