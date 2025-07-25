@@ -2,6 +2,21 @@
 
 /*Member functions*/
 
+void	Connection::clean()
+{
+	std::cout << "Cleaning up connection resources..." << std::endl;
+	if (_response)
+	{
+		delete _response;
+		_response = nullptr;
+	}
+	if (_request)
+	{
+		delete _request;
+		_request = nullptr;
+	}
+}
+
 void printActiveConnections(const std::map<const Socket*, Connection*>& activeConnections) {
 	std::cout << "--- Active Connections ---" << std::endl;
 	for (std::map<const Socket*, Connection*>::const_iterator it = activeConnections.begin(); it != activeConnections.end(); ++it) {

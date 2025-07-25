@@ -107,6 +107,8 @@ public:
 	bool			sendToClient();
 	struct pollfd	createConnectionSocket(ListeningSocket* serverListeningSocket);
 	void			changeSocketMode(short mode, pollfd& pollFd);
+
+	void			clean();
 	// bool	disconnectSocket();
 
 	/*Getters and Setters*/

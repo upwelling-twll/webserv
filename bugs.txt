@@ -1,4 +1,8 @@
-1. seg fault caused by Zombie FD
+1. 
+
+
+solved 25.07
+seg fault caused by Zombie FD
 client A connects : nc localhost 8080
 client A sends bad request
 server response with bad request. disconnecting client, removing socket from the vector

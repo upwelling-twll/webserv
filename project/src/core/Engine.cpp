@@ -113,7 +113,8 @@ void Engine::updateAliveConnections(std::map<const Socket*, Connection*>& active
 					else
 						++it;
 				}
-				delete it ->second; // Delete the Connection object
+				it->second->clean();
+				delete it->second; // Delete the Connection object
 				it = activeConnections.erase(it);
 			}
 			else
