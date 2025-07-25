@@ -38,6 +38,10 @@ void	Connection::processConnectionStatusSending()
 		// changeSocketMode(POLLIN, pollFd);
 		if (_active == true)
 			_status = IDLE; // Reset status to IDLE after sending response
+		delete this->_response; // Remove response object after sending
+		this->_response = new HttpResponse(); // Reset response object for next request
+		delete this->_request; // Remove response object after sending
+		this->_request = new AHttpRequest(); // Reset request object for next request
 		// TODO : if request had "Connection : close" header, then close the connection after sending response
 		// TODO : if request had "Connection : keep-alive" header, then keep the connection open for further requests
 	}
@@ -52,7 +56,6 @@ void	Connection::processConnectionStatusReceiving()
 	std::cout << "	process Connection Status, status:" << _status << std::endl;
 	if (_status == READY_FOR_FORMATTING_RESPONSE)
 	{
-		// changeSocketMode(POLLOUT, pollFd);
 		std::cout << "Connection is ready for formatting response" << std::endl;
 		 std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
 		//TODO : form response and send it to client
@@ -61,17 +64,15 @@ void	Connection::processConnectionStatusReceiving()
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 	}
 	else if (_status == CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE)
-	{
-		// changeSocketMode(POLLOUT, pollFd);
+	{ /* i do not know if this case is needed and what is the use of it*/
 		// TODO : form response and send it to client 
 		// _response->insert("Found someone, you have, I would say, hmmmm"); 
 		// _status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 		// std::cout << "Connection is ready for formatting response after client closed sending side" << std::endl;
-		_active = false; // it a workaround to close connection after sending error response
+		_active = false; // it a workaround to close connection 
 	}
-	else if ( _status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_REQUEST_RECEIVED)
+	else if (_status == ERROR_REQUEST_RECEIVED)
 	{
-		// changeSocketMode(POLLOUT, pollFd);
 		//TODO : will form BadRequest error responce and send it to client and then close the connection
 		// set Connection status to ERROR_CONNECTION (?)
 		_response->insert("How uncivilized... Bad Request"); //TODO: replace bu proper 400 error
@@ -83,16 +84,15 @@ void	Connection::processConnectionStatusReceiving()
 	{
 		std::cout << "Connection is waiting for data, no changes" << std::endl;
 	}
-	else if (_status == ERROR_RECEIVING_DATA_CLOSE_CONNECTION)
+	else if (_status == CLIENT_CLOSED_ERROR_RECEIVING_DATA || _status == ERROR_RECEIVING_DATA_CLOSE_CONNECTION)
 	{
 		//TODO : just close the connection, no response to send
 		// set Connection status to ERROR_CONNECTION (?)
-		std::cout << "Connection is in seriouse error state, close it" << std::endl;
-		_active = false; // it a workaround to close connection after sending error response
+		std::cout << "Connection was closed by client or is in seriouse error state, close it" << std::endl;
+		_active = false; // it a workaround to close connection, in this case without sending error response
 	}
 	else
 	{
-		// changeSocketMode(POLLIN, pollFd);
 		// set Connection status to ERROR_CONNECTION (?)
 		std::cout << "Connection is in default state" << std::endl;
 
@@ -160,6 +160,11 @@ void	Connection::receiveMessage()
 			{
 				_status = CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE;
 				std::cout << "Request is ready to form response, client closed the sending side" << std::endl;
+			}
+			else if (_request->getStatus() == WAITING_START_LINE || _request->getStatus() == WAITING_HEADER || _request->getStatus() == WAITING_BODY)
+			{
+				_status = CLIENT_CLOSED_ERROR_RECEIVING_DATA;
+				std::cout << "Client closed the sending side, no complete request" << std::endl;
 			}
 			else
 			{

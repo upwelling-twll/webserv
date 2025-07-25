@@ -82,7 +82,9 @@ void Engine::updateAliveConnections(std::map<const Socket*, Connection*>& active
 		{
 			//std::cout << "Checking connection for socket fd=" << it->first->getFd() << std::endl;
 			if (it->first->isListening() == false &&  it->second && (it->second->getStatus() == SENT_TO_CLIENT \
-				|| it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION ) && it->second->isActive() == false)
+				|| it->second->getStatus() == ERROR_RECEIVING_DATA_CLOSE_CONNECTION \
+				|| it->second->getStatus() == CLIENT_CLOSED_ERROR_RECEIVING_DATA \
+				) && it->second->isActive() == false)
 			{	
 				// Remove the corresponding pollfd from _fds
 				std::cout << "Someone will be erased from here!" << std::endl;
