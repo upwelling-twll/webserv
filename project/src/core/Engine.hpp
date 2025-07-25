@@ -29,6 +29,7 @@ public:
 											std::map<const Socket*, Connection*>& activeConnections);
 
 	struct pollfd	createPollFd(int fd, short events, short revents);
+	void 			updateAliveConnections(std::map<const Socket*, Connection*>& activeConnections, std::vector<struct pollfd>& pfds);
 
 	/*Getters and Setters*/
 

@@ -1,4 +1,5 @@
 import socket
+import sys
 
 def netcat(hostname, port, content=None, protocol='tcp'):
     print('')
@@ -40,7 +41,21 @@ def netcat(hostname, port, content=None, protocol='tcp'):
         # print('Connection closed.')
 
 #Examples of usage
-netcat('localhost', 8080, 'Hello there\n')
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == "-ok":
+        # Send a correct HTTP request
+        http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
+        netcat('localhost', 8080, http_request)
+    elif len(sys.argv) > 1 and sys.argv[1] == "-bad":
+        # Send a malformed HTTP request
+        bad_request = "Hello there / HTTP/1.1\r\nHost: localhost\r\n\r\n"
+        netcat('localhost', 8080, bad_request)
+    elif len(sys.argv) > 1 and sys.argv[1] == "-ko":
+        netcat('localhost', 8080, 'Hello there\n')
+    else:
+        # Default example
+        http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
+        netcat('localhost', 8080, http_request)
 # netcat('localhost', 3478)
 # netcat('localhost', 3478, protocol='udp')
 # netcat('localhost', 16384, 'Hello', 'udp')
