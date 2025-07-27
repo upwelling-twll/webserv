@@ -30,8 +30,8 @@ private:
 
 public:
 	/*Member functions*/
-	size_t	writeToClient(const std::string& message, int fd);
-	int		readFromClient(int fd, AHttpRequest* _request);
+	size_t					writeToClient(const std::string& message, int fd);
+	SocketIOStatus			readFromClient(int fd, AHttpRequest* _request);
 
 	int		writeToDemon(const std::string& message, int fd);
 	int		readFromDemon(int fd, HttpResponse* _response, std::string _rawMessage);
