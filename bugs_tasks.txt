@@ -1,4 +1,8 @@
-1. 
+tasks:
+1. replace receiveMessage by readFromClient
+2. integrate read and write FromDemon, from CGI.
+3. handle headers of request
+4. implement redirection (from config to response)
 
 
 solved 25.07
