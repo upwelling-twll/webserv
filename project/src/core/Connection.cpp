@@ -1,5 +1,5 @@
 #include "Connection.hpp"
-
+#include "../../rest/Rest.hpp"
 /*Member functions*/
 
 bool locateSymbol(const std::string& string, char symbol)
@@ -102,8 +102,11 @@ void	Connection::receiveMessage()
 				rstatus = _request->insert(_rawMessage);
 				if (rstatus == READY)
 				{
+					Rest newResponse;
+					std::cout << newResponse.get(*_request, 200);
 					_status = READY_FOR_FORMATTING_RESPONSE;
 					std::cout << "Request is ready to form response" << std::endl;
+					
 					_rawMessage.clear(); // Clear the raw message after processing
 					return ;
 				}
