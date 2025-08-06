@@ -15,8 +15,13 @@ enum SocketIOStatus
 	IDLE_SOCKETIO,
 	CLOSED_ERROR_SENDING_SOCKETIO,
 	CLOSED_ERROR_RECEIVING_SOCKETIO,
+	//following statuses are added for readFromClient use
+	
 	//TODO: following statuses might be moved to other class
 	ERROR_RESPONSE_RECEIVED,
+
+	//to compile grabage
+	WAITING_FOR_DATA,
 };
 
 
