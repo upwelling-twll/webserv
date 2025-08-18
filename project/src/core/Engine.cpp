@@ -139,7 +139,7 @@ int Engine::engineRoutine(Config& config)
 	while(true)
 	{
 		dbg++;
-		if (dbg % 10000000 == 0)
+		if (dbg % 100000000 == 0)
 			print_pfds(_fds);
 		int n = poll(_fds.data(), _fds.size(), 0); //timeout=0, then poll() will return without blocking.
 		if (n < 0)

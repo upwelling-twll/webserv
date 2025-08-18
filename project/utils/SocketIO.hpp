@@ -20,8 +20,7 @@ enum SocketIOStatus
 	//TODO: following statuses might be moved to other class
 	ERROR_RESPONSE_RECEIVED,
 
-	//to compile grabage
-	WAITING_FOR_DATA,
+	//to compile garbage
 };
 
 
@@ -36,7 +35,7 @@ private:
 public:
 	/*Member functions*/
 	size_t					writeToClient(const std::string& message, int fd);
-	SocketIOStatus			readFromClient(int fd, AHttpRequest* _request);
+	void					readFromClient(int fd, AHttpRequest* _request, Connection* connection);
 
 	int		writeToDemon(const std::string& message, int fd);
 	int		readFromDemon(int fd, HttpResponse* _response, std::string _rawMessage);

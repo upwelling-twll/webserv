@@ -48,7 +48,7 @@ size_t SocketIO::writeToClient(const std::string& message, int fd)
 	return (sentSize);
 }
 
-SocketIOStatus SocketIO::readFromClient(int fd, AHttpRequest* _request)
+void SocketIO::readFromClient(int fd, AHttpRequest* _request, Connection* connection)
 {
 	int 	i;
 	char	buf[1000];
@@ -74,17 +74,19 @@ SocketIOStatus SocketIO::readFromClient(int fd, AHttpRequest* _request)
 				if (rstatus == READY)
 				{
 					_status = RECEIVED_SOCKETIO;
+					connection->setStatus(READY_FOR_FORMATTING_RESPONSE);
 					std::cout << "Request is ready to form response" << std::endl;
 					_rawMessage.clear(); // Clear the raw message after processing
-					return (RECEIVED_SOCKETIO);
+					return ;
 					// return (READY_FOR_FORMATTING_RESPONSE);
 				}
 				else if (rstatus == ERROR_REQUEST)
 				{
 					_status = RECEIVED_SOCKETIO; //may be ERROR_SOCKETIO would work better
+					connection->setStatus(ERROR_REQUEST_RECEIVED);
 					std::cout << "Error in request parsing" << std::endl;
 					_rawMessage.clear(); // Clear the raw message after processing
-					return (RECEIVED_SOCKETIO);
+					break ;
 					// return (ERROR_REQUEST_RECEIVED);
 				}
 				else if (rstatus == WAITING_START_LINE || 
@@ -92,9 +94,11 @@ SocketIOStatus SocketIO::readFromClient(int fd, AHttpRequest* _request)
 						rstatus == WAITING_BODY)
 				{
 					_status = BUSY_SOCKETIO;
+					connection->setStatus(WAITING_FOR_DATA);
 					// CONNECTION STATUS : _status = WAITING_FOR_DATA;
 					std::cout << "Request is not ready yet, waiting for more data" << std::endl;
-					_rawMessage.clear(); // Clear the raw message after processing
+					// _rawMessage.clear(); // Clear the raw message after processing
+					memset(buf, 0, sizeof(buf));
 					rstatus = _request->getStatus();
 					continue ;
 				}
@@ -113,24 +117,33 @@ SocketIOStatus SocketIO::readFromClient(int fd, AHttpRequest* _request)
 			if (_request->getStatus() == READY)
 			{
 				_status = RECEIVED_SOCKETIO; 
+				connection->setStatus(CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE);
 				std::cout << "Request is ready to form response, client closed the sending side" << std::endl;
-				return (RECEIVED_SOCKETIO);
+				return ;
 				//return (CLENT_CLOSED_READY_FOR_FORMATTING_RESPONSE);
+			}
+			else if (_request->getStatus() == WAITING_START_LINE || _request->getStatus() == WAITING_HEADER || _request->getStatus() == WAITING_BODY)
+			{
+				connection->setStatus(CLIENT_CLOSED_ERROR_RECEIVING_DATA);
+				std::cout << "Client closed the sending side, no complete request" << std::endl;
 			}
 			else
 			{
+				connection->setStatus(CLIENT_CLOSED_ERROR_RECEIVING_DATA);
 				_status = CLOSED_ERROR_RECEIVING_SOCKETIO;
 				std::cout << "Error receiving data from client, client closed the sending side" << std::endl;
-				return (CLOSED_ERROR_RECEIVING_SOCKETIO);
+				return ;
 				//return (CLIENT_CLOSED_ERROR_RECEIVING_DATA);
 			}
+			return ;
 		}
-		else if (i == EAGAIN || i == EWOULDBLOCK)
+		else if (i == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
 		{
 			_status = BUSY_SOCKETIO;
+			connection->setStatus(WAITING_FOR_DATA);
 			std::cout << "No more data to read, waiting for more data chunks" << std::endl;
 			//return (WAITING_FOR_DATA);
-			return (BUSY_SOCKETIO);
+			return ;
 		}
 		else if (i == EINTR)
 		{
@@ -143,15 +156,16 @@ SocketIOStatus SocketIO::readFromClient(int fd, AHttpRequest* _request)
 		else
 		{
 			_status = CLOSED_ERROR_RECEIVING_SOCKETIO;
+			connection->setStatus(ERROR_RECEIVING_DATA_CLOSE_CONNECTION);
 			//TODO : might need to set request status to ERROR_REQUEST,
 			// but must not send the responce, just !! close connection !!
 			std::cerr << "Error receiving data from client: " << strerror(errno) << std::endl;
-			return (CLOSED_ERROR_RECEIVING_SOCKETIO);
+			return ;
 			//return (ERROR_RECEIVING_DATA_CLOSE_CONNECTION);
 		}
 		rstatus = _request->getStatus();
 	}
-	return (WAITING_FOR_DATA);
+	return ;
 }
 
 int SocketIO::writeToDemon(const std::string& message, int fd)
