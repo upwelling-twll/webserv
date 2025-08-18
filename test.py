@@ -35,7 +35,7 @@ def netcat(hostname, port, content=None, keep_alive=False, protocol='tcp'):
             s.sendall(request.encode())
 
             has_received = False
-            s.settimeout(10)
+            s.settimeout(100000)
 
             while True:
                 try:
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     elif "-post" in args:
         http_request = "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 5\r\n\r\nHello"
     elif "-large" in args:
-        http_request = "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 10\r\n\r\n" + "0" * 100
+        http_request = "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 1940\r\n\r\n" + "0" * 1930 + "1" * 10
     else:
         http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
 
