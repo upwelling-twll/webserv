@@ -29,6 +29,12 @@ private:
 	std::string proxy_pass; //might be converted to str ip and int port
 
 public:
+	bool isMethodAllowed(const std::string& method) const;
+
+	std::string getPathPrefix() const;
+	size_t getMaxBodySize() const; //in bytes
+	std::string getRoot_sd() const;
+
 	Location(); //constructor for mock locations
 	Location(const LocationParse& src); //constructor taking the LocationParse object
 	~Location();
@@ -50,6 +56,7 @@ private:
 public:
 	void		addLocation(std::vector<Location> src); //not used can delete
 	Socket*		initListeningSocket();
+	const Location* matchLocation(const std::string& uri) const;
 
 	std::string getIp() const;
 	int			getPort() const;

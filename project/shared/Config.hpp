@@ -23,6 +23,7 @@ public:
 	bool	startWebServ();
 	void	closeAllFds();
 	void	addSocketToVector(Socket *s);
+	const Server& matchServer(const std::string& host) const;
 
 	/*Getters and Setters*/
 	std::vector<Server>	const	getServers();

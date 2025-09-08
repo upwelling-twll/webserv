@@ -2,6 +2,17 @@
 
 /*Member functions*/
 
+const Server& Config::matchServer(const std::string& host) const
+{
+	for (std::vector<Server>::const_iterator it = this->_servers.begin(); it != this->_servers.end(); ++it)
+	{
+		if (it->getServerName() == host)
+			return (*it);
+	}
+	return (this->_servers.front());
+}
+
+
 void Config::addSocketToVector(Socket *s)
 {
 	std::cout << "adding socket to vector:" << s->getFd() << std::endl;

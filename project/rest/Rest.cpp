@@ -11,13 +11,76 @@ Rest::Rest(const std::string &dir) : storageDir(dir) {}
 
 void Rest::setStorageDir(const std::string &dir) { storageDir = dir; }
 
+struct PathParts {
+    std::string directory;
+    std::string filename;
+};
+
+PathParts splitUri(const std::string& uri) {
+    PathParts parts;
+    if (uri.empty() || uri == "/") {
+        parts.directory = "/";
+        parts.filename = "";
+        return parts;
+    }
+    size_t pos = uri.find_last_of('/');
+    if (pos == std::string::npos) {
+        parts.directory = "/";
+        parts.filename = uri;
+    } else {
+        parts.directory = uri.substr(0, pos + 1);   // keep trailing slash
+        parts.filename = uri.substr(pos + 1);
+    }
+    return parts;
+}
+
+int validateRequest(AHttpRequest& req, const Server& srv, const std::string& method, const Location*& outLoc)
+{
+	std::string uri = req.get(URI);
+	outLoc = srv.matchLocation(uri);
+
+	if (!outLoc)
+	{
+		return 404; // no location matched
+	}
+	if (!outLoc->isMethodAllowed(method))
+	{
+		return 405; // method not allowed
+	}
+	if (method == "POST")
+	{
+		size_t bodySize = req.get(BODY).size();
+		if (bodySize > outLoc->getMaxBodySize())
+		{
+		return 413; // Payload Too Large
+		}
+	}
+	return 200; // OK
+}
 std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 {
 	Headers h;
-	(void)conf;
 	h["Content-Type"] = "text/html; charset=utf-8";
-	const std::string body = "<div>Hello World<div/>";
-	return formResponse(req, status, body, h);
+
+	std::cout << "DEBUG: " << safeHeader(req, HOST) << std::endl;
+	const Server& srv = conf.matchServer(safeHeader(req, HOST));
+	const Location* loc;
+	int vstatus = validateRequest(req, srv, "GET", loc);
+	if (vstatus != 200)
+		return formResponse(req, vstatus, reasonPhrase(vstatus), h);
+
+	PathParts parts = splitUri(req.get(URI));
+	std::cout << "DEBUG: root_sd = " << loc->getRoot_sd()<< std::endl;
+	std::string filepath = loc->getRoot_sd() + parts.directory + parts.filename;
+
+	std::cout << "DEBUG: filepath = " << filepath << std::endl;
+	std::ifstream ifs(filepath.c_str());
+    if (!ifs)
+        return formResponse(req, 404, "<h1>Not Found</h1>", h);
+
+    std::ostringstream buffer;
+    buffer << ifs.rdbuf();
+    return formResponse(req, status, buffer.str(), h);
 }
 
 std::string Rest::post(AHttpRequest &req, int status, Config& conf)

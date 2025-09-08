@@ -66,6 +66,7 @@ void	Connection::processConnectionStatusSending()
 	}
 }
 
+
 HttpResponse* createRestResponse(AHttpRequest& req, Config& _config)
 {
 	Rest newResponse;
@@ -77,23 +78,23 @@ HttpResponse* createRestResponse(AHttpRequest& req, Config& _config)
 		response->insert(responseStr);
 		return response;
 	}
-	if (req.get(VarKey::METHOD) == "GET")
+	if (req.get(METHOD) == "GET")
 	{
 		std::string responseStr = newResponse.get(req, 200, _config); // Using 200 OK for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);
 		return response;
 	}
-	else if (req.get(VarKey::METHOD) == "POST")
+	else if (req.get(METHOD) == "POST")
 	{
 		std::string responseStr = newResponse.post(req, 200, _config); // Using 200 OK for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);
 		return response;
 	}
-	else if (req.get(VarKey::METHOD) == "DELETE")
+	else if (req.get(METHOD) == "DELETE")
 	{
-		std::string filename = req.get(VarKey::URI);
+		std::string filename = req.get(URI);
 		std::string responseStr = newResponse.del(req, 200, filename, _config); // Using 200 OK for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);

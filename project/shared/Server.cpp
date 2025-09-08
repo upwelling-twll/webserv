@@ -1,7 +1,77 @@
 #include "./Server.hpp"
 
+// ───── Location ──────────────────────────────────────────
+
+bool Location::isMethodAllowed(const std::string& method) const
+{
+	if (limit_except.empty()) return true; // default: allow everything
+	return limit_except.find(method) != std::string::npos;
+}
+
+size_t Location::getMaxBodySize() const
+{
+	if (client_max_body_size_sd.empty())
+		return SIZE_MAX;
+	return static_cast<size_t>(std::stoul(client_max_body_size_sd));
+}
+
+std::string Location::getRoot_sd() const
+{
+	return (this->root_sd);
+}
+
+Location::Location() //constructor for mock locations
+{
+	this->path_prefix = "-";
+	this->root_sd = "server_default";
+	this->index_sd = "server_default";
+	this->autoindex = "off";
+	this->limit_except = "GET POST DELETE HEAD";
+	this->returns = "";
+	this->cgi_pass = "off";
+	this->upload_store = "forbidden";
+	this->client_max_body_size_sd = "server_default";
+	this->error_page_sd = "server_default";
+}
+
+Location::Location(const LocationParse& src) //constructor taking the LocationParse object
+{
+	this->path_prefix = src.get("path_prefix").front();
+	this->root_sd = src.get("root").front();
+	this->index_sd = src.get("index_sd").front();
+	this->autoindex = src.get("autoindex").front();
+	this->limit_except = src.get("limit_except").front();
+	this->returns = src.get("return").front();
+	this->cgi_pass = src.get("cgi_pass").front();
+	this->upload_store = src.get("upload_store").front();
+	this->client_max_body_size_sd = src.get("client_max_body_size_sd").front();
+	this->error_page_sd = src.get("error_page_sd").front();
+	this->proxy_pass = src.get("proxy_pass").front();
+}
+
+Location::~Location(){
+}
+
+std::string Location::getPathPrefix() const
+{
+	return (this->path_prefix);
+}
+
 
 // ───── Server ────────────────────────────────────────────
+
+const Location* Server::matchLocation(const std::string& uri) const
+{
+    for (std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); ++it)
+	{
+		if (uri.find(it->getPathPrefix()) == 0) 
+		{
+            return &(*it);
+        }
+    }
+    return NULL;
+}
+
 
 Socket* Server::initListeningSocket()
 {
@@ -83,39 +153,4 @@ Server::Server(const ServerParse& src) //constructor taking the ServerParse obje
 Server::~Server()
 {
 	std::cout << "Server destructor is called" << std::endl;
-}
-
-// ───── Location ──────────────────────────────────────────
-
-Location::Location() //constructor for mock locations
-{
-	this->path_prefix = "-";
-	this->root_sd = "server_default";
-	this->index_sd = "server_default";
-	this->autoindex = "off";
-	this->limit_except = "GET POST DELETE HEAD";
-	this->returns = "";
-	this->cgi_pass = "off";
-	this->upload_store = "forbidden";
-	this->client_max_body_size_sd = "server_default";
-	this->error_page_sd = "server_default";
-}
-
-Location::Location(const LocationParse& src) //constructor taking the LocationParse object
-{
-	this->path_prefix = src.get("path_prefix").front();
-	this->root_sd = src.get("root").front();
-	this->index_sd = src.get("index_sd").front();
-	this->autoindex = src.get("autoindex").front();
-	this->limit_except = src.get("limit_except").front();
-	this->returns = src.get("return").front();
-	this->cgi_pass = src.get("cgi_pass").front();
-	this->upload_store = src.get("upload_store").front();
-	this->client_max_body_size_sd = src.get("client_max_body_size_sd").front();
-	this->error_page_sd = src.get("error_page_sd").front();
-	this->proxy_pass = src.get("proxy_pass").front();
-}
-
-Location::~Location(){
-
 }
