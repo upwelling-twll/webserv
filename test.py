@@ -82,7 +82,9 @@ if __name__ == "__main__":
         http_request = "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 5\r\n\r\nHello"
     elif "-large" in args:
         http_request = "POST / HTTP/1.1\r\nHost: localhost\r\nContent-Length: 1940\r\n\r\n" + "0" * 1930 + "1" * 10
+    elif "-rest" in args:
+        http_request = "GET /test/index.html HTTP/1.1\r\nHost: localhost\r\n\r\n"
     else:
         http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
 
-    netcat('localhost', 8080, http_request, keep_alive)
+    netcat('localhost', 1025, http_request, keep_alive)
