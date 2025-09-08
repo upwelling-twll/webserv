@@ -1,5 +1,5 @@
 #include "Connection.hpp"
-
+#include "../../rest/Rest.hpp"
 /*Member functions*/
 
 void	Connection::clean()
