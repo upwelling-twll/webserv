@@ -41,7 +41,7 @@ void Engine::pollinSocketsHandle(size_t i, std::map<const Socket*, Connection*>&
 	if (_allSockets[i]->isListening())
 	{
 		std::cout << "pollinSocketsHandle: New connection is being accepted" << std::endl;
-		Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]));
+		Connection* newConnection = new Connection(static_cast<ListeningSocket*>(_allSockets[i]), _config);
 		std::cout << "pollinSocketsHandle: New connection created: " << *newConnection << std::endl;
 		//add Client`s ConnectionSocket to _allSockets vector to use it as a key
 		_allSockets.push_back(newConnection->getClientConnectionSocket());
@@ -125,7 +125,7 @@ void Engine::updateAliveConnections(std::map<const Socket*, Connection*>& active
 
 int Engine::engineRoutine(Config& config)
 {
-	(void)config;
+	_config = config;
 
 	std::map<const Socket*, Connection*> activeConnections;
 
@@ -180,7 +180,7 @@ int Engine::engineRoutine(Config& config)
 /*Getters and Setters*/
 
 /*Constructors*/
-Engine::Engine(std::vector<Socket*> allSockets) : _allSockets(allSockets)
+Engine::Engine(std::vector<Socket*> allSockets, Config& config) : _allSockets(allSockets), _config(config)
 {
    std::cout << "Engine parameterized constructor is called" << std::endl;
 //    Controller controller;

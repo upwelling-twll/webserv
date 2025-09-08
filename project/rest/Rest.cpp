@@ -11,16 +11,19 @@ Rest::Rest(const std::string &dir) : storageDir(dir) {}
 
 void Rest::setStorageDir(const std::string &dir) { storageDir = dir; }
 
-std::string Rest::get(AHttpRequest &req, int status)
+std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 {
 	Headers h;
+	(void)conf;
 	h["Content-Type"] = "text/html; charset=utf-8";
 	const std::string body = "<div>Hello World<div/>";
 	return formResponse(req, status, body, h);
 }
 
-std::string Rest::post(AHttpRequest &req, int status)
+std::string Rest::post(AHttpRequest &req, int status, Config& conf)
 {
+	(void)conf;
+
 	std::string body = req.get(BODY);
 	std::string name = generateTxtName();
 	std::string path = storageDir + "/" + name;
@@ -44,8 +47,10 @@ std::string Rest::post(AHttpRequest &req, int status)
 	return formResponse(req, s, outBody, h);
 }
 
-std::string Rest::del(AHttpRequest &req, int status, const std::string &filename)
+std::string Rest::del(AHttpRequest &req, int status, const std::string &filename, Config& conf)
 {
+	(void)conf;
+
 	std::string path = storageDir + "/" + filename;
 	int s = status;
 

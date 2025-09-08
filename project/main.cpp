@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 		std::cout << "Server start impossible" << std::endl;
 	}
 	//TODO : for each IP:PORT check that the is running deamon of this server 
-	Engine	engine(newConf.getAllSockets());
+	Engine	engine(newConf.getAllSockets(), newConf);
 
 	if (!engine.engineRoutine(newConf))
 	{

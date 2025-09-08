@@ -14,9 +14,9 @@ public:
 
     void setStorageDir(const std::string& dir);
 
-    std::string get (AHttpRequest& req, int status);
-    std::string post(AHttpRequest& req, int status);
-    std::string del (AHttpRequest& req, int status, const std::string& filename);
+    std::string get (AHttpRequest& req, int status, Config& conf);
+    std::string post(AHttpRequest& req, int status, Config& conf);
+    std::string del (AHttpRequest& req, int status, const std::string& filename, Config& conf);
 
 protected:
     virtual std::string formResponse(AHttpRequest& req,

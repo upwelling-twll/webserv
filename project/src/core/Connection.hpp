@@ -26,6 +26,7 @@ class HttpResponse
 private:
 	ResponseStatus	_status;
 	std::string		_responseMessage;
+	
 
 public:
 	HttpResponse(): _status(WAITING_START_LINE_RESPONSE) {};
@@ -98,6 +99,8 @@ private:
 
 	struct pollfd				_pollFd;
 
+	Config&						_config; // to create RestResponse
+
 public:
 	/*Member functions*/
 	void			receiveMessage();
@@ -130,7 +133,7 @@ public:
 	}
 
 	/*Constructors*/
-    Connection(ListeningSocket* serverListeningSocket);
+    Connection(ListeningSocket* serverListeningSocket, Config& config);
 
 	/*Destructors*/
     ~Connection( void );

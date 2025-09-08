@@ -19,6 +19,7 @@ private:
 	std::vector<struct pollfd>	_fds;
 
 	Controller*					_controller;
+	Config&						_config;
 
 public:
 	/*Member functions*/
@@ -34,7 +35,7 @@ public:
 	/*Getters and Setters*/
 
 	/*Constructors*/
-    Engine(std::vector<Socket*> allSockets);
+    Engine(std::vector<Socket*> allSockets, Config& config);
 	// Engine(void);
 
 	/*Destructors*/

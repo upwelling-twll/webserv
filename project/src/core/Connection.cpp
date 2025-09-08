@@ -66,27 +66,27 @@ void	Connection::processConnectionStatusSending()
 	}
 }
 
-HttpResponse* createRestResponse(AHttpRequest& req)
+HttpResponse* createRestResponse(AHttpRequest& req, Config& _config)
 {
 	Rest newResponse;
 
 	if (req.getStatus() == ERROR_REQUEST)
 	{
-		std::string responseStr = newResponse.get(req, 400); // Using 400 Bad Request for simplicity
+		std::string responseStr = newResponse.get(req, 400, _config); // Using 400 Bad Request for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);
 		return response;
 	}
 	if (req.get(VarKey::METHOD) == "GET")
 	{
-		std::string responseStr = newResponse.get(req, 200); // Using 200 OK for simplicity
+		std::string responseStr = newResponse.get(req, 200, _config); // Using 200 OK for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);
 		return response;
 	}
 	else if (req.get(VarKey::METHOD) == "POST")
 	{
-		std::string responseStr = newResponse.post(req, 200); // Using 200 OK for simplicity
+		std::string responseStr = newResponse.post(req, 200, _config); // Using 200 OK for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);
 		return response;
@@ -94,12 +94,12 @@ HttpResponse* createRestResponse(AHttpRequest& req)
 	else if (req.get(VarKey::METHOD) == "DELETE")
 	{
 		std::string filename = req.get(VarKey::URI);
-		std::string responseStr = newResponse.del(req, 200, filename); // Using 200 OK for simplicity
+		std::string responseStr = newResponse.del(req, 200, filename, _config); // Using 200 OK for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);
 		return response;
 	}
-	std::string responseStr = newResponse.get(req, 400); // Using 400 Bad Request for simplicity
+	std::string responseStr = newResponse.get(req, 400, _config); // Using 400 Bad Request for simplicity
 	HttpResponse* response = new HttpResponse();
 	response->insert(responseStr);
 	return response;
@@ -114,7 +114,7 @@ void	Connection::processConnectionStatusReceiving()
 		std::cout << "Connection is ready for formatting response" << std::endl;
 		 std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
 		//TODO : form response and send it to client
-		_response = createRestResponse(*_request);
+		_response = createRestResponse(*_request, _config);
 		std::cout << "		*prepared response*	\n" << _response->getResponseMessage() << std::endl;
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 	}
@@ -180,8 +180,8 @@ void	Connection::receiveMessage()
 				std::cout << "Completed insert. Request status = " << rstatus << std::endl;
 				if (rstatus == READY)
 				{
-					Rest newResponse;
-					std::cout << newResponse.get(*_request, 200);
+					// Rest newResponse;
+					// std::cout << newResponse.get(*_request, 200);
 					_status = READY_FOR_FORMATTING_RESPONSE;
 					std::cout << "Request is ready to form response" << std::endl;
 					
@@ -363,12 +363,13 @@ HttpResponse* Connection::getResponse() const
 }
 
 /*Constructors*/
-Connection::Connection(ListeningSocket* serverListeningSocket) :
+Connection::Connection(ListeningSocket* serverListeningSocket, Config& config) :
 															   _buffer(""), 
 															   _status(IDLE),
 															   _bytesSent(0),
 															   _serverListeningSocket(serverListeningSocket),
-															   _active(true)
+															   _active(true),
+															   _config(config)
 {
 	std::cout << "Connection parameterized constructor is called. Time Last Used:" \
     << std::asctime(std::localtime(&_timeLastUsed)) << std::endl;
