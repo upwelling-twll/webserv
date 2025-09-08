@@ -66,6 +66,46 @@ void	Connection::processConnectionStatusSending()
 	}
 }
 
+HttpResponse* createRestResponse(AHttpRequest& req)
+{
+	Rest newResponse;
+
+	if (req.getStatus() == ERROR_REQUEST)
+	{
+		std::string responseStr = newResponse.get(req, 400); // Using 400 Bad Request for simplicity
+		HttpResponse* response = new HttpResponse();
+		response->insert(responseStr);
+		return response;
+	}
+	if (req.get(VarKey::METHOD) == "GET")
+	{
+		std::string responseStr = newResponse.get(req, 200); // Using 200 OK for simplicity
+		HttpResponse* response = new HttpResponse();
+		response->insert(responseStr);
+		return response;
+	}
+	else if (req.get(VarKey::METHOD) == "POST")
+	{
+		std::string responseStr = newResponse.post(req, 200); // Using 200 OK for simplicity
+		HttpResponse* response = new HttpResponse();
+		response->insert(responseStr);
+		return response;
+	}
+	else if (req.get(VarKey::METHOD) == "DELETE")
+	{
+		std::string filename = req.get(VarKey::URI);
+		std::string responseStr = newResponse.del(req, 200, filename); // Using 200 OK for simplicity
+		HttpResponse* response = new HttpResponse();
+		response->insert(responseStr);
+		return response;
+	}
+	std::string responseStr = newResponse.get(req, 400); // Using 400 Bad Request for simplicity
+	HttpResponse* response = new HttpResponse();
+	response->insert(responseStr);
+	return response;
+}
+
+
 void	Connection::processConnectionStatusReceiving()
 {
 	std::cout << "	process Connection Status, status:" << _status << std::endl;
@@ -74,7 +114,7 @@ void	Connection::processConnectionStatusReceiving()
 		std::cout << "Connection is ready for formatting response" << std::endl;
 		 std::cout << "		*raw request*	\n" << _rawMessage << std::endl;
 		//TODO : form response and send it to client
-		_response->insert("Found someone, you have, I would say, hmmmm"); 
+		_response = createRestResponse(*_request);
 		std::cout << "		*prepared response*	\n" << _response->getResponseMessage() << std::endl;
 		_status = PREPARED_RESPONSE; // Set status to PREPARED_RESPONSE after formatting response
 	}
