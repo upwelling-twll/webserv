@@ -14,7 +14,7 @@ equivalent).
 ? We will consider that NGINX is HTTP 1.1 compliant and may be used to compare headers and answer behaviors.
 - Your HTTP response status codes must be accurate.
 - You server must have default error pages if none are provided.
-- You can’t use fork for something else than CGI (like PHP, or Python, and so forth).
++ You can’t use fork for something else than CGI (like PHP, or Python, and so forth).
 + You must be able to serve a fully static website.
 + Clients must be able to upload files.
 + You need at least GET, POST, and DELETE methods.
@@ -26,7 +26,7 @@ equivalent).
 - The first server for a host:port will be the default for this host:port (that means
 it will answer to all the requests that don’t belong to an other server).
 - Setup default error pages.
-- (we do not check it) Limit client body size.
+- (we do not check it- NM) Limit client body size.
 • Setup routes with one or multiple of the following rules/configuration (routes wont
 be using regexp):
     + Define a list of accepted HTTP methods for the route.
