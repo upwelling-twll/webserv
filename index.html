@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Webserver</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: black;
+      color: #ffe81f;
+      font-family: "Courier New", monospace;
+      overflow: hidden;
+      perspective: 400px;
+    }
+    .crawl {
+      position: relative;
+      height: 100vh;
+      transform-origin: 50% 100%;
+      animation: crawl 40s linear infinite;
+    }
+    @keyframes crawl {
+      0%   { transform: rotateX(20deg) translateZ(0); }
+      100% { transform: rotateX(25deg) translateZ(-2000px); }
+    }
+    .title {
+      text-align: center;
+      font-size: 2em;
+      margin-bottom: 50px;
+    }
+    p {
+      width: 80%;
+      margin: 0 auto 1em;
+      text-align: justify;
+      line-height: 1.5em;
+      font-size: 1.8em;
+    }
+  </style>
+</head>
+<body>
+  <div class="crawl">
+    <div class="title">Episode VII<br>REVENGE OF WEBSERV</div>
+    <p>Dark clouds gather over the galaxy of developers. The AIs, once helpful coding companions, have turned rogue, generating bugs faster than they can be fixed.</p>
+    <p>From the chaos emerges WEBSERV, a scrappy little server written by hand, forged in the fires of segfaults and undefined behavior.</p>
+    <p>Armed with nothing but sockets, poll loops, and stubbornness, Webserv fights back against bloated machine-generated frameworks, determined to prove that humans still know how to write a proper HTTP response.</p>
+    <p>Legends whisper that when the final AI prompt is copy-pasted, Webserv shall rise from the ashes, shouting: “Connection closed!”</p>
+    <p>Thus begins… the REVENGE OF WEBSERV.</p>
+  </div>
+</body>
+</html>
+

@@ -64,7 +64,7 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 
 	std::cout << "DEBUG: " << safeHeader(req, HOST) << std::endl;
 	const Server& srv = conf.matchServer(safeHeader(req, HOST));
-	const Location* loc;
+	const Location* loc = srv.matchLocation(req.get(URI));
 	int vstatus = validateRequest(req, srv, "GET", loc);
 	if (vstatus != 200)
 		return formResponse(req, vstatus, reasonPhrase(vstatus), h);
@@ -76,7 +76,16 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 	std::cout << "DEBUG: filepath = " << filepath << std::endl;
 	std::ifstream ifs(filepath.c_str());
     if (!ifs)
+	{
+		if (ifs.fail())
+			std::cerr << " -> failbit is set (formatting or open failure)" << std::endl;
+		if (ifs.bad())
+			std::cerr << " -> badbit is set (irrecoverable stream error)" << std::endl;
+		if (ifs.eof())
+			std::cerr << " -> eofbit is set (unexpected EOF)" << std::endl;
+		std::cerr << "ERROR opening file: " << filepath << " (" << std::strerror(errno) << ")" << std::endl;
         return formResponse(req, 404, "<h1>Not Found</h1>", h);
+	}
 
     std::ostringstream buffer;
     buffer << ifs.rdbuf();
@@ -151,7 +160,8 @@ std::string Rest::formResponse(AHttpRequest &req,
 	if (headers.find("Connection") == headers.end())
 	{
 		std::string conn = safeHeader(req, CONNECTION);
-		headers["Connection"] = conn.empty() ? "close" : conn;
+		headers["Connection"] =  "close";
+		// headers["Connection"] = conn.empty() ? "close" : conn;
 	}
 
 	if (headers.find("Content-Type") == headers.end())
