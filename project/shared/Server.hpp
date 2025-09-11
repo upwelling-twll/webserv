@@ -20,7 +20,7 @@ private:
 	std::string root_sd;
 	std::string index_sd;
 	std::string autoindex;
-	std::string limit_except;
+	std::vector<std::string> limit_except;
 	std::string returns;
 	std::string cgi_pass;
 	std::string upload_store;
@@ -34,6 +34,7 @@ public:
 	std::string getPathPrefix() const;
 	size_t getMaxBodySize() const; //in bytes
 	std::string getRoot_sd() const;
+	std::string getUpload_store() const;
 
 	Location(); //constructor for mock locations
 	Location(const LocationParse& src); //constructor taking the LocationParse object

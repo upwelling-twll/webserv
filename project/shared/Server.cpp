@@ -4,20 +4,52 @@
 
 bool Location::isMethodAllowed(const std::string& method) const
 {
-	if (limit_except.empty()) return true; // default: allow everything
-	return limit_except.find(method) != std::string::npos;
+	if (limit_except.empty())
+		return true; // default: allow everything
+	else
+		if (std::find(limit_except.begin(), limit_except.end(), method) != limit_except.end())
+			return true;
+	return false;
 }
 
 size_t Location::getMaxBodySize() const
 {
 	if (client_max_body_size_sd.empty())
 		return SIZE_MAX;
-	return static_cast<size_t>(std::stoul(client_max_body_size_sd));
+
+    std::string s = client_max_body_size_sd;
+    size_t multiplier = 1;
+
+    if (s.size() > 2)
+    {
+        std::string suffix = s.substr(s.size() - 2);
+        if (suffix == "KB") 
+		{ 
+			multiplier = 1024; 
+			s = s.substr(0, s.size() - 2); 
+		}
+        else if (suffix == "MB") 
+		{ 
+			multiplier = 1024 * 1024; 
+			s = s.substr(0, s.size() - 2); 
+		}
+        else if (suffix == "GB") 
+		{ 
+			multiplier = 1024ull * 1024ull * 1024ull; 
+			s = s.substr(0, s.size() - 2); 
+		}
+    }
+    return std::stoul(s) * multiplier;
 }
 
 std::string Location::getRoot_sd() const
 {
 	return (this->root_sd);
+}
+
+std::string Location::getUpload_store() const
+{
+	return (this->upload_store);
 }
 
 Location::Location() //constructor for mock locations
@@ -26,11 +58,11 @@ Location::Location() //constructor for mock locations
 	this->root_sd = "server_default";
 	this->index_sd = "server_default";
 	this->autoindex = "off";
-	this->limit_except = "GET POST DELETE HEAD";
+	this->limit_except = {"GET"};
 	this->returns = "";
 	this->cgi_pass = "off";
 	this->upload_store = "forbidden";
-	this->client_max_body_size_sd = "server_default";
+	this->client_max_body_size_sd = "1024";
 	this->error_page_sd = "server_default";
 }
 
@@ -40,7 +72,7 @@ Location::Location(const LocationParse& src) //constructor taking the LocationPa
 	this->root_sd = src.get("root").front();
 	this->index_sd = src.get("index_sd").front();
 	this->autoindex = src.get("autoindex").front();
-	this->limit_except = src.get("limit_except").front();
+	this->limit_except = src.get("limit_except");
 	this->returns = src.get("return").front();
 	this->cgi_pass = src.get("cgi_pass").front();
 	this->upload_store = src.get("upload_store").front();

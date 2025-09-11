@@ -57,6 +57,7 @@ int validateRequest(AHttpRequest& req, const Server& srv, const std::string& met
 	}
 	return 200; // OK
 }
+
 std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 {
 	Headers h;
@@ -94,37 +95,80 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 
 std::string Rest::post(AHttpRequest &req, int status, Config& conf)
 {
-	(void)conf;
+    Headers h;
+    h["Content-Type"] = "application/json; charset=utf-8";
 
-	std::string body = req.get(BODY);
-	std::string name = generateTxtName();
-	std::string path = storageDir + "/" + name;
+    const Server& srv = conf.matchServer(safeHeader(req, HOST));
+    const Location* loc = srv.matchLocation(req.get(URI));
 
-	int s = status;
-	{
-		std::ofstream ofs(path.c_str(), std::ios::out | std::ios::binary);
-		if (!ofs)
-			s = 500;
-		else
-		{
-			ofs.write(body.data(), static_cast<std::streamsize>(body.size()));
-			if (!ofs.good())
-				s = 500;
-		}
-	}
+    int vstatus = validateRequest(req, srv, "POST", loc);
+    if (vstatus != 200)
+        return formResponse(req, vstatus, reasonPhrase(vstatus), h);
 
-	Headers h;
-	h["Content-Type"] = "text/plain; charset=utf-8";
-	std::string outBody = (s == 500) ? "Save error\n" : ("Saved: " + name + "\n");
-	return formResponse(req, s, outBody, h);
+    std::string uploadDir = loc->getUpload_store();
+    if (uploadDir.empty())
+        uploadDir = "/tmp";
+
+    std::string name = generateTxtName();
+    std::string path = uploadDir + "/" + name;
+
+    std::string body = req.get(BODY);
+   
+	int s;
+	if (status == 200)
+		s = 201; // default: created
+	else
+		s = status;
+    {
+        std::ofstream ofs(path.c_str(), std::ios::out | std::ios::binary);
+        if (!ofs)
+            s = 500;
+        else
+        {
+            ofs.write(body.data(), static_cast<std::streamsize>(body.size()));
+            if (!ofs.good())
+                s = 500;
+        }
+    }
+
+    std::string outBody;
+    if (s == 500) {
+        outBody = "{ \"error\": \"Save error\" }";
+    } else {
+        std::string url = loc->getUpload_store() + "/" + name;
+        outBody = "{ \"file\": \"" + name + "\", \"url\": \"" + url + "\" }";
+        h["Location"] = url;  // required by HTTP/1.1 for 201
+    }
+
+    return formResponse(req, s, outBody, h);
 }
+
+
 
 std::string Rest::del(AHttpRequest &req, int status, const std::string &filename, Config& conf)
 {
-	(void)conf;
+	Headers h;
+	h["Content-Type"] = "text/plain; charset=utf-8";
+	const Server& srv = conf.matchServer(safeHeader(req, HOST));
+    const Location* loc = srv.matchLocation(req.get(URI));
 
-	std::string path = storageDir + "/" + filename;
+    int vstatus = validateRequest(req, srv, "DELETE", loc);
+    if (vstatus != 200)
+        return formResponse(req, vstatus, reasonPhrase(vstatus), h);
+
+    std::string uploadDir = loc->getUpload_store();
+    if (uploadDir.empty())
+        uploadDir = "/tmp";
+
+    std::string name = generateTxtName();
+    std::string path = uploadDir + "/" + name;
+
 	int s = status;
+
+	if (filename.find("..") != std::string::npos || filename.find('/') != std::string::npos)
+	{
+		s = 403; // Forbidden
+	}
 
 	if (std::remove(path.c_str()) != 0)
 	{
@@ -134,8 +178,6 @@ std::string Rest::del(AHttpRequest &req, int status, const std::string &filename
 			s = 500;
 	}
 
-	Headers h;
-	h["Content-Type"] = "text/plain; charset=utf-8";
 	std::string outBody;
 	if (s == 404)
 		outBody = "Not found\n";

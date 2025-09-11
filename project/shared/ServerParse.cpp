@@ -8,7 +8,7 @@ const char* LocationParse::properties[LocationParse::locationPropertiesRange] = 
 
 const char* LocationParse::defaults[LocationParse::locationPropertiesRange] = {
     "-", "server_default", "server_default", "off", "GET POST DELETE HEAD",
-    "",  "off", "forbidden", "server_default", "server_default", ""};
+    "",  "off", "forbidden", "1MB", "server_default", ""};
 
 const char* ServerParse::properties[ServerParse::serverPropertiesRange] = {
     "listen", "server_name", "root", "index", "client_max_body_size", "error_page"};

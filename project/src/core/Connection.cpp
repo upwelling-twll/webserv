@@ -370,8 +370,9 @@ Connection::Connection(ListeningSocket* serverListeningSocket, Config& config) :
 															   _bytesSent(0),
 															   _serverListeningSocket(serverListeningSocket),
 															   _active(true),
-															   _config(config)
+															   _config(config)						  
 {
+	 _timeLastUsed =std::time(NULL);
 	std::cout << "Connection parameterized constructor is called. Time Last Used:" \
     << std::asctime(std::localtime(&_timeLastUsed)) << std::endl;
 	_pollFd = createConnectionSocket(serverListeningSocket);
