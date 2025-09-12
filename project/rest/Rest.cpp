@@ -132,12 +132,19 @@ std::string Rest::post(AHttpRequest &req, int status, Config& conf)
     }
 
     std::string outBody;
-    if (s == 500) {
+    if (s == 500)
         outBody = "{ \"error\": \"Save error\" }";
-    } else {
-        std::string url = loc->getUpload_store() + "/" + name;
+	else
+	{
+        std::string host = safeHeader(req, HOST);
+        if (host.empty())
+            host = "localhost:8080";
+
+        std::string url = "http://" + host + uploadDir.substr(uploadDir.find_last_of("/")) + "/" + name;
         outBody = "{ \"file\": \"" + name + "\", \"url\": \"" + url + "\" }";
-        h["Location"] = url;  // required by HTTP/1.1 for 201
+
+        // HTTP/1.1 requires Location header on 201 Created
+        h["Location"] = url;
     }
 
     return formResponse(req, s, outBody, h);
