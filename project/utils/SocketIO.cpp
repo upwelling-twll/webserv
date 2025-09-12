@@ -137,7 +137,7 @@ void SocketIO::readFromClient(int fd, AHttpRequest* _request, Connection* connec
 			}
 			return ;
 		}
-		else if (i == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
+		else if (i == -1)
 		{
 			_status = BUSY_SOCKETIO;
 			connection->setStatus(WAITING_FOR_DATA);
