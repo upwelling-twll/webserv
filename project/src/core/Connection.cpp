@@ -95,6 +95,7 @@ HttpResponse* createRestResponse(AHttpRequest& req, Config& _config)
 	else if (req.get(METHOD) == "DELETE")
 	{
 		std::string filename = req.get(URI);
+		std::cout << "DEBUG: DELETE method called" << std::endl;
 		std::string responseStr = newResponse.del(req, 200, filename, _config); // Using 200 OK for simplicity
 		HttpResponse* response = new HttpResponse();
 		response->insert(responseStr);

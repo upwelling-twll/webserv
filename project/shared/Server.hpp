@@ -58,6 +58,7 @@ public:
 	void		addLocation(std::vector<Location> src); //not used can delete
 	Socket*		initListeningSocket();
 	const Location* matchLocation(const std::string& uri) const;
+	const Location* matchUploadLocation(const std::string& uri) const;
 
 	std::string getIp() const;
 	int			getPort() const;

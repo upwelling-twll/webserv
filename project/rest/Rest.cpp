@@ -37,7 +37,8 @@ PathParts splitUri(const std::string& uri) {
 int validateRequest(AHttpRequest& req, const Server& srv, const std::string& method, const Location*& outLoc)
 {
 	std::string uri = req.get(URI);
-	outLoc = srv.matchLocation(uri);
+	(void)srv;
+	// outLoc = srv.matchLocation(uri);
 
 	if (!outLoc)
 	{
@@ -150,34 +151,46 @@ std::string Rest::post(AHttpRequest &req, int status, Config& conf)
     return formResponse(req, s, outBody, h);
 }
 
+std::string getLastFolder(const std::string &uri_path) 
+{
+    std::size_t lastSlash = uri_path.find_last_of('/');
+    if (lastSlash == std::string::npos)
+        return "/"; // no slash at all → root
 
+    return uri_path.substr(0, lastSlash);
+}
 
 std::string Rest::del(AHttpRequest &req, int status, const std::string &filename, Config& conf)
 {
 	Headers h;
 	h["Content-Type"] = "text/plain; charset=utf-8";
+	
 	const Server& srv = conf.matchServer(safeHeader(req, HOST));
-    const Location* loc = srv.matchLocation(req.get(URI));
+	
+	std::string uri_path = req.get(URI);
+	std::string location_path = getLastFolder(uri_path);
+	std::cout << "DEBUG: URI_PATH = " << uri_path << std::endl;
+	std::cout << "DEBUG: location_path = " << location_path << std::endl;
+    
+	const Location* loc = srv.matchUploadLocation(location_path);
 
     int vstatus = validateRequest(req, srv, "DELETE", loc);
     if (vstatus != 200)
         return formResponse(req, vstatus, reasonPhrase(vstatus), h);
 
     std::string uploadDir = loc->getUpload_store();
-    if (uploadDir.empty())
-        uploadDir = "/tmp";
-
-    std::string name = generateTxtName();
-    std::string path = uploadDir + "/" + name;
-
 	int s = status;
-
+    if (uploadDir.empty())
+	{
+        s = 404;
+	}
 	if (filename.find("..") != std::string::npos || filename.find('/') != std::string::npos)
 	{
 		s = 403; // Forbidden
 	}
-
-	if (std::remove(path.c_str()) != 0)
+	std::cout << "DEBUG: filename: " << filename << std::endl;
+	std::string uri_path_full = uploadDir + "/" + uri_path.substr(uri_path.find_last_of('/') + 1);
+	if (std::remove(uri_path_full.c_str()) != 0)
 	{
 		if (errno == ENOENT)
 			s = 404;

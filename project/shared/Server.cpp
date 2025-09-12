@@ -104,6 +104,20 @@ const Location* Server::matchLocation(const std::string& uri) const
     return NULL;
 }
 
+const Location* Server::matchUploadLocation(const std::string& uri) const
+{
+    for (std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); ++it)
+	{
+		std::string uriUploadStore = it->getRoot_sd() + uri;
+		std::cout << "DEBUG: searching uriUploadStore = " << uriUploadStore << std::endl;
+		std::cout << "DEBUG: comparing with location upload_store = " << it->getUpload_store() << std::endl;
+		if (uriUploadStore == it->getUpload_store()) 
+		{
+            return &(*it);
+        }
+    }
+    return NULL;
+}
 
 Socket* Server::initListeningSocket()
 {

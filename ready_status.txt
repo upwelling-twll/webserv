@@ -49,3 +49,12 @@ be using regexp):
         - Your server should work with one CGI (php-CGI, Python, and so forth).
     You must provide some configuration files and default basic files to test and demonstrate every feature works during evaluation.
 The important thing is resilience. Your server should never die.
+
+
+
+BUGS:
+config parsing
+
+    - for  limit_except GET HEAD - if more then one method listed, only the last method is parsed, while others ignored.
+    - deny_all does not work
+    - if there is no max_body_size specified for each location it fails doing POST
