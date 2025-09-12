@@ -114,6 +114,8 @@ std::string Rest::post(AHttpRequest &req, int status, Config& conf)
     std::string path = uploadDir + "/" + name;
 
     std::string body = req.get(BODY);
+
+	std::cout <<"DEBUG: post body : " << body << std::endl;
    
 	int s;
 	if (status == 200)

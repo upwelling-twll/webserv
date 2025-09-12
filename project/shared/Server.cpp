@@ -73,6 +73,8 @@ Location::Location(const LocationParse& src) //constructor taking the LocationPa
 	this->index_sd = src.get("index_sd").front();
 	this->autoindex = src.get("autoindex").front();
 	this->limit_except = src.get("limit_except");
+	if ((this->limit_except).front() == "GET POST DELETE HEAD")
+		this->limit_except = {"GET", "POST", "DELETE", "HEAD"};
 	this->returns = src.get("return").front();
 	this->cgi_pass = src.get("cgi_pass").front();
 	this->upload_store = src.get("upload_store").front();

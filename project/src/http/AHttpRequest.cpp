@@ -11,6 +11,51 @@ std::string AHttpRequest::trimSides(const std::string &s)
 	return s.substr(first, last - first);
 }
 
+std::string AHttpRequest::extractMultipartFile() const
+{
+    // 1. Get boundary from Content-Type header
+    std::string contentType = headers.find("Content-Type") != headers.end() ? headers.at("Content-Type") : "";
+    if (contentType.empty())
+        return "";
+
+    std::string boundary;
+    std::size_t pos = contentType.find("boundary=");
+    if (pos == std::string::npos)
+        return ""; // no boundary found
+
+    boundary = "--" + contentType.substr(pos + 9); // include leading --
+
+    // 2. Locate first boundary in body
+    std::size_t start = vars.find("body") != vars.end() ? vars.at("body").find(boundary) : std::string::npos;
+    if (start == std::string::npos)
+        return "";
+
+    start += boundary.size();
+    if (start < vars.at("body").size() && vars.at("body")[start] == '\r' && vars.at("body")[start+1] == '\n')
+        start += 2;
+
+    // 3. Locate next boundary (closing boundary)
+    std::size_t end = vars.at("body").find(boundary, start);
+    if (end == std::string::npos)
+        return "";
+
+    std::string part = vars.at("body").substr(start, end - start);
+
+    // 4. Skip headers inside the part (until double CRLF)
+    std::size_t headerEnd = part.find("\r\n\r\n");
+    if (headerEnd == std::string::npos)
+        return "";
+
+    std::string fileContent = part.substr(headerEnd + 4);
+
+    // 5. Remove possible trailing CRLF
+    if (fileContent.size() >= 2 && fileContent.substr(fileContent.size()-2) == "\r\n")
+        fileContent.erase(fileContent.size()-2);
+
+    return fileContent;
+}
+
+
 void AHttpRequest::removeTrailingCRLF(std::string &s)
 {
 	while (!s.empty() && (s[s.size() - 1] == '\r' || s[s.size() - 1] == '\n'))

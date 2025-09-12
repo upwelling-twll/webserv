@@ -10,6 +10,14 @@ void AHttpRequest::checkHeaders()
 	removeTrailingCRLF(line);
 	if (line.empty())
 	{
+		// std::cout << "DEBUG: End of headers reached" << std::endl;
+		// std::cout << "DEBUG: buf after headers: [" << buf << "]" << std::endl;
+		//  if (!buf.empty() && buf[0] == '\r')
+		// 	buf.erase(0, 1);
+		// if (!buf.empty() && buf[0] == '\n')
+       	// 	buf.erase(0, 1);
+		// std::cout << "DEBUG: after removing CRLF" << std::endl;
+		// std::cout << "DEBUG: buf after removing CRLF: [" << buf << "]" << std::endl;
 		if (vars["method"] == "POST" || vars["method"] == "PUT")
 		{
 			std::string cl = headers["Content-Length"];

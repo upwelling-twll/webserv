@@ -50,6 +50,8 @@ private:
 
 	static const char *const stdHeaders[];
 	static const std::size_t stdHeadersCount;
+	std::string extractMultipartFile() const;
+
 
 	std::string buf;
 	std::string raw;
