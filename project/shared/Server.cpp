@@ -58,7 +58,8 @@ Location::Location() //constructor for mock locations
 	this->root_sd = "server_default";
 	this->index_sd = "server_default";
 	this->autoindex = "off";
-	this->limit_except = {"GET"};
+	this->limit_except.clear();
+	this->limit_except.push_back("GET");
 	this->returns = "";
 	this->cgi_pass = "off";
 	this->upload_store = "forbidden";
@@ -74,7 +75,13 @@ Location::Location(const LocationParse& src) //constructor taking the LocationPa
 	this->autoindex = src.get("autoindex").front();
 	this->limit_except = src.get("limit_except");
 	if ((this->limit_except).front() == "GET POST DELETE HEAD")
-		this->limit_except = {"GET", "POST", "DELETE", "HEAD"};
+	{
+		this->limit_except.clear();
+		this->limit_except.push_back("GET");
+		this->limit_except.push_back("POST");
+		this->limit_except.push_back("DELETE");
+		this->limit_except.push_back("HEAD");
+	}
 	this->returns = src.get("return").front();
 	this->cgi_pass = src.get("cgi_pass").front();
 	this->upload_store = src.get("upload_store").front();
