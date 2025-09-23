@@ -68,8 +68,12 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 	const Server& srv = conf.matchServer(safeHeader(req, HOST));
 	const Location* loc = srv.matchLocation(req.get(URI));
 	int vstatus = validateRequest(req, srv, "GET", loc);
+	std::cout << "DEBUG: Request status: " << vstatus << std::endl;
 	if (vstatus != 200)
+	{
+		std::cout << "DEBUG: invalid request" << std::endl;
 		return formResponse(req, vstatus, reasonPhrase(vstatus), h);
+	}
 
 	PathParts parts = splitUri(req.get(URI));
 	std::cout << "DEBUG: root_sd = " << loc->getRoot_sd()<< std::endl;

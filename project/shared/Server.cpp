@@ -103,13 +103,20 @@ std::string Location::getPathPrefix() const
 
 const Location* Server::matchLocation(const std::string& uri) const
 {
+	std::string doubleSlashUri;
+
+	if (uri[(uri.size() - 1)] != '/')
+	{
+		doubleSlashUri = uri + "/";
+	}
     for (std::vector<Location>::const_iterator it = locations.begin(); it != locations.end(); ++it)
 	{
-		if (uri.find(it->getPathPrefix()) == 0) 
+		if (uri.find(it->getPathPrefix()) == 0 || doubleSlashUri.find(it->getPathPrefix()) == 0) 
 		{
             return &(*it);
         }
     }
+	std::cout << "DEBUG: did not find location for " << uri <<  std::endl;
     return NULL;
 }
 
