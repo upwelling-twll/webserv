@@ -44,9 +44,10 @@ std::string getErrorPageBody(int status, const std::string& error_page_path, Con
 		ifs.open(error_page_path.c_str());
 	if (error_page_path.empty() || !ifs)
 	{
-		std::cerr << "ERROR opening error page file: " << error_page_path << " (" << std::strerror(errno) << ")" << std::endl;
+		std::cerr << "ERROR opening error page file:" << error_page_path << "$ (" << std::strerror(errno) << ")" << std::endl;
 		Server default_server = (conf.getServers()).front();
 		const std::string default_server_error_path = default_server.getDefaultErrorPagePath();
+		std::cout << "DEBUG: default_server_error_path = " << default_server_error_path << std::endl;
 		if (!default_server_error_path.empty())
 		{
 			std::ifstream default_ifs(default_server_error_path.c_str());
@@ -56,10 +57,10 @@ std::string getErrorPageBody(int status, const std::string& error_page_path, Con
 				buffer << default_ifs.rdbuf();
 				return buffer.str();
 			}
+			return "<h1>Internal Server Error</h1>";
 		}
-		return "<h1>Internal Server Error</h1>";
+		ifs.open(default_server_error_path.c_str());
 	}
-
 	std::ostringstream buffer;
 	buffer << ifs.rdbuf();
 	return buffer.str();

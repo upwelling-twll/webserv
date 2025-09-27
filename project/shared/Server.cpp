@@ -54,6 +54,8 @@ std::string Location::getUpload_store() const
 
 std::string Location::getError_page_sd() const
 {
+	if (this->error_page_sd == "server_default")
+		return "";
 	return (this->error_page_sd);
 }
 
