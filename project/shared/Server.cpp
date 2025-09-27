@@ -52,6 +52,11 @@ std::string Location::getUpload_store() const
 	return (this->upload_store);
 }
 
+std::string Location::getError_page_sd() const
+{
+	return (this->error_page_sd);
+}
+
 Location::Location() //constructor for mock locations
 {
 	this->path_prefix = "-";
@@ -86,7 +91,7 @@ Location::Location(const LocationParse& src) //constructor taking the LocationPa
 	this->cgi_pass = src.get("cgi_pass").front();
 	this->upload_store = src.get("upload_store").front();
 	this->client_max_body_size_sd = src.get("client_max_body_size_sd").front();
-	this->error_page_sd = src.get("error_page_sd").front();
+	this->error_page_sd = src.get("error_page_sd").back();
 	this->proxy_pass = src.get("proxy_pass").front();
 }
 
@@ -178,6 +183,11 @@ std::string Server::getServerName() const
 	return (this->server_name);
 }
 
+std::string Server::getDefaultErrorPagePath() const
+{
+	return (this->error_page);
+}
+
 Server::Server(std::string addr, int port) //constructor for mock servers
 {
 	this->ip = addr;
@@ -203,7 +213,7 @@ Server::Server(const ServerParse& src) //constructor taking the ServerParse obje
 	this->root = src.get("root").front();
 	this->index = src.get("index").front();
 	this->client_max_body_size = src.get("client_max_body_size").front();
-	this->error_page = src.get("error_page").front();
+	this->error_page = src.get("error_page").back();
 
 	for (std::vector<LocationParse>::const_iterator it = src.getLocations().begin(); it != src.getLocations().end(); ++it)
 	{

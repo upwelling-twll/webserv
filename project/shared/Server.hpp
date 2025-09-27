@@ -5,6 +5,7 @@
 # include <vector>
 # include <fstream>
 # include <string>
+# include <cstdint>
 
 # include "../inc/webserv.hpp"
 
@@ -35,6 +36,7 @@ public:
 	size_t getMaxBodySize() const; //in bytes
 	std::string getRoot_sd() const;
 	std::string getUpload_store() const;
+	std::string getError_page_sd() const;
 
 	Location(); //constructor for mock locations
 	Location(const LocationParse& src); //constructor taking the LocationParse object
@@ -64,6 +66,7 @@ public:
 	int			getPort() const;
 	std::string getAddr() const;
 	std::string getServerName() const;
+	std::string getDefaultErrorPagePath() const;
 
 	Server(std::string addr, int port); //constructor for mock servers
 	Server(const ServerParse& src); //constructor taking the ServerParse object

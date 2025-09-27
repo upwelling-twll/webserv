@@ -34,6 +34,37 @@ PathParts splitUri(const std::string& uri) {
     return parts;
 }
 
+std::string getErrorPageBody(int status, const std::string& error_page_path, Config& conf)
+{
+	std::ifstream ifs;
+	(void)status;
+
+	std::cout << "DEBUG: error_page_path = " << error_page_path << std::endl;
+	if (!error_page_path.empty())
+		ifs.open(error_page_path.c_str());
+	if (error_page_path.empty() || !ifs)
+	{
+		std::cerr << "ERROR opening error page file: " << error_page_path << " (" << std::strerror(errno) << ")" << std::endl;
+		Server default_server = (conf.getServers()).front();
+		const std::string default_server_error_path = default_server.getDefaultErrorPagePath();
+		if (!default_server_error_path.empty())
+		{
+			std::ifstream default_ifs(default_server_error_path.c_str());
+			if (default_ifs)
+			{
+				std::ostringstream buffer;
+				buffer << default_ifs.rdbuf();
+				return buffer.str();
+			}
+		}
+		return "<h1>Internal Server Error</h1>";
+	}
+
+	std::ostringstream buffer;
+	buffer << ifs.rdbuf();
+	return buffer.str();
+}
+
 int validateRequest(AHttpRequest& req, const Server& srv, const std::string& method, const Location*& outLoc)
 {
 	std::string uri = req.get(URI);
@@ -90,7 +121,10 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 		if (ifs.eof())
 			std::cerr << " -> eofbit is set (unexpected EOF)" << std::endl;
 		std::cerr << "ERROR opening file: " << filepath << " (" << std::strerror(errno) << ")" << std::endl;
-        return formResponse(req, 404, "<h1>Not Found</h1>", h);
+		std::string errorBody = getErrorPageBody(status, loc->getError_page_sd(), conf);
+		if (errorBody.empty())
+			errorBody = "<h1>Not Found</h1>";
+		return formResponse(req, 404, errorBody, h);
 	}
 
     std::ostringstream buffer;
