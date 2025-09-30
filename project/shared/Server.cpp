@@ -142,7 +142,7 @@ void Location::print(int indent = 0) const
     for (std::map<int,std::string>::const_iterator it = error_page_sd.begin();
          it != error_page_sd.end(); ++it)
     {
-        std::cout << pad << "  error_page " << it->first
+        std::cout << pad << "  error_page_sd " << it->first
                   << " -> " << it->second << "\n";
     }
 
@@ -229,9 +229,26 @@ std::string Server::getServerName() const
 	return (this->server_name);
 }
 
-std::string Server::getDefaultErrorPagePath() const
+std::string Server::getDefaultErrorPagePath(int errorStatus) const
 {
-	return (this->error_page);
+	std::map<int, std::string>::const_iterator it = (this->error_page).find(errorStatus);
+	if (it->second == "server_default" || it->second == "" || it->second.empty())
+		return ("");
+	std::cout << "DEBUG : found error page: " << it->first << "," << it->second << std::endl;
+	return (it->second);
+}
+
+void	Server::addMissingErrorPages(LocationParse &loc, std::map<int, std::string> servErrorPages)
+{
+	const std::map<int, std::string> locErrorPages = loc.getErrorPages();
+	for (std::map<int, std::string>::const_iterator it_s = servErrorPages.begin(); it_s != servErrorPages.end(); ++it_s)
+	{
+		if (locErrorPages.find(it_s->first) == locErrorPages.end())
+		{
+			loc.addMissingErrorPage(it_s->first, it_s->second);
+		}
+	}
+
 }
 
 Server::Server(std::string addr, int port) //constructor for mock servers
@@ -242,7 +259,7 @@ Server::Server(std::string addr, int port) //constructor for mock servers
 	this->root = "";
 	this->index = "index.html";
 	this->client_max_body_size = "1MB";
-	this->error_page = "";
+	// this->error_page = "";
 
 	std::vector<Location> locations;
 }
@@ -259,10 +276,12 @@ Server::Server(const ServerParse& src) //constructor taking the ServerParse obje
 	this->root = src.get("root").front();
 	this->index = src.get("index").front();
 	this->client_max_body_size = src.get("client_max_body_size").front();
-	this->error_page = src.get("error_page").back();
+	this->error_page = src.getErrorPages();
 
-	for (std::vector<LocationParse>::const_iterator it = src.getLocations().begin(); it != src.getLocations().end(); ++it)
+	std::vector<LocationParse> copyLocations = src.getLocationsToEdit();
+	for (std::vector<LocationParse>::iterator it = copyLocations.begin(); it != copyLocations.end(); ++it)
 	{
+		addMissingErrorPages(*it, error_page);
 		Location loc(*it); // Create a Location object from the LocationParse object
 		this->locations.push_back(loc);
 	}
@@ -283,7 +302,14 @@ void Server::print(int indent = 0) const
     std::cout << pad << "  root: " << root << "\n";
     std::cout << pad << "  index: " << index << "\n";
     std::cout << pad << "  client_max_body_size: " << client_max_body_size << "\n";
-    std::cout << pad << "  error_page: " << error_page << "\n";
+    for (std::map<int,std::string>::const_iterator it = error_page.begin();
+         it != error_page.end(); ++it)
+    {
+        std::cout << pad << "  error_page " << it->first
+                  << " -> " << it->second << "\n";
+    }
+
+    std::cout << pad << "}\n";
 
     // Print all locations
     for (std::vector<Location>::const_iterator it = locations.begin();

@@ -32,6 +32,7 @@ private:
     static std::string safeHeader(AHttpRequest& req, HeaderKey key);
     static std::string safeHttpVersion(AHttpRequest& req);
     static std::string generateTxtName();
+    std::string         getWebservDefaultErrorBody(int statusCode);
 };
 
 #endif

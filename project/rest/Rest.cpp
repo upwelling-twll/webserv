@@ -34,10 +34,10 @@ PathParts splitUri(const std::string& uri) {
     return parts;
 }
 
-std::string getErrorPageBody(int status, const std::string& error_page_path, Config& conf)
+std::string getErrorPageBody(int vstatus, const std::string& error_page_path, Config& conf)
 {
 	std::ifstream ifs;
-	(void)status;
+	(void)vstatus;
 
 	std::cout << "DEBUG: error_page_path = " << error_page_path << std::endl;
 	if (!error_page_path.empty())
@@ -46,7 +46,7 @@ std::string getErrorPageBody(int status, const std::string& error_page_path, Con
 	{
 		std::cerr << "ERROR opening error page file:" << error_page_path << "$ (" << std::strerror(errno) << ")" << std::endl;
 		Server default_server = (conf.getServers()).front();
-		const std::string default_server_error_path = default_server.getDefaultErrorPagePath();
+		const std::string default_server_error_path = default_server.getDefaultErrorPagePath(vstatus);
 		std::cout << "DEBUG: default_server_error_path = " << default_server_error_path << std::endl;
 		if (!default_server_error_path.empty())
 		{
@@ -91,24 +91,71 @@ int validateRequest(AHttpRequest& req, const Server& srv, const std::string& met
 	return 200; // OK
 }
 
+std::string Rest::getWebservDefaultErrorBody(int statusCode)
+{
+	switch (statusCode)
+	{
+	case 200:
+		return "OK";
+	case 201:
+		return "Created";
+	case 202:
+		return "Accepted";
+	case 204:
+		return "No Content";
+	case 301:
+		return "Moved Permanently";
+	case 302:
+		return "Found";
+	case 304:
+		return "Not Modified";
+	case 400:
+		return "Bad Request";
+	case 401:
+		return "Unauthorized";
+	case 403:
+		return "Forbidden";
+	case 404:
+		return "Not Found";
+	case 405:
+		return "Method Not Allowed";
+	case 409:
+		return "Conflict";
+	case 413:
+		return "Payload Too Large";
+	case 415:
+		return "Unsupported Media Type";
+	case 500:
+		return "Internal Server Error";
+	case 501:
+		return "Not Implemented";
+	case 503:
+		return "Service Unavailable";
+	default:
+		return "Unknown";
+	}
+}
+
 std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 {
 	Headers h;
 	h["Content-Type"] = "text/html; charset=utf-8";
-
+	
 	std::cout << "DEBUG: " << safeHeader(req, HOST) << std::endl;
 	const Server& srv = conf.matchServer(safeHeader(req, HOST));
 	const Location* loc = srv.matchLocation(req.get(URI));
 	int vstatus = validateRequest(req, srv, req.get(METHOD), loc);
 	std::cout << "DEBUG: Request status: " << vstatus << std::endl;
+	std::string errorBody = getErrorPageBody(vstatus, srv.getDefaultErrorPagePath(vstatus), conf);
 	if (vstatus != 200)
 	{
 		std::cout << "DEBUG: request status != 200" << std::endl;
-		std::string errorBody = getErrorPageBody(status, loc->getError_page_sd(vstatus), conf);
+		if (loc)
+			errorBody = getErrorPageBody(vstatus, loc->getError_page_sd(vstatus), conf);
 		if (errorBody.empty())
 		{
-			errorBody = reasonPhrase(vstatus);
-			return formResponse(req, vstatus, reasonPhrase(vstatus), h);
+			errorBody = getWebservDefaultErrorBody(vstatus);
+			return formResponse(req, vstatus, errorBody, h);
 		}
 		return formResponse(req, vstatus, errorBody, h);
 	}
@@ -128,7 +175,7 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 		if (ifs.eof())
 			std::cerr << " -> eofbit is set (unexpected EOF)" << std::endl;
 		std::cerr << "ERROR opening file: " << filepath << " (" << std::strerror(errno) << ")" << std::endl;
-		std::string errorBody = getErrorPageBody(status, loc->getError_page_sd(404), conf);
+		std::string errorBody = getErrorPageBody(vstatus, loc->getError_page_sd(404), conf);
 		if (errorBody.empty())
 			errorBody = "<h1>Not Found</h1>";
 		return formResponse(req, 404, errorBody, h);

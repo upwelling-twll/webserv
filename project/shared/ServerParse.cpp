@@ -114,7 +114,8 @@ void LocationParse::append(const std::string& k, const std::vector<std::string>&
 
 void LocationParse::addErrorPage(const std::vector<std::string>& vals)
 {
-    if (vals.size() < 2) return; // need at least codes + path
+    if (vals.size() < 2)
+        return; // need at least codes + path
 
     std::string path = vals.back();
     for (size_t i = 0; i < vals.size() - 1; ++i) {
@@ -122,6 +123,11 @@ void LocationParse::addErrorPage(const std::vector<std::string>& vals)
         if (code > 0)
             errorPages[code] = path;
     }
+}
+
+void LocationParse::addMissingErrorPage(int statusCode, std::string path)
+{
+    this->errorPages.insert(std::pair<const int, std::string>(statusCode, path));
 }
 
 const std::map<int, std::string>& LocationParse::getErrorPages() const 
@@ -232,13 +238,31 @@ void ServerParse::addErrorPage(const std::vector<std::string>& vals)
     }
 }
 
-const std::map<int, std::string>& ServerParse::getErrorPages() const {
+const std::map<int, std::string>& ServerParse::getErrorPages() const
+{
     return errorPages;
 }
 
 
-void ServerParse::addLocation(const LocationParse& loc) { locations.push_back(loc); }
-const std::vector<LocationParse>& ServerParse::getLocations() const { return locations; }
+void ServerParse::addLocation(const LocationParse& loc)
+{
+    locations.push_back(loc);
+}
+
+const std::vector<LocationParse>& ServerParse::getLocations() const
+{ 
+    return locations;
+}
+
+// std::vector<LocationParse>& ServerParse::getLocationsToEdit()
+// { 
+//     return locations;
+// }
+
+const std::vector<LocationParse>& ServerParse::getLocationsToEdit() const
+{ 
+    return locations;
+}
 
 std::string ServerParse::getProperties() const
 {

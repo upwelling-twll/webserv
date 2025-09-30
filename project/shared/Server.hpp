@@ -26,7 +26,6 @@ private:
 	std::string cgi_pass;
 	std::string upload_store;
 	std::string client_max_body_size_sd; //convert to bytes size_t
-	// std::string error_page_sd;
 	std::map<int, std::string> error_page_sd;
 	std::string proxy_pass; //might be converted to str ip and int port
 
@@ -55,7 +54,7 @@ private:
 	std::string root;
 	std::string index;
 	std::string client_max_body_size;
-	std::string error_page;
+	std::map<int, std::string> error_page;
 
 	std::vector<Location> locations;
 
@@ -69,7 +68,8 @@ public:
 	int			getPort() const;
 	std::string getAddr() const;
 	std::string getServerName() const;
-	std::string getDefaultErrorPagePath() const;
+	std::string getDefaultErrorPagePath(int errorStatus) const;
+	void		addMissingErrorPages(LocationParse &loc, std::map<int, std::string> servErrorPages);
 
 	Server(std::string addr, int port); //constructor for mock servers
 	Server(const ServerParse& src); //constructor taking the ServerParse object

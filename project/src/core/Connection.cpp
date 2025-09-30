@@ -132,7 +132,8 @@ void	Connection::processConnectionStatusReceiving()
 	{
 		//TODO : will form BadRequest error responce and send it to client and then close the connection
 		// set Connection status to ERROR_CONNECTION (?)
-		_response->insert("How uncivilized... Bad Request"); //TODO: replace bu proper 400 error
+		// _response->insert("How uncivilized... Bad Request"); //TODO: replace bu proper 400 error
+		_response = createRestResponse(*_request, _config);
 		std::cout << "Connection is in error state, but will send error message" << std::endl;
 		_status = PREPARED_RESPONSE;
 		_active = false; // it a workaround to close connection after sending error response

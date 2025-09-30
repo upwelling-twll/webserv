@@ -81,6 +81,7 @@ public:
 
     // NEW: API for error_page
     void addErrorPage(const std::vector<std::string>& vals);
+    void addMissingErrorPage(int statusCode, std::string path);
     const std::map<int, std::string>& getErrorPages() const;
 
     std::string getProperties() const;
@@ -117,6 +118,9 @@ public:
 
     void                        addLocation(const LocationParse &loc);
     const std::vector<LocationParse> &getLocations() const;
+    // std::vector<LocationParse> &getLocationsToEdit();
+    const std::vector<LocationParse> &getLocationsToEdit() const;
+
 
     // NEW → error page API
     void                        addErrorPage(const std::vector<std::string>& vals);
