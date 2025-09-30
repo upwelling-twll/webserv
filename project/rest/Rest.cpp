@@ -85,7 +85,7 @@ int validateRequest(AHttpRequest& req, const Server& srv, const std::string& met
 		size_t bodySize = req.get(BODY).size();
 		if (bodySize > outLoc->getMaxBodySize())
 		{
-		return 413; // Payload Too Large
+			return 413; // Payload Too Large
 		}
 	}
 	return 200; // OK
@@ -99,12 +99,18 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 	std::cout << "DEBUG: " << safeHeader(req, HOST) << std::endl;
 	const Server& srv = conf.matchServer(safeHeader(req, HOST));
 	const Location* loc = srv.matchLocation(req.get(URI));
-	int vstatus = validateRequest(req, srv, "GET", loc);
+	int vstatus = validateRequest(req, srv, req.get(METHOD), loc);
 	std::cout << "DEBUG: Request status: " << vstatus << std::endl;
 	if (vstatus != 200)
 	{
-		std::cout << "DEBUG: invalid request" << std::endl;
-		return formResponse(req, vstatus, reasonPhrase(vstatus), h);
+		std::cout << "DEBUG: request status != 200" << std::endl;
+		std::string errorBody = getErrorPageBody(status, loc->getError_page_sd(vstatus), conf);
+		if (errorBody.empty())
+		{
+			errorBody = reasonPhrase(vstatus);
+			return formResponse(req, vstatus, reasonPhrase(vstatus), h);
+		}
+		return formResponse(req, vstatus, errorBody, h);
 	}
 
 	PathParts parts = splitUri(req.get(URI));
@@ -122,7 +128,7 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 		if (ifs.eof())
 			std::cerr << " -> eofbit is set (unexpected EOF)" << std::endl;
 		std::cerr << "ERROR opening file: " << filepath << " (" << std::strerror(errno) << ")" << std::endl;
-		std::string errorBody = getErrorPageBody(status, loc->getError_page_sd(), conf);
+		std::string errorBody = getErrorPageBody(status, loc->getError_page_sd(404), conf);
 		if (errorBody.empty())
 			errorBody = "<h1>Not Found</h1>";
 		return formResponse(req, 404, errorBody, h);

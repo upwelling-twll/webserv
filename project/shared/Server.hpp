@@ -6,7 +6,7 @@
 # include <fstream>
 # include <string>
 # include <cstdint>
-
+# include <map>
 # include "../inc/webserv.hpp"
 
 class Socket;
@@ -26,7 +26,8 @@ private:
 	std::string cgi_pass;
 	std::string upload_store;
 	std::string client_max_body_size_sd; //convert to bytes size_t
-	std::string error_page_sd;
+	// std::string error_page_sd;
+	std::map<int, std::string> error_page_sd;
 	std::string proxy_pass; //might be converted to str ip and int port
 
 public:
@@ -36,11 +37,13 @@ public:
 	size_t getMaxBodySize() const; //in bytes
 	std::string getRoot_sd() const;
 	std::string getUpload_store() const;
-	std::string getError_page_sd() const;
+	std::string getError_page_sd(int errorStatus) const;
 
 	Location(); //constructor for mock locations
 	Location(const LocationParse& src); //constructor taking the LocationParse object
 	~Location();
+
+	void print(int indent) const;
 };
 
 class Server
@@ -71,6 +74,8 @@ public:
 	Server(std::string addr, int port); //constructor for mock servers
 	Server(const ServerParse& src); //constructor taking the ServerParse object
 	~Server(void);
+
+	void print(int indent) const;
 };
 
 std::ostream &operator<<(std::ostream &output_stream, Server &src);

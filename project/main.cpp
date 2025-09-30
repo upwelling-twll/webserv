@@ -27,6 +27,11 @@ int main(int argc, char** argv)
 		Server server(*it); // Create a Server object from the ServerParse object
 		servers.push_back(server);
 	}
+	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
+	{
+		it->print(1);
+	}
+
 	Config newConf(servers); //constructor using Servers vector and creating a Locations vector during the construction
 
 	std::cout << "Data for config is created" << std::endl;

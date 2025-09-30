@@ -52,11 +52,15 @@ std::string Location::getUpload_store() const
 	return (this->upload_store);
 }
 
-std::string Location::getError_page_sd() const
+std::string Location::getError_page_sd(int errorStatus) const
 {
-	if (this->error_page_sd == "server_default")
-		return "";
-	return (this->error_page_sd);
+	// if (this->error_page_sd == "server_default")
+	// 	return "";
+	std::map<int, std::string>::const_iterator it = (this->error_page_sd).find(errorStatus);
+	if (it->second == "server_default" || it->second == "" || it->second.empty())
+		return ("");
+	std::cout << "DEBUG : found error page: " << it->first << "," << it->second << std::endl;
+	return (it->second);
 }
 
 Location::Location() //constructor for mock locations
@@ -71,7 +75,10 @@ Location::Location() //constructor for mock locations
 	this->cgi_pass = "off";
 	this->upload_store = "forbidden";
 	this->client_max_body_size_sd = "1024";
-	this->error_page_sd = "server_default";
+	std::map<int, std::string> error_pages;
+	error_pages.clear();
+	error_pages.insert(std::pair<const int, std::string>(0, "server_default"));
+	this->error_page_sd = error_pages;
 }
 
 Location::Location(const LocationParse& src) //constructor taking the LocationParse object
@@ -93,7 +100,7 @@ Location::Location(const LocationParse& src) //constructor taking the LocationPa
 	this->cgi_pass = src.get("cgi_pass").front();
 	this->upload_store = src.get("upload_store").front();
 	this->client_max_body_size_sd = src.get("client_max_body_size_sd").front();
-	this->error_page_sd = src.get("error_page_sd").back();
+	this->error_page_sd = src.getErrorPages();
 	this->proxy_pass = src.get("proxy_pass").front();
 }
 
@@ -103,6 +110,43 @@ Location::~Location(){
 std::string Location::getPathPrefix() const
 {
 	return (this->path_prefix);
+}
+
+
+void Location::print(int indent = 0) const
+{
+    std::string pad(indent * 2, ' ');
+    std::cout << pad << "location {\n";
+
+    std::cout << pad << "  path_prefix: " << path_prefix << "\n";
+    std::cout << pad << "  root: " << root_sd << "\n";
+    std::cout << pad << "  index: " << index_sd << "\n";
+    std::cout << pad << "  autoindex: " << autoindex << "\n";
+
+    // limit_except vector
+    std::cout << pad << "  limit_except: ";
+    for (std::vector<std::string>::const_iterator it = limit_except.begin();
+         it != limit_except.end(); ++it)
+    {
+        if (it != limit_except.begin()) std::cout << ", ";
+        std::cout << *it;
+    }
+    std::cout << "\n";
+
+    std::cout << pad << "  returns: " << returns << "\n";
+    std::cout << pad << "  cgi_pass: " << cgi_pass << "\n";
+    std::cout << pad << "  upload_store: " << upload_store << "\n";
+    std::cout << pad << "  client_max_body_size: " << client_max_body_size_sd << "\n";
+
+    // error pages
+    for (std::map<int,std::string>::const_iterator it = error_page_sd.begin();
+         it != error_page_sd.end(); ++it)
+    {
+        std::cout << pad << "  error_page " << it->first
+                  << " -> " << it->second << "\n";
+    }
+
+    std::cout << pad << "}\n";
 }
 
 
@@ -227,4 +271,26 @@ Server::Server(const ServerParse& src) //constructor taking the ServerParse obje
 Server::~Server()
 {
 	std::cout << "Server destructor is called" << std::endl;
+}
+
+void Server::print(int indent = 0) const
+{
+    std::string pad(indent * 2, ' ');
+    std::cout << pad << "server {\n";
+    std::cout << pad << "  ip: " << ip << "\n";
+    std::cout << pad << "  port: " << port << "\n";
+    std::cout << pad << "  server_name: " << server_name << "\n";
+    std::cout << pad << "  root: " << root << "\n";
+    std::cout << pad << "  index: " << index << "\n";
+    std::cout << pad << "  client_max_body_size: " << client_max_body_size << "\n";
+    std::cout << pad << "  error_page: " << error_page << "\n";
+
+    // Print all locations
+    for (std::vector<Location>::const_iterator it = locations.begin();
+         it != locations.end(); ++it)
+    {
+        it->print(indent + 1);
+    }
+
+    std::cout << pad << "}\n";
 }

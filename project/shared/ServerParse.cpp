@@ -89,7 +89,7 @@ std::vector<std::string> LocationParse::get(const std::string& k) const
 
 void LocationParse::reset(const std::string& k, const std::vector<std::string>& v)
 {
-    if (k == "error_page") {
+    if (k == "error_page_sd") {
         addErrorPage(v);
         return;
     }
@@ -100,7 +100,7 @@ void LocationParse::reset(const std::string& k, const std::vector<std::string>& 
 
 void LocationParse::append(const std::string& k, const std::vector<std::string>& v)
 {
-    if (k == "error_page") {
+    if (k == "error_page_sd") {
         addErrorPage(v);
         return;
     }
@@ -124,7 +124,9 @@ void LocationParse::addErrorPage(const std::vector<std::string>& vals)
     }
 }
 
-const std::map<int, std::string>& LocationParse::getErrorPages() const {
+const std::map<int, std::string>& LocationParse::getErrorPages() const 
+{
+    std::cout << "returning error pages, size=" << errorPages.size() << std::endl;
     return errorPages;
 }
 
@@ -142,7 +144,7 @@ void LocationParse::print(int indent) const
     std::cout << pad << "location {\n";
     for (std::size_t i = 0; i < locationPropertiesRange; ++i)
     {
-        if (std::string(properties[i]) == "error_page")
+        if (std::string(properties[i]) == "error_page_sd")
             continue; // printed separately below
 
         const std::string& cur = values[i].empty() ? "" : values[i].back();
@@ -157,7 +159,7 @@ void LocationParse::print(int indent) const
     for (std::map<int,std::string>::const_iterator it = errorPages.begin();
          it != errorPages.end(); ++it)
     {
-        std::cout << pad << "  error_page " << it->first
+        std::cout << pad << "  error_page_sd " << it->first
                   << " → " << it->second << "\n";
     }
 
