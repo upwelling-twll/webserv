@@ -144,11 +144,15 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 	std::cout << "DEBUG: " << safeHeader(req, HOST) << std::endl;
 	const Server& srv = conf.matchServer(safeHeader(req, HOST));
 	const Location* loc = srv.matchLocation(req.get(URI));
+	//debug start
+	if (loc)
+		std::cout << "DEBUG: location found :" << loc->getPathPrefix() << std::endl;
+	//debug end
 	int vstatus = validateRequest(req, srv, req.get(METHOD), loc);
 	std::cout << "DEBUG: Request status: " << vstatus << std::endl;
-	std::string errorBody = getErrorPageBody(vstatus, srv.getDefaultErrorPagePath(vstatus), conf);
 	if (vstatus != 200)
 	{
+		std::string errorBody = getErrorPageBody(vstatus, srv.getDefaultErrorPagePath(vstatus), conf);
 		std::cout << "DEBUG: request status != 200" << std::endl;
 		if (loc)
 			errorBody = getErrorPageBody(vstatus, loc->getError_page_sd(vstatus), conf);
@@ -163,8 +167,8 @@ std::string Rest::get(AHttpRequest &req, int status, Config& conf)
 	PathParts parts = splitUri(req.get(URI));
 	std::cout << "DEBUG: root_sd = " << loc->getRoot_sd()<< std::endl;
 	std::string filepath = loc->getRoot_sd() + parts.directory + parts.filename;
-
 	std::cout << "DEBUG: filepath = " << filepath << std::endl;
+	
 	std::ifstream ifs(filepath.c_str());
     if (!ifs)
 	{

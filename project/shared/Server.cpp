@@ -59,7 +59,7 @@ std::string Location::getError_page_sd(int errorStatus) const
 	std::map<int, std::string>::const_iterator it = (this->error_page_sd).find(errorStatus);
 	if (it->second == "server_default" || it->second == "" || it->second.empty())
 		return ("");
-	std::cout << "DEBUG : found error page: " << it->first << "," << it->second << std::endl;
+	std::cout << "DEBUG : found error page_sd: " << it->first << "," << it->second << std::endl;
 	return (it->second);
 }
 
@@ -232,7 +232,7 @@ std::string Server::getServerName() const
 std::string Server::getDefaultErrorPagePath(int errorStatus) const
 {
 	std::map<int, std::string>::const_iterator it = (this->error_page).find(errorStatus);
-	if (it->second == "server_default" || it->second == "" || it->second.empty())
+	if (it ==  this->error_page.end() ||  it->second == "server_default" || it->second == "" || it->second.empty())
 		return ("");
 	std::cout << "DEBUG : found error page: " << it->first << "," << it->second << std::endl;
 	return (it->second);
