@@ -58,3 +58,6 @@ config parsing
     - for  limit_except GET HEAD - if more then one method listed, only the last method is parsed, while others ignored.
     - deny_all does not work
     - if there is no max_body_size specified for each location it fails doing POST
+
+request parsing:
+ - infinty loop for "BAD / HTTP/1.1\r\nHost: localhost\r\n\r\n" request
